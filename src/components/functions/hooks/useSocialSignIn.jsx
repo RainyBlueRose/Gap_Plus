@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { signInWithProvider } from "../firebase/authService";
 
-const useSocialSignIn = () => {
+export const useSocialSignIn = () => {
   const dispatch = useDispatch();
 
   const signIn = async (providerName) => {
@@ -12,6 +12,5 @@ const useSocialSignIn = () => {
       console.error(`${providerName} signin failed`, err);
     }
   };
+  return { signIn };
 };
-
-export default useSocialSignIn;
