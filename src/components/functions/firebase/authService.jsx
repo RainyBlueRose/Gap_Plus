@@ -1,10 +1,12 @@
 import { auth, googleAuthProvider } from "../../config/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 
-export const handleSigninByGoogle = async () => {
-  const result = await signInWithPopup(auth, googleAuthProvider);
-  console.log("result", result);
-  console.log("token", await result.user.getIdTokenResult());
+const provider = {
+  google: googleAuthProvider,
+};
+
+export const signInWithProvider = (providerName) => {
+  signInWithPopup(auth, provider[providerName]);
 };
 
 export const handleSignout = async () => {
