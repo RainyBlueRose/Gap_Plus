@@ -11,7 +11,6 @@ export const useSocialSignIn = () => {
   const signIn = async (providerName) => {
     try {
       const { user } = await signInWithProvider(providerName);
-      console.log("userinfo", user);
       dispatch(
         login({
           email: user.email,
