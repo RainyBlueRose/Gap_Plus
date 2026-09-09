@@ -1,5 +1,5 @@
 import React from "react";
-import { handleSignout } from "../functions/firebase/auth";
+import { handleSignout } from "../functions/firebase/authService";
 import { useSocialSignIn } from "../functions/hooks/useSocialSignIn";
 
 const Login = () => {
