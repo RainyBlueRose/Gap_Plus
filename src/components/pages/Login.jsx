@@ -8,7 +8,13 @@ const Login = () => {
   return (
     <div>
       <div>
-        <button onClick={signIn("google")}>Login by Google</button>
+        <button
+          onClick={() => {
+            signIn("google");
+          }}
+        >
+          Login by Google
+        </button>
         <button onClick={handleSignout}>Logout</button>
       </div>
     </div>
