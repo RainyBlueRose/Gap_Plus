@@ -6,7 +6,7 @@ const provider = {
 };
 
 export const signInWithProvider = (providerName) => {
-  signInWithPopup(auth, provider[providerName]);
+  return signInWithPopup(auth, provider[providerName]);
 };
 
 export const handleSignout = async () => {
