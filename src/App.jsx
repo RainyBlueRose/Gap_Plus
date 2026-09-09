@@ -6,9 +6,12 @@ import { auth } from "./components/config/firebase";
 
 const App = () => {
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user", user);
     });
+    return () => {
+      unsubscribe();
+    };
   }, []);
   return (
     <div>
