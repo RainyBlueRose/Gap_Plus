@@ -10,5 +10,5 @@ export const signInWithProvider = (providerName) => {
 };
 
 export const handleSignout = async () => {
-  signOut();
+  signOut(auth);
 };
