@@ -1,13 +1,23 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+
 import { signInWithProvider } from "../firebase/authService";
+
+import { useDispatch } from "react-redux";
+import { login } from "../../../store/userSlice";
 
 export const useSocialSignIn = () => {
   const dispatch = useDispatch();
 
   const signIn = async (providerName) => {
     try {
-      const result = await signInWithProvider(providerName);
+      const { user } = await signInWithProvider(providerName);
+      console.log("userinfo", user);
+      dispatch(
+        login({
+          email: user.email,
+          uid: user.uid,
+        }),
+      );
     } catch (err) {
       console.error(`${providerName} signin failed`, err);
     }
