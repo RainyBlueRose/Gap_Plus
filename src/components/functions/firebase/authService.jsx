@@ -8,5 +8,5 @@ export const handleSigninByGoogle = async () => {
 };
 
 export const handleSignout = async () => {
-  signOut()
+  signOut();
 };
