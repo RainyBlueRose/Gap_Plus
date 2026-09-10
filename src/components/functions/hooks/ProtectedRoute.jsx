@@ -6,7 +6,11 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../../store/userSlice";
 
 export const ProtectedRoute = () => {
-  const { isAuthentication } = useSelector(selectUser);
+  const { isAuthentication, authInitialize } = useSelector(selectUser);
+
+  if (authInitialize) {
+    return <div>loading ...</div>;
+  }
 
   if (!isAuthentication) {
     console.log("ไม่มี User");
