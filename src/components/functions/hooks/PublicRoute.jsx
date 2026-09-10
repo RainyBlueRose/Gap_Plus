@@ -1,8 +1,11 @@
 import React from "react";
+
+import { useSelector } from "react-redux";
 import { selectUser } from "../../../store/userSlice";
+
 import { ROUTES } from "../../router/Router";
 
-const PublicRoute = () => {
+export const PublicRoute = () => {
   const { isAuthentication, authInitialize } = useSelector(selectUser);
 
   if (authInitialize) {
@@ -13,5 +16,3 @@ const PublicRoute = () => {
     return <Navigate to={ROUTES.HOME} replace />;
   }
 };
-
-export default PublicRoute;
