@@ -21,7 +21,7 @@ export const userSlice = createSlice({
       state.isAuthentication = false;
     },
     setAuthInitialize(state, action) {
-      state.isAuthentication = action.payload;
+      state.authInitialize = action.payload;
     },
   },
 });
