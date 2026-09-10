@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectUsers } from "../../../store/userSlice";
 
-const ProtectedRoute = () => {
+export const ProtectedRoute = () => {
   const { user } = useSelector(selectUsers);
 
   if (!user) {
