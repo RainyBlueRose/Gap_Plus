@@ -6,11 +6,11 @@ import { selectUsers } from "../../../store/userSlice";
 const useProtectedRoute = () => {
   const { user } = useSelector(selectUsers);
 
-  if (user) {
-    console.log("มี User");
+  if (!user) {
+    console.log("ไม่มี User");
     return;
   }
-  console.log("ไม่มี User");
+  console.log("มี User");
 };
 
 export default useProtectedRoute;
