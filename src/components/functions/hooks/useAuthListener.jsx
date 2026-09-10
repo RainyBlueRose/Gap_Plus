@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { subscribeToAuthChanges } from "../firebase/authService";
+import { login } from "../../../store/userSlice";
 
 export const useAuthListener = () => {
-  const dispatch = useDispatch;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges((user) => {
-      console.log("เปิด onAuthStateChanged")
+      console.log("เปิด onAuthStateChanged");
       if (user) {
         dispatch(
           login({
@@ -18,7 +19,7 @@ export const useAuthListener = () => {
       }
     });
     return () => {
-      console.log("ปิด onAuthStateChanged")
+      console.log("ปิด onAuthStateChanged");
       unsubscribe();
     };
   }, []);
