@@ -1,10 +1,10 @@
 import React from "react";
 
 import { useSelector } from "react-redux";
-import { selectUsers } from "../../../store/userSlice";
+import { selectUser } from "../../../store/userSlice";
 
 export const ProtectedRoute = () => {
-  const { user } = useSelector(selectUsers);
+  const { user } = useSelector(selectUser);
 
   if (!user) {
     console.log("ไม่มี User");
