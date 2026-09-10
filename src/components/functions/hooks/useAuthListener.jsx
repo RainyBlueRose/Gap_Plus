@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { subscribeToAuthChanges } from "../firebase/authService";
-import { login, logout } from "../../../store/userSlice";
+import { login, logout, setAuthInitialize } from "../../../store/userSlice";
 
 export const useAuthListener = () => {
   const dispatch = useDispatch();
@@ -19,6 +19,7 @@ export const useAuthListener = () => {
       } else {
         dispatch(logout());
       }
+      dispatch(setAuthInitialize(false));
     });
     return () => {
       console.log("ปิด onAuthStateChanged");
