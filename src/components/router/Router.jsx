@@ -17,7 +17,7 @@ export const router = createBrowserRouter([
   },
 ]);
 
-export const routes = {
-  login: "/",
-  home: "/Home",
+export const ROUTES = {
+  LOGIN: "/",
+  HOME: "/Home",
 };
