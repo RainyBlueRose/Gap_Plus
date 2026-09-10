@@ -10,7 +10,7 @@ export const ProtectedRoute = () => {
 
   if (!isAuthentication) {
     console.log("ไม่มี User");
-    return <Navigate to={routes.login} />;
+    return <Navigate to={routes.login} replace />;
   }
   console.log("มี User");
   return <Outlet />;
