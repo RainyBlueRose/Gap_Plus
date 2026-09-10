@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../../store/userSlice";
 
 import { useNavigate } from "react-router-dom";
-import { routes } from "../../router/Router";
+import { ROUTES } from "../../router/Router";
 
 export const useSocialSignIn = () => {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ export const useSocialSignIn = () => {
           uid: user.uid,
         }),
       );
-      navigate(routes.home);
+      navigate(ROUTES.HOME);
     } catch (err) {
       console.error(`${providerName} signin failed`, err);
     }

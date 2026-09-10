@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { handleSignout } from "../firebase/authService";
 import { logout } from "../../../store/userSlice";
 import { useNavigate } from "react-router-dom";
-import { routes } from "../../router/Router";
+import { ROUTES } from "../../router/Router";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ export const useAuth = () => {
   const signOut = async () => {
     await handleSignout();
     dispatch(logout());
-    navigate(routes.login);
+    navigate(ROUTES.LOGIN);
   };
 
   return { signOut };
