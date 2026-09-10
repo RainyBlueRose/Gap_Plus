@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectUsers } from "../../../store/userSlice";
 
-const useProtectedRoute = () => {
+const ProtectedRoute = () => {
   const { user } = useSelector(selectUsers);
 
   if (!user) {
@@ -13,4 +13,4 @@ const useProtectedRoute = () => {
   console.log("มี User");
 };
 
-export default useProtectedRoute;
+export default ProtectedRoute;
