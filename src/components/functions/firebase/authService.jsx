@@ -1,5 +1,5 @@
 import { auth, googleAuthProvider } from "../../config/firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 
 const provider = {
   google: googleAuthProvider,
@@ -11,4 +11,8 @@ export const signInWithProvider = (providerName) => {
 
 export const handleSignout = async () => {
   signOut(auth);
+};
+
+export const subscribeToAuthChanges = (callback) => {
+  return onAuthStateChanged(auth, callback);
 };
