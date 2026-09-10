@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { subscribeToAuthChanges } from "../firebase/authService";
-import { login } from "../../../store/userSlice";
+import { login, logout } from "../../../store/userSlice";
 
 export const useAuthListener = () => {
   const dispatch = useDispatch();
@@ -16,6 +16,8 @@ export const useAuthListener = () => {
             uid: user.uid,
           }),
         );
+      } else {
+        dispatch(logout());
       }
     });
     return () => {
