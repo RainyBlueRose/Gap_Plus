@@ -5,9 +5,9 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../../store/userSlice";
 
 export const ProtectedRoute = () => {
-  const { user } = useSelector(selectUser);
+  const { isAuthentication } = useSelector(selectUser);
 
-  if (!user) {
+  if (!isAuthentication) {
     console.log("ไม่มี User");
     return;
   }
