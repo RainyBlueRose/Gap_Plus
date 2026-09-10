@@ -1,4 +1,5 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../store/userSlice";
@@ -11,6 +12,7 @@ export const ProtectedRoute = () => {
     return;
   }
   console.log("มี User");
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
