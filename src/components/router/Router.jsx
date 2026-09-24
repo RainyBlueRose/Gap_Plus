@@ -1,3 +1,5 @@
+//เอาไว้กำหนด Route ต่างๆ 
+//export ROUTES เอาไว้จะได้ไม่ต้อง Hard Code
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 

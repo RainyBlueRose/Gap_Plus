@@ -1,3 +1,4 @@
+//ไว้เช็คว่า Login รึยัง ถ้า Login แล้วข้ามหน้า Login ไปเลย
 import React from "react";
 
 import { useSelector } from "react-redux";

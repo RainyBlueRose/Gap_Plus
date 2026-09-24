@@ -1,3 +1,4 @@
+//ไว้ใช้เช็คว่า Login รึยัง ถ้ายังให้กลับไปหน้า Login
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { ROUTES } from "../../router/Router";

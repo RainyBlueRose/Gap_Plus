@@ -1,3 +1,5 @@
+//สำหรับ Login ของ Provider ต่างๆตามชื่อที่ใส่ ซึ่งสามารถดูได้ในไฟล์ authService ว่ามีอะไรบ้าง อันไหนไม่มีก็ไปใส่เพิ่มเองได้แล้วตอนตั้งค่าปุ่มก็ใส่ให้พารามิเตอร์ให้ตรง ซึ่งตอนนี้มีแค่ google
+//แล้วเอาข้อมูลที่ Provider ส่งมาไปเก็บที่ Redux
 import React from "react";
 
 import { signInWithProvider } from "../firebase/authService";

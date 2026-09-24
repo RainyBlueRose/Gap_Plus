@@ -1,3 +1,4 @@
+//ไว้ใช้เรียก Firebase Service เท่านั้น
 import { auth, googleAuthProvider } from "../../config/firebase";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 

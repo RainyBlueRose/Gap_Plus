@@ -1,3 +1,4 @@
+//เปิดเช็คสถานะและข้อมูลการเข้าสู่ระบบตอนเปิดหน้าเว็บใหม่หรือรีเฟรช แล้วปิดเช็คสถานะตอนปิดแอพหรือรีเฟรช
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { subscribeToAuthChanges } from "../firebase/authService";
