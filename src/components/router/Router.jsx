@@ -1,4 +1,4 @@
-//เอาไว้กำหนด Route ต่างๆ 
+//เอาไว้กำหนด Route ต่างๆ
 //export ROUTES เอาไว้จะได้ไม่ต้อง Hard Code
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
@@ -8,6 +8,7 @@ import { PublicRoute } from "../functions/hooks/PublicRoute";
 
 import Login from "../pages/Login";
 import Home from "../pages/Home";
+import MyLearning from "../pages/MyLearning";
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [{ path: "/Home", element: <Home /> }],
+    children: [{ path: "/MyLearning", element: <MyLearning /> }],
   },
 ]);
 
