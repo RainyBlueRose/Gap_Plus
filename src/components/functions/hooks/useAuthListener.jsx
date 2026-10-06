@@ -2,7 +2,12 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { subscribeToAuthChanges } from "../firebase/authService";
-import { login, logout, setAuthInitialize } from "../../../store/userSlice";
+import {
+  login,
+  logout,
+  setAuthInitialize,
+  fetchUserByEmail,
+} from "../../../store/userSlice";
 
 export const useAuthListener = () => {
   const dispatch = useDispatch();
@@ -10,13 +15,10 @@ export const useAuthListener = () => {
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges((user) => {
       console.log("เปิด onAuthStateChanged");
+      dispatch(setAuthInitialize(true));
       if (user) {
-        dispatch(
-          login({
-            email: user.email,
-            uid: user.uid,
-          }),
-        );
+        console.log("user", user);
+        dispatch(fetchUserByEmail(user.email));
       } else {
         dispatch(logout());
       }
