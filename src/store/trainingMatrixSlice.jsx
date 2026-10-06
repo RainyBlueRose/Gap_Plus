@@ -20,3 +20,5 @@ export const trainingMatrixSlice = createSlice({
   initialState,
   reducers: {},
 });
+
+export default trainingMatrixSlice.reducer;
