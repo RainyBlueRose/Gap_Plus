@@ -3,9 +3,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { subscribeToAuthChanges } from "../firebase/authService";
 import {
-  login,
   logout,
-  setAuthInitialize,
   fetchUserByEmail,
 } from "../../../store/userSlice";
 
