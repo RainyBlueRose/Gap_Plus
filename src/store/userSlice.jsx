@@ -31,10 +31,6 @@ export const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    login(state, action) {
-      state.user = action.payload;
-      state.isAuthentication = true;
-    },
     logout(state) {
       state.user = [];
       state.isAuthentication = false;
@@ -48,6 +44,7 @@ export const userSlice = createSlice({
     builder
       .addCase(fetchUserByEmail.pending, (state) => {
         state.loading = "loading";
+        state.isAuthentication = false;
       })
       .addCase(fetchUserByEmail.fulfilled, (state, action) => {
         state.loading = "succeeded";
@@ -57,6 +54,7 @@ export const userSlice = createSlice({
       .addCase(fetchUserByEmail.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload ?? action.error.message;
+        state.isAuthentication = false;
       });
   },
 });
