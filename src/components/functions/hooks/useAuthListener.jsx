@@ -17,7 +17,6 @@ export const useAuthListener = () => {
       console.log("เปิด onAuthStateChanged");
       dispatch(setAuthInitialize(true));
       if (user) {
-        console.log("user", user);
         dispatch(fetchUserByEmail(user.email));
       } else {
         dispatch(logout());

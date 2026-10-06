@@ -15,6 +15,7 @@ export const fetchUserByEmail = createAsyncThunk(
   "user/fetchUserByEmail",
   async (email, { rejectWithValue }) => {
     try {
+      console.log("email", email);
       const q = query(collection(db, "employees"), where("email", "==", email));
       const snap = await getDocs(q);
       if (snap.empty) return rejectWithValue("ไม่พบผู้ใช้");
@@ -37,6 +38,7 @@ export const userSlice = createSlice({
     logout(state) {
       state.user = [];
       state.isAuthentication = false;
+      state.loading = "idle";
     },
     setAuthInitialize(state, action) {
       state.authInitialize = action.payload;
