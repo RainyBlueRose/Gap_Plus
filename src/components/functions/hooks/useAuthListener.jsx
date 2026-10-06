@@ -15,13 +15,11 @@ export const useAuthListener = () => {
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges((user) => {
       console.log("เปิด onAuthStateChanged");
-      dispatch(setAuthInitialize(true));
       if (user) {
         dispatch(fetchUserByEmail(user.email));
       } else {
         dispatch(logout());
       }
-      dispatch(setAuthInitialize(false));
     });
     return () => {
       console.log("ปิด onAuthStateChanged");

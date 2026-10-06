@@ -45,16 +45,19 @@ export const userSlice = createSlice({
       .addCase(fetchUserByEmail.pending, (state) => {
         state.loading = "loading";
         state.isAuthentication = false;
+        state.authInitialize = true;
       })
       .addCase(fetchUserByEmail.fulfilled, (state, action) => {
         state.loading = "succeeded";
         state.isAuthentication = true;
         state.user = action.payload;
+        state.authInitialize = false;
       })
       .addCase(fetchUserByEmail.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload ?? action.error.message;
         state.isAuthentication = false;
+        state.authInitialize = false;
       });
   },
 });
