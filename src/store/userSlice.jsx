@@ -34,6 +34,7 @@ export const userSlice = createSlice({
     logout(state) {
       state.user = [];
       state.isAuthentication = false;
+      state.authInitialize = false;
       state.loading = "idle";
     },
     setAuthInitialize(state, action) {
