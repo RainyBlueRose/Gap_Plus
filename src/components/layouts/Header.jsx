@@ -10,7 +10,7 @@ const Header = () => {
   const { signOut } = useAuth();
   return (
     <div>
-      <div>info ข้อมูล</div>
+      <Link to={ROUTES.HOME}>info ข้อมูล</Link>
       <div>My Performance ผลงานของฉัน</div>
       <Link to={ROUTES.MYLEARNING}>My Learning การเรียนรู้ของฉัน</Link>
       <div>(ชื่อ นามสกุล)</div>
