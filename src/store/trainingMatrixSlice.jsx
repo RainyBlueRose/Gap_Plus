@@ -6,15 +6,6 @@ const initialState = {
   error: null,
 };
 
-export const fetchTrainingMatrix = createAsyncThunk(
-  "trainingMatrix/fetchTrainingMatrix",
-  async (jobCode, { rejectWithValue }) => {
-    try {
-      console.log("jobCode", jobCode);
-    } catch {}
-  },
-);
-
 export const trainingMatrixSlice = createSlice({
   name: "trainingMatrix",
   initialState,
