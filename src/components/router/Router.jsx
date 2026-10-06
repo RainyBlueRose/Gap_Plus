@@ -17,12 +17,15 @@ export const router = createBrowserRouter([
   },
   {
     element: <ProtectedRoute />,
-    children: [{ path: "/Home", element: <Home /> }],
-    children: [{ path: "/MyLearning", element: <MyLearning /> }],
+    children: [
+      { path: "/Home", element: <Home /> },
+      { path: "/MyLearning", element: <MyLearning /> },
+    ],
   },
 ]);
 
 export const ROUTES = {
   LOGIN: "/",
   HOME: "/Home",
+  MYLEARNING: "/MyLearning"
 };
