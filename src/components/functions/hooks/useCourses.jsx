@@ -3,16 +3,16 @@
 จะได้ไม่เปลือง read quota */
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser } from "../../../store/userSlice";
+import { selectTrainingMatrix } from "../../../store/trainingMatrixSlice";
 import { useEffect } from "react";
 
 export function useCourse() {
   const dispatch = useDispatch();
-  const { user } = useSelector(selectUser);
-  const jobCode = user.jobCode;
+  const { trainingMatrix } = useSelector(selectTrainingMatrix);
 
   useEffect(() => {
-    if (!jobCode) return console.log("useCourse ไม่ได้ไปต่อ");
-    console.log("jobCode ได้ไปต่อ", jobCode);
+    if (trainingMatrix.length !== 0) {
+      console.log("trainingMatrix", trainingMatrix);
+    }
   });
 }

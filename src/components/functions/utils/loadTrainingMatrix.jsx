@@ -1,4 +1,4 @@
-import { doc, getDocFromCache, getDocFromServer } from "firebase/firestore";
+import { getDocFromCache, getDocFromServer } from "firebase/firestore";
 
 const TTL = 24 * 60 * 60 * 1000; //ค่าคือ 1 วัน : ตัวกำหนดอายุข้อมูลที่จะเก็บไว้แบบ offline ว่าให้อยู่ได้นานแค่ไหนถึงจะเกินจุดที่ควรอัปเดทข้อมูล ทำเพื่อประหยัด read quota
 

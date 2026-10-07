@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   trainingMatrix: [],
@@ -22,4 +22,5 @@ export const trainingMatrixSlice = createSlice({
 
 export const { setLoadingTrainingMatrix, setTrainingMatrix } =
   trainingMatrixSlice.actions;
+export const selectTrainingMatrix = (state) => state.trainingMatrix;
 export default trainingMatrixSlice.reducer;
