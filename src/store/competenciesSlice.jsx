@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
 
 const initialState = {
   competencies: [],
@@ -22,4 +23,5 @@ export const competenciesSlice = createSlice({
 export const { setLoadingCompetencies, setCompetencies } =
   competenciesSlice.actions;
 export const selectCompetencies = (state) => state.competencies;
+export const useCompetenciesData = () => useSelector(selectCompetencies);
 export default competenciesSlice.reducer;
