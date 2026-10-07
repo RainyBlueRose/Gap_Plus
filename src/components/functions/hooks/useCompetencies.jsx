@@ -3,21 +3,35 @@
 จะได้ไม่เปลือง read quota */
 
 import { useDispatch, useSelector } from "react-redux";
+
 import { selectTrainingMatrix } from "../../../store/trainingMatrixSlice";
+import { setLoadingCompetencies } from "../../../store/competenciesSlice";
+import { selectUser } from "../../../store/userSlice";
+
+import { loadCompetencies } from "../utils/loadCompetencies";
+
 import { useEffect } from "react";
 
 export function useCompetencies() {
   const dispatch = useDispatch();
   const { trainingMatrix } = useSelector(selectTrainingMatrix);
-  const mandatory = trainingMatrix.mandatory;
-  const electives = trainingMatrix.electives;
+
+  const { user } = useSelector(selectUser);
+  const { empId } = user;
 
   useEffect(() => {
-    if (mandatory?.length > 0) {
+    if (!trainingMatrix || Array.isArray(trainingMatrix)) return;
+    dispatch(setLoadingCompetencies("loading"));
+
+    const mandatory = trainingMatrix.mandatory ?? [];
+    const electives = trainingMatrix.electives ?? [];
+
+    if (Array.isArray(mandatory) && mandatory.length > 0) {
       console.log("mandatory", mandatory);
     }
-    if (electives?.length > 0) {
+
+    if (Array.isArray(electives) && electives.length > 0) {
       console.log("elective", electives);
     }
-  }, [mandatory, electives]);
+  }, [trainingMatrix, dispatch]);
 }

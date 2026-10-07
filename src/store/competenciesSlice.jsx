@@ -9,7 +9,12 @@ const initialState = {
 export const competenciesSlice = createSlice({
   name: "competencies",
   initialState,
-  reducers: {},
+  reducers: {
+    setLoadingCompetencies(state, action) {
+      state.loading = action.payload;
+    },
+  },
 });
 
+export const { setLoadingCompetencies } = competenciesSlice.actions;
 export default competenciesSlice.reducer;
