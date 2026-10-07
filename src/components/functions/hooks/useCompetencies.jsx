@@ -3,6 +3,8 @@
 จะได้ไม่เปลือง read quota */
 
 import { useDispatch, useSelector } from "react-redux";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 import { selectTrainingMatrix } from "../../../store/trainingMatrixSlice";
 import { setLoadingCompetencies } from "../../../store/competenciesSlice";
@@ -28,12 +30,34 @@ export function useCompetencies() {
 
     const allCompetencies = {};
 
-    if (Array.isArray(mandatory) && mandatory.length > 0) {
-      console.log("mandatory", mandatory);
+    async function load() {
+      if (Array.isArray(mandatory) && mandatory.length > 0) {
+        console.log("mandatory", mandatory);
+        const q = query(
+          collection(db, "competencies"),
+          where("competencyName", "in", mandatory),
+        );
+        const snap = await loadCompetencies(
+          q,
+          `competencies-mandatory-${empId}`,
+        );
+        console.log("useCompetenciesmandatory", snap);
+      }
+
+      if (Array.isArray(electives) && electives.length > 0) {
+        console.log("elective", electives);
+        const q = query(
+          collection(db, "competencies"),
+          where("competencyName", "in", electives),
+        );
+        const snap = await loadCompetencies(
+          q,
+          `competencies-mandatory-${empId}`,
+        );
+        console.log("useCompetencieselectives", snap);
+      }
     }
 
-    if (Array.isArray(electives) && electives.length > 0) {
-      console.log("elective", electives);
-    }
+    load();
   }, [trainingMatrix, dispatch]);
 }

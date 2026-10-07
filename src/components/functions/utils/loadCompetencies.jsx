@@ -1,5 +1,7 @@
 import { getDocsFromCache, getDocsFromServer } from "firebase/firestore";
 
+const TTL = 24 * 60 * 60 * 1000; //ค่าคือ 1 วัน : ตัวกำหนดอายุข้อมูลที่จะเก็บไว้แบบ offline ว่าให้อยู่ได้นานแค่ไหนถึงจะเกินจุดที่ควรอัปเดทข้อมูล ทำเพื่อประหยัด read quota
+
 //ดึงเวลาที่เซฟ Cahce ล่าสุดออกมาก่อน โดยที่เอาเวลาไปเก็บใน last
 export async function loadCompetencies(q, key) {
   const last = Number(localStorage.getItem(key) || 0);
