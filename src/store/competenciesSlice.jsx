@@ -10,11 +10,15 @@ export const competenciesSlice = createSlice({
   name: "competencies",
   initialState,
   reducers: {
-    setLoadingCompetencies(state, action) {
-      state.loading = action.payload;
+    setCompetencies: (state, action) => {
+      state.data = action.payload; // { mandatory: [...], electives: [...] }
+    },
+    setLoadingCompetencies: (state, action) => {
+      state.status = action.payload;
     },
   },
 });
 
-export const { setLoadingCompetencies } = competenciesSlice.actions;
+export const { setLoadingCompetencies, setCompetencies } =
+  competenciesSlice.actions;
 export default competenciesSlice.reducer;

@@ -7,7 +7,10 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
 
 import { selectTrainingMatrix } from "../../../store/trainingMatrixSlice";
-import { setLoadingCompetencies } from "../../../store/competenciesSlice";
+import {
+  setLoadingCompetencies,
+  setCompetencies,
+} from "../../../store/competenciesSlice";
 import { selectUser } from "../../../store/userSlice";
 
 import { loadCompetencies } from "../utils/loadCompetencies";
@@ -17,47 +20,53 @@ import { useEffect } from "react";
 export function useCompetencies() {
   const dispatch = useDispatch();
   const { trainingMatrix } = useSelector(selectTrainingMatrix);
-
   const { user } = useSelector(selectUser);
-  const { empId } = user;
+  const jobCode = user?.jobCode;
 
   useEffect(() => {
     if (!trainingMatrix || Array.isArray(trainingMatrix)) return;
-    dispatch(setLoadingCompetencies("loading"));
 
+    let cancelled = false;
     const mandatory = trainingMatrix.mandatory ?? [];
     const electives = trainingMatrix.electives ?? [];
 
-    const allCompetencies = {};
+    // ฟังก์ชันช่วย: ดึงรายวิชาของกลุ่มหนึ่ง (ถ้าว่างคืน array ว่าง)
+    async function fetchGroup(names, groupKey) {
+      if (names.length === 0) return [];
+      const q = query(
+        collection(db, "competencies"),
+        where("competencyName", "in", names),
+      );
+      return await loadCompetencies(q, `gap:comp:${groupKey}:${jobCode}`);
+    }
 
     async function load() {
-      if (Array.isArray(mandatory) && mandatory.length > 0) {
-        console.log("mandatory", mandatory);
-        const q = query(
-          collection(db, "competencies"),
-          where("competencyName", "in", mandatory),
-        );
-        const snap = await loadCompetencies(
-          q,
-          `competencies-mandatory-${empId}`,
-        );
-        console.log("useCompetenciesmandatory", snap);
-      }
+      dispatch(setLoadingCompetencies("loading"));
+      try {
+        // ดึงสองกลุ่มพร้อมกัน แล้วรวมเป็นก้อนเดียว
+        const [mandatoryList, electiveList] = await Promise.all([
+          fetchGroup(mandatory, "mandatory"),
+          fetchGroup(electives, "electives"),
+        ]);
 
-      if (Array.isArray(electives) && electives.length > 0) {
-        console.log("elective", electives);
-        const q = query(
-          collection(db, "competencies"),
-          where("competencyName", "in", electives),
-        );
-        const snap = await loadCompetencies(
-          q,
-          `competencies-mandatory-${empId}`,
-        );
-        console.log("useCompetencieselectives", snap);
+        if (cancelled) return;
+
+        const allCompetencies = {
+          mandatory: mandatoryList,
+          electives: electiveList,
+        };
+
+        dispatch(setCompetencies(allCompetencies)); // dispatch ครั้งเดียว
+        dispatch(setLoadingCompetencies("succeeded"));
+      } catch (e) {
+        console.error("โหลด competencies ไม่สำเร็จ", e);
+        if (!cancelled) dispatch(setLoadingCompetencies("failed"));
       }
     }
 
     load();
-  }, [trainingMatrix, dispatch]);
+    return () => {
+      cancelled = true;
+    };
+  }, [trainingMatrix, jobCode, dispatch]);
 }
