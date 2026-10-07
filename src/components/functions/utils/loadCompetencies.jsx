@@ -5,7 +5,7 @@ import { getDocFromCache, getDocsFromServer } from "firebase/firestore";
 const TTL = 24 * 60 * 60 * 1000; // 1 วัน
 
 //ดึงเวลาที่เซฟ Cahce ล่าสุดออกมาก่อน โดยที่เอาเวลาไปเก็บใน last
-export async function loadCourses(q, uid) {
+export async function loadCompetencies(q, uid) {
   const key = `coursesAt:${uid}`;
   const last = Number(localStorage.getItem(key) || 0);
 

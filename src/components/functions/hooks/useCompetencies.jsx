@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectTrainingMatrix } from "../../../store/trainingMatrixSlice";
 import { useEffect } from "react";
 
-export function useCourse() {
+export function useCompetencies() {
   const dispatch = useDispatch();
   const { trainingMatrix } = useSelector(selectTrainingMatrix);
 

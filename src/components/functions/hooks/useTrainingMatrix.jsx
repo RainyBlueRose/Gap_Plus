@@ -18,12 +18,13 @@ export function useTrainingMatrix() {
   const dispatch = useDispatch();
   const { user } = useSelector(selectUser);
   const jobCode = user?.jobCode;
+  console.log("jobCode", jobCode);
 
   useEffect(() => {
     if (!jobCode) return console.log("useTrainingMatrix ไม่ได้ไปต่อ");
     dispatch(setLoadingTrainingMatrix("loading"));
     console.log("user", user);
-    console.log("jobCode ได้ไปต่อ", jobCode);
+    console.log("jobCode ได้ไปต่อ");
     async function load() {
       console.log("เรียกใช้ load");
       try {
