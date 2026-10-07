@@ -9,10 +9,15 @@ import { useEffect } from "react";
 export function useCompetencies() {
   const dispatch = useDispatch();
   const { trainingMatrix } = useSelector(selectTrainingMatrix);
+  const mandatory = trainingMatrix.mandatory;
+  const electives = trainingMatrix.electives;
 
   useEffect(() => {
-    if (trainingMatrix.length !== 0) {
-      console.log("trainingMatrix", trainingMatrix);
+    if (mandatory?.length > 0) {
+      console.log("mandatory", mandatory);
     }
-  });
+    if (electives?.length > 0) {
+      console.log("elective", electives);
+    }
+  }, [mandatory, electives]);
 }

@@ -4,12 +4,12 @@ import { RouterProvider, useNavigate } from "react-router-dom";
 
 import { useAuthListener } from "./components/functions/hooks/useAuthListener";
 import { useTrainingMatrix } from "./components/functions/hooks/useTrainingMatrix";
-import { useCourse } from "./components/functions/hooks/useCourses";
+import { useCompetencies } from "./components/functions/hooks/useCompetencies";
 
 const App = () => {
   useAuthListener();
   useTrainingMatrix();
-  useCourse();
+  useCompetencies();
   return (
     <div>
       <RouterProvider router={router} />
