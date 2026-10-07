@@ -26,6 +26,8 @@ export function useCompetencies() {
     const mandatory = trainingMatrix.mandatory ?? [];
     const electives = trainingMatrix.electives ?? [];
 
+    const allCompetencies = {};
+
     if (Array.isArray(mandatory) && mandatory.length > 0) {
       console.log("mandatory", mandatory);
     }
