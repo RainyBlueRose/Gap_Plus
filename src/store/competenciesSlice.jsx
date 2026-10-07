@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 const initialState = {
   competencies: {
     mandatory: [],
-    elective: [],
+    electives: [],
   },
   loading: "idle", // idle, loading, succeeded, failed
   error: null,
