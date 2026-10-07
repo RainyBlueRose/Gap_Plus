@@ -4,6 +4,11 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../../store/userSlice";
+import {
+  setLoadingTrainingMatrix,
+  setTrainingMatrix,
+} from "../../../store/trainingMatrixSlice";
+
 import { useEffect } from "react";
 import { loadTrainingMatrix } from "../utils/loadTrainingMatrix";
 import { db } from "../../config/firebase";
@@ -16,6 +21,7 @@ export function useTrainingMatrix() {
 
   useEffect(() => {
     if (!jobCode) return console.log("useTrainingMatrix ไม่ได้ไปต่อ");
+    dispatch(setLoadingTrainingMatrix("loading"));
     console.log("user", user);
     console.log("jobCode ได้ไปต่อ", jobCode);
     async function load() {
@@ -25,6 +31,7 @@ export function useTrainingMatrix() {
         const ref = doc(db, "training_matrix", jobCode);
         const snap = await loadTrainingMatrix(ref, `gap:matrix:${jobCode}`);
         console.log("snap", snap);
+        dispatch(setTrainingMatrix(snap));
       } catch (error) {
         console.error("โหลด Training Matrix ไม่สำเร็จ:", error);
       }

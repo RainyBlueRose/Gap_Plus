@@ -8,7 +8,10 @@ export async function loadTrainingMatrix(ref, key) {
   if (Date.now() - last < TTL) {
     try {
       const snap = await getDocFromCache(ref);
-      if (snap.exists()) return snap.data();
+      if (snap.exists()) {
+        console.log("ดึงจาก cache");
+        return snap.data();
+      }
     } catch {}
   }
 
