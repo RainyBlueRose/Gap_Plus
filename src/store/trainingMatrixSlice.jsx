@@ -9,7 +9,11 @@ const initialState = {
 export const trainingMatrixSlice = createSlice({
   name: "trainingMatrix",
   initialState,
-  reducers: {},
+  reducers: {
+    setLoading(state, action) {
+      state.loading = action.payload;
+    },
+  },
 });
 
 export default trainingMatrixSlice.reducer;

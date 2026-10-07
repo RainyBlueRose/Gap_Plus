@@ -15,5 +15,5 @@ export async function loadTrainingMatrix(ref, key) {
   const snap = await getDocFromServer(ref);
   localStorage.setItem(key, String(Date.now()));
   console.log("ดึงจาก Firebase");
-  return snap;
+  return snap.data();
 }
