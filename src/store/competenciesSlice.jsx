@@ -21,4 +21,5 @@ export const competenciesSlice = createSlice({
 
 export const { setLoadingCompetencies, setCompetencies } =
   competenciesSlice.actions;
+export const selectCompetencies = (state) => state.competencies;
 export default competenciesSlice.reducer;
