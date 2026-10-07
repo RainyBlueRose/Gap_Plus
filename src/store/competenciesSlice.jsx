@@ -2,7 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 
 const initialState = {
-  competencies: [],
+  competencies: {
+    mandatory: [],
+    elective: [],
+  },
   loading: "idle", // idle, loading, succeeded, failed
   error: null,
 };
