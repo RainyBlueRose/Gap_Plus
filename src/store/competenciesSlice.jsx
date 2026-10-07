@@ -12,7 +12,7 @@ export const competenciesSlice = createSlice({
   initialState,
   reducers: {
     setCompetencies: (state, action) => {
-      state.data = action.payload; // { mandatory: [...], electives: [...] }
+      state.competencies = action.payload; // { mandatory: [...], electives: [...] }
     },
     setLoadingCompetencies: (state, action) => {
       state.status = action.payload;
