@@ -26,6 +26,7 @@ export function useCompetencies() {
   useEffect(() => {
     if (!trainingMatrix || Array.isArray(trainingMatrix)) return;
 
+    console.log("useCompetencies ทำงาน")
     let cancelled = false;
     const mandatory = trainingMatrix.mandatory ?? [];
     const electives = trainingMatrix.electives ?? [];
