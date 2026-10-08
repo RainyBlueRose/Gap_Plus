@@ -4,9 +4,15 @@ import Header from "../layouts/Header";
 
 import { useCompetenciesData } from "../../store/competenciesSlice";
 
+import { useTrainingMatrix } from "../functions/hooks/useTrainingMatrix";
+import { useCompetencies } from "../functions/hooks/useCompetencies";
+
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
   console.log("competencies my learning", competencies);
+
+  useTrainingMatrix();
+  useCompetencies();
 
   return (
     <div>
