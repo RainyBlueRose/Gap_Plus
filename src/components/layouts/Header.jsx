@@ -9,20 +9,25 @@ import { ROUTES } from "../router/Router";
 const Header = () => {
   const { signOut } = useAuth();
   return (
-    <div>
-      <Link to={ROUTES.HOME}>info ข้อมูล</Link>
-      <div>My Performance ผลงานของฉัน</div>
-      <Link to={ROUTES.MYLEARNING}>My Learning การเรียนรู้ของฉัน</Link>
-      <div>(ชื่อ นามสกุล)</div>
-      <div>AllStar</div>
-      <button
-        onClick={() => {
-          signOut();
-        }}
-      >
-        {" "}
-        Sing Out{" "}
-      </button>
+    <div className="flex justify-between">
+      <div></div>
+      <div className="flex gap-10">
+        <Link to={ROUTES.HOME}>info ข้อมูล</Link>
+        <div>My Performance ผลงานของฉัน</div>
+        <Link to={ROUTES.MYLEARNING}>My Learning การเรียนรู้ของฉัน</Link>
+      </div>
+      <div className="flex">
+        <div>(ชื่อ นามสกุล)</div>
+        <div>AllStar</div>
+        <button
+          onClick={() => {
+            signOut();
+          }}
+        >
+          {" "}
+          Sing Out{" "}
+        </button>
+      </div>
     </div>
   );
 };
