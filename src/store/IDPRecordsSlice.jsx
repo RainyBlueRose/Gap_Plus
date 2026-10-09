@@ -10,7 +10,11 @@ const initialState = {
 export const idpRecordsSlice = createSlice({
   name: "idpRecords",
   initialState,
-  reducer: {},
+  reducer: {
+    setIDPRecords: (state, action) => {
+      state.idpRecords = action.payload;
+    },
+  },
 });
 
 export const selectIDPRecords = (state) => state.IDPRecords;
