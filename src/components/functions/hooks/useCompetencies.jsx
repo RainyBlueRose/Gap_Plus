@@ -13,7 +13,7 @@ import {
 } from "../../../store/competenciesSlice";
 import { selectUser } from "../../../store/userSlice";
 
-import { loadCompetencies } from "../utils/loadCompetencies";
+import { loadDocs } from "../utils/loadDocs";
 
 import { useEffect } from "react";
 
@@ -38,7 +38,7 @@ export function useCompetencies() {
         collection(db, "competencies"),
         where("competencyName", "in", names),
       );
-      return await loadCompetencies(q, `gap:comp:${groupKey}:${jobCode}`);
+      return await loadDocs(q, `gap:comp:${groupKey}:${jobCode}`);
     }
 
     async function load() {

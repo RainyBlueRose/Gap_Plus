@@ -3,7 +3,7 @@ import { getDocsFromCache, getDocsFromServer } from "firebase/firestore";
 const TTL = 60 * 60 * 1000; //ค่าคือ 1 ชม : ตัวกำหนดอายุข้อมูลที่จะเก็บไว้แบบ offline ว่าให้อยู่ได้นานแค่ไหนถึงจะเกินจุดที่ควรอัปเดทข้อมูล ทำเพื่อประหยัด read quota
 
 //ดึงเวลาที่เซฟ Cahce ล่าสุดออกมาก่อน โดยที่เอาเวลาไปเก็บใน last
-export async function loadCompetencies(q, key) {
+export async function loadDocs(q, key) {
   const last = Number(localStorage.getItem(key) || 0);
 
   //เช็คว่าครั้งที่เซฟล่าสุดมากกว่าเวลาที่กำหนดไหม ถ้ายังก็โหลดข้อมูลจาก Cache ก่อนจะได้ไม่เปลือง read quota
@@ -11,7 +11,7 @@ export async function loadCompetencies(q, key) {
     try {
       const snap = await getDocsFromCache(q);
       if (!snap.empty) {
-        console.log("ดึงข้อมูล competencies จาก cache");
+        console.log("ดึงข้อมูล Docs จาก cache");
         return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       }
     } catch (e) {
@@ -21,6 +21,6 @@ export async function loadCompetencies(q, key) {
 
   const snap = await getDocsFromServer(q);
   localStorage.setItem(key, String(Date.now()));
-  console.log("ดึงข้อมูล competencies จาก firebase");
+  console.log("ดึงข้อมูล Docs จาก firebase");
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
