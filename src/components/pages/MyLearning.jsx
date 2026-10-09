@@ -53,7 +53,7 @@ const MyLearning = () => {
               <button
                 className="border p-5 "
                 onClick={() => {
-                  setIDPRecords(selectedCompetency.id);
+                  setIDPRecords(selectedCompetency);
                 }}
               >
                 Select class

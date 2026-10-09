@@ -6,8 +6,8 @@ import { createIDPRecord } from "../utils/createIDPRecord";
 export const useIDPRecords = () => {
   const { user } = useUserData();
 
-  function setIDPRecords(compId) {
-    createIDPRecord(user, compId);
+  function setIDPRecords(comp) {
+    createIDPRecord(user, comp);
   }
   return { setIDPRecords };
 };
