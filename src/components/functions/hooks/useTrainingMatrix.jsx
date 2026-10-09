@@ -10,7 +10,7 @@ import {
 } from "../../../store/trainingMatrixSlice";
 
 import { useEffect } from "react";
-import { loadTrainingMatrix } from "../utils/loadTrainingMatrix";
+import { loadDoc } from "../utils/loadDoc";
 import { db } from "../../config/firebase";
 import { doc } from "firebase/firestore";
 
@@ -22,11 +22,11 @@ export function useTrainingMatrix() {
   useEffect(() => {
     if (!jobCode) return console.log("useTrainingMatrix ไม่ได้ไปต่อ");
     dispatch(setLoadingTrainingMatrix("loading"));
-    console.log("useTrainingMatrix ทำงาน")
+    console.log("useTrainingMatrix ทำงาน");
     async function load() {
       try {
         const ref = doc(db, "training_matrix", jobCode);
-        const snap = await loadTrainingMatrix(ref, `gap:matrix:${jobCode}`);
+        const snap = await loadDoc(ref, `gap:matrix:${jobCode}`);
 
         dispatch(setTrainingMatrix(snap));
       } catch (error) {

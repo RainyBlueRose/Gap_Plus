@@ -2,7 +2,7 @@ import { getDocFromCache, getDocFromServer } from "firebase/firestore";
 
 const TTL = 60 * 60 * 1000; //ค่าคือ 1 ชม : ตัวกำหนดอายุข้อมูลที่จะเก็บไว้แบบ offline ว่าให้อยู่ได้นานแค่ไหนถึงจะเกินจุดที่ควรอัปเดทข้อมูล ทำเพื่อประหยัด read quota
 
-export async function loadTrainingMatrix(ref, key) {
+export async function loadDoc(ref, key) {
   const last = Number(localStorage.getItem(key) || 0);
 
   if (Date.now() - last < TTL) {
