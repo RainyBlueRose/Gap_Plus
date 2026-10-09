@@ -2,7 +2,6 @@
 import React from "react";
 
 import { useDispatch } from "react-redux";
-import { deleteCacheIndexDB } from "../utils/deleteCacheIndexDB";
 
 import { handleSignout } from "../firebase/authService";
 import { logout } from "../../../store/userSlice";
@@ -15,7 +14,6 @@ export const useAuth = () => {
 
   const signOut = async () => {
     await handleSignout();
-    await deleteCacheIndexDB();
     dispatch(logout());
     navigate(ROUTES.LOGIN);
   };
