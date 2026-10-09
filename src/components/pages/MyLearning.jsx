@@ -14,7 +14,7 @@ const MyLearning = () => {
   useTrainingMatrix();
   useCompetencies();
 
-  const { setIDPRecords } = useIDPRecords();
+  const { setElectiveIDPRecords } = useIDPRecords();
 
   const [selectedCompetency, setSelectedCompetency] = useState(null);
 
@@ -54,7 +54,7 @@ const MyLearning = () => {
               <button
                 className="border p-5 "
                 onClick={() => {
-                  setIDPRecords(selectedCompetency);
+                  setElectiveIDPRecords(selectedCompetency);
                 }}
               >
                 Select class

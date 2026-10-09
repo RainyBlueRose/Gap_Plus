@@ -3,7 +3,7 @@ import React from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 
-export const createIDPRecord = async (user, comp) => {
+export const createElectiveIDPRecord = async (user, comp) => {
   console.log("user", user);
   console.log("comp", comp);
   const idpinfo = await setDoc(
@@ -17,7 +17,7 @@ export const createIDPRecord = async (user, comp) => {
       empName: user.name,
       status: "In Progress",
       timestamp: Date.now(),
-      type: "?",
+      type: "electives",
     },
     { merge: true },
   );
