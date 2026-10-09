@@ -17,7 +17,7 @@ export const createElectiveIDPRecord = async (user, comp) => {
       empName: user.name,
       status: "In Progress",
       timestamp: Date.now(),
-      type: "electives",
+      type: "selective",
     },
     { merge: true },
   );
