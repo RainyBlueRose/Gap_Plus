@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../components/config/firebase";
+import { useSelector } from "react-redux";
 
 const initialState = {
   user: [],
@@ -65,4 +66,5 @@ export const userSlice = createSlice({
 
 export const { login, logout, setAuthInitialize } = userSlice.actions;
 export const selectUser = (state) => state.user;
+export const useUserData = () => useSelector(selectUser);
 export default userSlice.reducer;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Header from "../layouts/Header";
 
@@ -6,15 +6,15 @@ import { useCompetenciesData } from "../../store/competenciesSlice";
 
 import { useTrainingMatrix } from "../functions/hooks/useTrainingMatrix";
 import { useCompetencies } from "../functions/hooks/useCompetencies";
-
-import { useState } from "react";
+import { useIDPRecords } from "../functions/hooks/useIDPRecords";
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
-  console.log("competencies my learning", competencies);
 
   useTrainingMatrix();
   useCompetencies();
+
+  const { setIDPRecords } = useIDPRecords();
 
   const [selectedCompetency, setSelectedCompetency] = useState(null);
 
@@ -53,7 +53,7 @@ const MyLearning = () => {
               <button
                 className="border p-5 "
                 onClick={() => {
-                  console.log("selectClass");
+                  setIDPRecords(selectedCompetency.id);
                 }}
               >
                 Select class
