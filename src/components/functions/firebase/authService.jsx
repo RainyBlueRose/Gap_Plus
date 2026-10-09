@@ -11,7 +11,7 @@ export const signInWithProvider = (providerName) => {
 };
 
 export const handleSignout = async () => {
-  signOut(auth);
+  await signOut(auth);
 };
 
 export const subscribeToAuthChanges = (callback) => {
