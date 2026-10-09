@@ -25,7 +25,9 @@ const MyLearning = () => {
       {status === "loading" && <p>กำลังโหลด...</p>}
 
       <div>Mandatory</div>
-      {competencies.mandatory.map((m) => (
+      <div>Elective</div>
+
+      {competencies.electives.map((m) => (
         <div key={m.id}>
           <div
             className="border p-5 hover:cursor-pointer"
@@ -38,7 +40,6 @@ const MyLearning = () => {
           </div>
         </div>
       ))}
-      <div>Elective</div>
 
       {selectedCompetency && (
         <div
