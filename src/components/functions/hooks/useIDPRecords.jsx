@@ -5,8 +5,11 @@ import { createElectiveIDPRecord } from "../utils/createIDPRecord";
 
 export const useIDPRecords = () => {
   const { user } = useUserData();
+  const empId = user?.empId;
 
-  useEffect(() => {});
+  useEffect(() => {
+    console.log("Hello useIDPRecords", empId);
+  }, [empId]);
 
   function setElectiveIDPRecords(comp) {
     createElectiveIDPRecord(user, comp);
