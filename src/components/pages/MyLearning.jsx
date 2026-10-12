@@ -78,7 +78,7 @@ const MyLearning = () => {
               </button>
               {Object.values(selectedSelective.courses).map((course, index) => (
                 <div key={index}>
-                  <div>{course.institute}</div>
+                  <a href={course.link}>{course.institute}</a>
                 </div>
               ))}
             </div>
