@@ -18,6 +18,8 @@ const MyLearning = () => {
 
   const [selectedCompetency, setSelectedCompetency] = useState(null);
 
+  console.log("competencies", competencies);
+
   return (
     <div>
       <Header />
@@ -25,18 +27,27 @@ const MyLearning = () => {
       {status === "loading" && <p>กำลังโหลด...</p>}
 
       <div>Mandatory</div>
+
+      {competencies.mandatory.map((m) => (
+        <div key={m.id}>
+          <div className="border p-5 hover:cursor-pointer">
+            <div>{m.competencyName}</div>
+            <div>{m.description}</div>
+          </div>
+        </div>
+      ))}
       <div>Elective</div>
 
-      {competencies.electives.map((m) => (
-        <div key={m.id}>
+      {competencies.electives.map((e) => (
+        <div key={e.id}>
           <div
             className="border p-5 hover:cursor-pointer"
             onClick={() => {
-              setSelectedCompetency(m);
+              setSelectedCompetency(e);
             }}
           >
-            <div>{m.competencyName}</div>
-            <div>{m.description}</div>
+            <div>{e.competencyName}</div>
+            <div>{e.description}</div>
           </div>
         </div>
       ))}
