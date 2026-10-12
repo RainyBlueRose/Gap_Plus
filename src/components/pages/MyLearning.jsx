@@ -16,7 +16,8 @@ const MyLearning = () => {
 
   const { setElectiveIDPRecords } = useIDPRecords();
 
-  const [selectedCompetency, setSelectedCompetency] = useState(null);
+  const [selectedMandatory, setSelectedMandatory] = useState(null);
+  const [selectedSelective, setSelectedSelective] = useState(null);
 
   console.log("competencies", competencies);
 
@@ -30,7 +31,12 @@ const MyLearning = () => {
 
       {competencies.mandatory.map((m) => (
         <div key={m.id}>
-          <div className="border p-5 hover:cursor-pointer">
+          <div
+            className="border p-5 hover:cursor-pointer"
+            onClick={() => {
+              setSelectedMandatory(m);
+            }}
+          >
             <div>{m.competencyName}</div>
             <div>{m.description}</div>
           </div>
@@ -43,7 +49,7 @@ const MyLearning = () => {
           <div
             className="border p-5 hover:cursor-pointer"
             onClick={() => {
-              setSelectedCompetency(e);
+              setSelectedSelective(e);
             }}
           >
             <div>{e.competencyName}</div>
@@ -52,10 +58,10 @@ const MyLearning = () => {
         </div>
       ))}
 
-      {selectedCompetency && (
+      {selectedSelective && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => setSelectedCompetency(null)}
+          onClick={() => setSelectedSelective(null)}
         >
           <div
             className="bg-white p-5 rounded"
@@ -65,18 +71,35 @@ const MyLearning = () => {
               <button
                 className="border p-5 "
                 onClick={() => {
-                  setElectiveIDPRecords(selectedCompetency);
+                  setElectiveIDPRecords(selectedSelective);
                 }}
               >
                 Select class
               </button>
-              {Object.values(selectedCompetency.courses).map(
-                (course, index) => (
-                  <div key={index}>
-                    <div>{course.institute}</div>
-                  </div>
-                ),
-              )}
+              {Object.values(selectedSelective.courses).map((course, index) => (
+                <div key={index}>
+                  <div>{course.institute}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedMandatory && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => setSelectedMandatory(null)}
+        >
+          <div
+            className="bg-white p-5 rounded"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div>
+              {Object.values(selectedMandatory.courses).map((course, index) => (
+                <div key={index}>
+                  <div>{course.institute}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
