@@ -6,6 +6,8 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -17,7 +19,7 @@ const firebaseConfig = {
   storageBucket: "gap-learning-plan.firebasestorage.app",
   messagingSenderId: "1068192174083",
   appId: "1:1068192174083:web:cec4e9a90e0621b4f7fe36",
-  measurementId: "G-Q4CXEL7C17"
+  measurementId: "G-Q4CXEL7C17",
 };
 
 // Initialize Firebase
@@ -29,3 +31,4 @@ export const db = initializeFirestore(app, {
     tabManager: persistentMultipleTabManager(),
   }),
 });
+export const storage = getStorage(app);
