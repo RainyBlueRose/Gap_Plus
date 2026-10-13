@@ -7,9 +7,11 @@ import { useCompetenciesData } from "../../store/competenciesSlice";
 import { useTrainingMatrix } from "../functions/hooks/useTrainingMatrix";
 import { useCompetencies } from "../functions/hooks/useCompetencies";
 import { useIDPRecords } from "../functions/hooks/useIDPRecords";
+import { useUploadCourseFile } from "../functions/hooks/useUploadCourseFile";
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
+  const { uploadCourseFile, savingIndex } = useUploadCourseFile();
 
   useTrainingMatrix();
   useCompetencies();
@@ -21,7 +23,7 @@ const MyLearning = () => {
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
 
-  const [files, setFiles] = useState({}); // { courseKey: File }
+  const [files, setFiles] = useState({});
 
   const handleFileChange = (courseKey, file) => {
     if (!file) return;
@@ -40,6 +42,11 @@ const MyLearning = () => {
     </label>
   );
 
+  const handleSave = async (competency, index) => {
+    const file = files[index];
+    if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
+    await uploadCourseFile(competency, index, file);
+  };
   return (
     <div>
       <Header />
@@ -80,7 +87,10 @@ const MyLearning = () => {
       {selectedSelective && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => setSelectedSelective(null)}
+          onClick={() => {
+            setSelectedSelective(null);
+            setFiles({});
+          }}
         >
           <div
             className="bg-white p-5 rounded"
@@ -104,16 +114,27 @@ const MyLearning = () => {
                     file={files[index]}
                     onChange={(file) => handleFileChange(index, file)}
                   />
+                  <button
+                    onClick={() => {
+                      handleSave(selectedSelective.id, index);
+                    }}
+                  >
+                    handleSave
+                  </button>
                 </div>
               ))}
             </div>
+            <div></div>
           </div>
         </div>
       )}
       {selectedMandatory && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => setSelectedMandatory(null)}
+          onClick={() => {
+            setSelectedMandatory(null);
+            setFiles({});
+          }}
         >
           <div
             className="bg-white p-5 rounded"
@@ -129,9 +150,17 @@ const MyLearning = () => {
                     file={files[index]}
                     onChange={(file) => handleFileChange(index, file)}
                   />
+                  <button
+                    onClick={() => {
+                      handleSave(selectedMandatory.id, index);
+                    }}
+                  >
+                    handleSave
+                  </button>
                 </div>
               ))}
             </div>
+            <div></div>
           </div>
         </div>
       )}
