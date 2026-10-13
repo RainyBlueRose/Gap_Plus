@@ -14,12 +14,31 @@ const MyLearning = () => {
   useTrainingMatrix();
   useCompetencies();
 
+  console.log("competencies", competencies);
+
   const { setElectiveIDPRecords } = useIDPRecords();
 
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
 
-  console.log("competencies", competencies);
+  const [files, setFiles] = useState({}); // { courseKey: File }
+
+  const handleFileChange = (courseKey, file) => {
+    if (!file) return;
+    setFiles((prev) => ({ ...prev, [courseKey]: file }));
+  };
+
+  const FileInput = ({ file, onChange }) => (
+    <label className="border px-3 py-1 cursor-pointer inline-block">
+      {file ? file.name : "เลือกไฟล์"}
+      <input
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => onChange(e.target.files[0])}
+      />
+    </label>
+  );
 
   return (
     <div>
@@ -76,9 +95,15 @@ const MyLearning = () => {
               >
                 Select class
               </button>
-              {Object.values(selectedSelective.courses).map((course, index) => (
+              {selectedSelective.courses.map((course, index) => (
                 <div key={index}>
-                  <a href={course.link}>{course.institute}</a>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <FileInput
+                    file={files[index]}
+                    onChange={(file) => handleFileChange(index, file)}
+                  />
                 </div>
               ))}
             </div>
@@ -95,9 +120,15 @@ const MyLearning = () => {
             onClick={(event) => event.stopPropagation()}
           >
             <div>
-              {Object.values(selectedMandatory.courses).map((course, index) => (
+              {selectedMandatory.courses.map((course, index) => (
                 <div key={index}>
-                  <div>{course.institute}</div>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <FileInput
+                    file={files[index]}
+                    onChange={(file) => handleFileChange(index, file)}
+                  />
                 </div>
               ))}
             </div>
