@@ -18,7 +18,15 @@ export const useUploadCourseFile = (competency, index, file) => {
         storage,
         `certificates/${user.empId}/cert_${user.empId}_${competency}_${index}.${type}`,
       );
+      console.log(
+        "useUploadCourseFile checking each value",
+        user.empId,
+        competency,
+        index,
+        type,
+      );
       await uploadBytes(storageRef, file);
+      return await getDownloadURL(storageRef);
     } finally {
       setSavingIndex(null);
     }

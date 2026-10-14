@@ -45,7 +45,8 @@ const MyLearning = () => {
   const handleSave = async (competency, index) => {
     const file = files[index];
     if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
-    await uploadCourseFile(competency, index, file);
+    const url = await uploadCourseFile(competency, index, file);
+    console.log("url", url);
   };
   return (
     <div>
