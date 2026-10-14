@@ -5,10 +5,12 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { ProtectedRoute } from "../functions/hooks/ProtectedRoute";
 import { PublicRoute } from "../functions/hooks/PublicRoute";
+import AdminProtectedRoute from "../functions/hooks/AdminProtectedRoute";
 
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import MyLearning from "../pages/MyLearning";
+import Admin from "../pages/admin"
 
 export const router = createBrowserRouter([
   {
@@ -22,10 +24,15 @@ export const router = createBrowserRouter([
       { path: "/MyLearning", element: <MyLearning /> },
     ],
   },
+  {
+    element: <AdminProtectedRoute />,
+    children: [{ path: "/admin", element: <Admin /> }],
+  },
 ]);
 
 export const ROUTES = {
   LOGIN: "/",
   HOME: "/Home",
-  MYLEARNING: "/MyLearning"
+  MYLEARNING: "/MyLearning",
+  ADMIN: "Admin",
 };
