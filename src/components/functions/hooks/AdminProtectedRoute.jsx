@@ -3,7 +3,7 @@ import { selectUser } from "../../../store/userSlice";
 import { useSelector } from "react-redux";
 import { ROUTES } from "../../router/Router";
 
-const AdminProtectedRoute = () => {
+export const AdminProtectedRoute = () => {
   const { isAuthentication, authInitialize, user } = useSelector(selectUser);
 
   if (authInitialize) {

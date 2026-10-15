@@ -5,12 +5,13 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { ProtectedRoute } from "../functions/hooks/ProtectedRoute";
 import { PublicRoute } from "../functions/hooks/PublicRoute";
-import AdminProtectedRoute from "../functions/hooks/AdminProtectedRoute";
+import { AdminProtectedRoute } from "../functions/hooks/AdminProtectedRoute";
 
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import MyLearning from "../pages/MyLearning";
-import Admin from "../pages/admin"
+import Admin from "../pages/admin";
+import AdminTrainingMatrices from "../pages/AdminTrainingMatrices"
 
 export const router = createBrowserRouter([
   {
@@ -26,7 +27,10 @@ export const router = createBrowserRouter([
   },
   {
     element: <AdminProtectedRoute />,
-    children: [{ path: "/admin", element: <Admin /> }],
+    children: [
+      { path: "/Admin", element: <Admin /> },
+      { path: "/Admin/Training_matrices", element: <AdminTrainingMatrices /> },
+    ],
   },
 ]);
 
@@ -34,5 +38,6 @@ export const ROUTES = {
   LOGIN: "/",
   HOME: "/Home",
   MYLEARNING: "/MyLearning",
-  ADMIN: "Admin",
+  ADMIN: "/Admin",
+  ADMINTRAININGMATRIX: "/Admin/Training_matrices",
 };

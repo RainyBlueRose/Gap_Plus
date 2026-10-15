@@ -1,5 +1,4 @@
 //Header ข้างบน เอาไปใช้โดยการไป import ลงทุกหน้าที่อยากให้มี
-import React from "react";
 
 import { Link } from "react-router-dom";
 
