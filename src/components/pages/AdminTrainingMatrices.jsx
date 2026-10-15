@@ -59,6 +59,11 @@ const AdminTrainingMatrices = () => {
     setEditId(null);
     setForm({});
   }
+
+  function handleCancel() {
+    setEditId(null);
+    setForm({});
+  }
   return (
     <div className="flex min-h-screen">
       <AdminNavbar />
@@ -136,7 +141,7 @@ const AdminTrainingMatrices = () => {
                   {editId === item.id ? (
                     <div>
                       <button onClick={handleSave}>Save</button>
-                      <button>Cancel</button>
+                      <button onClick={handleCancel}>Cancel</button>
                     </div>
                   ) : (
                     <button
