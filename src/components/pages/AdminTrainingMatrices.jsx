@@ -1,4 +1,4 @@
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs, query, updateDoc, doc } from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../config/firebase";
 
@@ -21,15 +21,43 @@ const AdminTrainingMatrices = () => {
     }));
     console.log(newData);
     setTraining_matrices(newData);
+  }
 
-    function handleEdit(item) {
-      setEditId(item.id);
-      setForm({
-        jobCode: item.jobCode,
-        electives: [...item.electives],
-        mandatory: [...item.mandatory],
-      });
-    }
+  function handleEdit(item) {
+    setEditId(item.id);
+    setForm({
+      jobCode: item.jobCode,
+      electives: [...item.electives],
+      mandatory: [...item.mandatory],
+    });
+  }
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleArrayChange(field, index, value) {
+    const newArray = [...form[field]];
+    newArray[index] = value;
+    setForm({ ...form, [field]: newArray });
+  }
+
+  async function handleSave() {
+    const newData = {
+      jobCode: form.jobCode,
+      electives: form.electives.filter((e) => e.trim() !== ""),
+      mandatory: form.mandatory.filter((m) => m.trim() !== ""),
+    };
+    await updateDoc(doc(db, "training_matrices", editId), newData);
+
+    setTraining_matrices(
+      training_matrices.map((item) =>
+        item.id === editId ? { ...item, ...newData } : item,
+      ),
+    );
+
+    setEditId(null);
+    setForm({});
   }
   return (
     <div className="flex min-h-screen">
@@ -66,20 +94,36 @@ const AdminTrainingMatrices = () => {
                       type="text"
                       name="jobCode"
                       placeholder="Job Code"
-                      value={
-                        form.jobCode !== undefined ? form.jobCode : item.jobCode
-                      }
+                      value={form.jobCode}
+                      onChange={handleChange}
                     ></input>
                   ) : (
                     item.jobCode
                   )}
                 </td>
                 <td>
-                  {item.electives.map((e, index) => (
-                    <div key={index}>
-                      {index + 1}. {e}
+                  {editId === item.id ? (
+                    <div>
+                      {form.electives.map((e, i) => (
+                        <div key={i}>
+                          <input
+                            className="border"
+                            type="text"
+                            value={e}
+                            onChange={(ev) =>
+                              handleArrayChange("electives", i, ev.target.value)
+                            }
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    item.electives.map((e, index) => (
+                      <div key={index}>
+                        {index + 1}. {e}
+                      </div>
+                    ))
+                  )}
                 </td>
                 <td>
                   {item.mandatory.map((m, index) => (
@@ -89,13 +133,20 @@ const AdminTrainingMatrices = () => {
                   ))}
                 </td>
                 <td>
-                  <button
-                    onClick={() => {
-                      handleEdit(item);
-                    }}
-                  >
-                    Edit
-                  </button>
+                  {editId === item.id ? (
+                    <div>
+                      <button onClick={handleSave}>Save</button>
+                      <button>Cancel</button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        handleEdit(item);
+                      }}
+                    >
+                      Edit
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
