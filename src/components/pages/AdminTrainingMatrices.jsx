@@ -36,12 +36,20 @@ const AdminTrainingMatrices = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  function handleArrayRemove(field, index) {
+    const newArray = [...form[field].filter((_, i) => i !== index)];
+    setForm({ ...form, [field]: newArray });
+  }
+
   function handleArrayChange(field, index, value) {
     const newArray = [...form[field]];
     newArray[index] = value;
     setForm({ ...form, [field]: newArray });
   }
 
+  function handleAddArray(field) {
+    setForm({ ...form, [field]: [...form[field], ""] });
+  }
   async function handleSave() {
     const newData = {
       jobCode: form.jobCode,
@@ -119,8 +127,24 @@ const AdminTrainingMatrices = () => {
                               handleArrayChange("electives", i, ev.target.value)
                             }
                           />
+                          <button
+                            className="border"
+                            onClick={() => {
+                              handleArrayRemove("electives", i);
+                            }}
+                          >
+                            Remove
+                          </button>
                         </div>
                       ))}
+                      <div>
+                        <button
+                          className="border"
+                          onClick={() => handleAddArray("electives")}
+                        >
+                          Add
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     item.electives.map((e, index) => (
