@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 
 export const AdminNavbar = () => {
   return (
-    <div>
-      <Link to={ROUTES.ADMINTRAININGMATRIX}>Training Matrix</Link>
+    <div className="border border-green-500 border-3">
+      <Link className="p-3 border" to={ROUTES.ADMINTRAININGMATRIX}>
+        Training Matrix
+      </Link>
     </div>
   );
 };

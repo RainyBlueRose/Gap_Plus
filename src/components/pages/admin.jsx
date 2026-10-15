@@ -1,6 +1,7 @@
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useState } from "react";
 import { db } from "../config/firebase";
+import { AdminNavbar } from "../layouts/AdminNavbar";
 
 const admin = () => {
   const [training_matrices, setTraining_matrices] = useState([]);
@@ -16,56 +17,59 @@ const admin = () => {
     console.log("loadTrainingMatrix data", training_matrices);
   }
   return (
-    <div>
-      <div>admin</div>
-      <button
-        className="p-3 border"
-        onClick={() => {
-          loadTrainingMatrix();
-        }}
-      >
-        TrainingMatrix
-      </button>
-      <table className="border">
-        <thead className="">
-          <tr>
-            <th>#</th>
-            <th>id</th>
-            <th>Job Code</th>
-            <th>Elective</th>
-            <th>Mandatory</th>
-          </tr>
-        </thead>
-        <tbody>
-          {training_matrices.map((item, index) => (
-            <tr key={index}>
-              <th>{index + 1}</th>
-              <td>{item.id}</td>
-              <td>{item.jobCode}</td>
-              <td>
-                {item.electives.map((e, index) => (
-                  <tr key={index}>
-                    <td>
-                      {index + 1}. {e}
-                    </td>
-                  </tr>
-                ))}
-              </td>
-              <td>
-                {item.mandatory.map((m, index) => (
-                  <tr key={index}>
-                    <td>
-                      {index + 1}. {m}
-                    </td>
-                  </tr>
-                ))}
-              </td>
+    <div className="flex min-h-screen">
+      <AdminNavbar/>
+      <main className="flex-1">
+        <div>admin</div>
+        <button
+          className="p-3 border"
+          onClick={() => {
+            loadTrainingMatrix();
+          }}
+        >
+          TrainingMatrix
+        </button>
+        <table className="border">
+          <thead className="">
+            <tr>
+              <th>#</th>
+              <th>id</th>
+              <th>Job Code</th>
+              <th>Elective</th>
+              <th>Mandatory</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {training_matrices.map((item, index) => (
+              <tr key={index}>
+                <th>{index + 1}</th>
+                <td>{item.id}</td>
+                <td>{item.jobCode}</td>
+                <td>
+                  {item.electives.map((e, index) => (
+                    <tr key={index}>
+                      <td>
+                        {index + 1}. {e}
+                      </td>
+                    </tr>
+                  ))}
+                </td>
+                <td>
+                  {item.mandatory.map((m, index) => (
+                    <tr key={index}>
+                      <td>
+                        {index + 1}. {m}
+                      </td>
+                    </tr>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </main>
     </div>
   );
-};
+}
 
 export default admin;
