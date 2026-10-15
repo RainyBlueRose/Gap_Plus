@@ -11,6 +11,7 @@ const admin = () => {
       id: doc.id,
       ...doc.data(),
     }));
+    console.log("loadTrainingMatrix newData", newData);
     setTraining_matrices(newData);
     console.log("loadTrainingMatrix data", training_matrices);
   }
@@ -25,6 +26,44 @@ const admin = () => {
       >
         TrainingMatrix
       </button>
+      <table className="border">
+        <thead className="">
+          <tr>
+            <th>#</th>
+            <th>id</th>
+            <th>Job Code</th>
+            <th>Elective</th>
+            <th>Mandatory</th>
+          </tr>
+        </thead>
+        <tbody>
+          {training_matrices.map((item, index) => (
+            <tr key={index}>
+              <th>{index + 1}</th>
+              <td>{item.id}</td>
+              <td>{item.jobCode}</td>
+              <td>
+                {item.electives.map((e, index) => (
+                  <tr key={index}>
+                    <td>
+                      {index + 1}. {e}
+                    </td>
+                  </tr>
+                ))}
+              </td>
+              <td>
+                {item.mandatory.map((m, index) => (
+                  <tr key={index}>
+                    <td>
+                      {index + 1}. {m}
+                    </td>
+                  </tr>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
