@@ -5,6 +5,7 @@ import {
   updateDoc,
   doc,
   where,
+  deleteDoc,
 } from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../config/firebase";
@@ -89,6 +90,15 @@ const AdminTrainingMatrices = () => {
 
     setEditId(null);
     setForm({});
+  }
+
+  async function handleDelete() {
+    await deleteDoc(doc(collection(db, "training_matrices"), editId));
+
+    setTraining_matrices(
+      training_matrices.filter((item) => item.id !== editId),
+    );
+    setEditId(null);
   }
 
   function handleCancel() {
@@ -197,6 +207,7 @@ const AdminTrainingMatrices = () => {
                     <div>
                       <button onClick={handleSave}>Save</button>
                       <button onClick={handleCancel}>Cancel</button>
+                      <button onClick={handleDelete}>Remove</button>
                     </div>
                   ) : (
                     <button
