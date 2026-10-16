@@ -6,6 +6,7 @@ import {
   doc,
   where,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../config/firebase";
@@ -22,8 +23,21 @@ const AdminTrainingMatrices = () => {
 
   const [search, setSearch] = useState("");
 
+  const [isAdding, setIsAdding] = useState(false);
+
   function handleQuery(e) {
     setSearch(e.target.value);
+  }
+
+  function handleAddData() {
+    setEditId("");
+    setIsAdding(!isAdding);
+    setForm({
+      id: "",
+      jobCode: "",
+      electives: [""],
+      mandatory: [""],
+    });
   }
 
   async function loadTrainingMatrix() {
@@ -45,6 +59,10 @@ const AdminTrainingMatrices = () => {
     }));
     console.log(newData);
     setTraining_matrices(newData);
+  }
+
+  function handleAddEdit(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   function handleEdit(item) {
@@ -73,6 +91,27 @@ const AdminTrainingMatrices = () => {
 
   function handleAddArray(field) {
     setForm({ ...form, [field]: [...form[field], ""] });
+  }
+
+  async function handleAddSave() {
+    const newData = {
+      jobCode: form.jobCode.toUpperCase(),
+      electives: form.electives.filter((e) => e.trim() !== ""),
+      mandatory: form.mandatory.filter((m) => m.trim() !== ""),
+    };
+    const docRef = await setDoc(
+      doc(db, "training_matrices", newData.jobCode),
+      newData,
+    );
+
+    setTraining_matrices([
+      ...training_matrices,
+      { id: newData.jobCode, ...newData },
+    ]);
+
+    setIsAdding(false);
+    setEditId(null);
+    setForm({});
   }
   async function handleSave() {
     const newData = {
@@ -125,6 +164,7 @@ const AdminTrainingMatrices = () => {
         >
           ค้นหาข้อมูล
         </button>
+        <button onClick={handleAddData}>เพิ่มข้อมูล</button>
         <table className="border">
           <thead className="">
             <tr>
@@ -137,6 +177,60 @@ const AdminTrainingMatrices = () => {
             </tr>
           </thead>
           <tbody>
+            {isAdding && (
+              <tr>
+                <th>+</th>
+                <td>สร้างอัตโนมัติ</td>
+                <td>
+                  <input
+                    className="border"
+                    type="text"
+                    name="jobCode"
+                    value={form.jobCode}
+                    onChange={handleAddEdit}
+                  />
+                </td>
+                <td>
+                  {form.electives.map((e, index) => (
+                    <div key={index}>
+                      <input
+                        className="border"
+                        value={e}
+                        onChange={(ev) => {
+                          handleArrayChange(
+                            "electives",
+                            index,
+                            ev.target.value,
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  {form.mandatory.map((m, index) => (
+                    <div key={index}>
+                      <input
+                        className="border"
+                        type="text"
+                        value={m}
+                        onChange={(ev) => {
+                          handleArrayChange(
+                            "mandatory",
+                            index,
+                            ev.target.value,
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  <button onClick={handleAddSave}>Save</button>
+                  <button onClick={handleCancel}>Cancel</button>
+                </td>
+              </tr>
+            )}
             {training_matrices.map((item, index) => (
               <tr key={index}>
                 <th>{index + 1}</th>
@@ -163,7 +257,7 @@ const AdminTrainingMatrices = () => {
                           <input
                             className="border"
                             type="text"
-                            value={e}
+                            value={form.electives[i]}
                             onChange={(ev) =>
                               handleArrayChange("electives", i, ev.target.value)
                             }
