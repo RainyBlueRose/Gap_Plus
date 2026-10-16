@@ -1,4 +1,11 @@
-import { collection, getDocs, query, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  updateDoc,
+  doc,
+  where,
+} from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../config/firebase";
 
@@ -12,8 +19,24 @@ const AdminTrainingMatrices = () => {
   //training_matrices เอาไว้เก็บข้อมูลที่เรียกมาจาก Firebase แบบโดยรวม
   const [training_matrices, setTraining_matrices] = useState([]);
 
+  const [search, setSearch] = useState("");
+
+  function handleQuery(e) {
+    setSearch(e.target.value);
+  }
+
   async function loadTrainingMatrix() {
-    const q = query(collection(db, "training_matrices"));
+    const cleanQuery = search.trim().toUpperCase();
+    let q;
+    if (cleanQuery === "") {
+      q = query(collection(db, "training_matrices"));
+    } else {
+      q = query(
+        collection(db, "training_matrices"),
+        where("jobCode", ">=", cleanQuery),
+        where("jobCode", "<=", cleanQuery + "\uf8ff"),
+      );
+    }
     const snap = await getDocs(q);
     const newData = snap.docs.map((doc) => ({
       id: doc.id,
@@ -76,6 +99,14 @@ const AdminTrainingMatrices = () => {
     <div className="flex min-h-screen">
       <AdminNavbar />
       <main>
+        <input
+          className="border p-6"
+          type="text"
+          name="jobCode"
+          value={search}
+          placeholder="Job Code"
+          onChange={handleQuery}
+        />
         <button
           className="p-3 border"
           onClick={() => {
