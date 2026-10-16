@@ -141,6 +141,7 @@ const AdminTrainingMatrices = () => {
   }
 
   function handleCancel() {
+    setIsAdding(false);
     setEditId(null);
     setForm({});
   }
