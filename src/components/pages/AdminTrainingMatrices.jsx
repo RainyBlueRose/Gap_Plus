@@ -205,8 +205,22 @@ const AdminTrainingMatrices = () => {
                           );
                         }}
                       />
+                      <button
+                        onClick={() => {
+                          handleArrayRemove("electives", index);
+                        }}
+                      >
+                        Remove
+                      </button>
                     </div>
                   ))}
+                  <button
+                    onClick={() => {
+                      handleAddArray("electives");
+                    }}
+                  >
+                    add
+                  </button>
                 </td>
                 <td>
                   {form.mandatory.map((m, index) => (
@@ -223,8 +237,22 @@ const AdminTrainingMatrices = () => {
                           );
                         }}
                       />
+                      <button
+                        onClick={() => {
+                          handleArrayRemove("mandatory", index);
+                        }}
+                      >
+                        Remove
+                      </button>
                     </div>
                   ))}
+                  <button
+                    onClick={() => {
+                      handleAddArray("mandatory");
+                    }}
+                  >
+                    add
+                  </button>
                 </td>
                 <td>
                   <button onClick={handleAddSave}>Save</button>
