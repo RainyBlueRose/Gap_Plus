@@ -13,12 +13,12 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAGkkUrl6VNZ-7tyIstgJiTZgW3TxdPu5E",
-  authDomain: "sandbox-testing-82d6c.firebaseapp.com",
-  projectId: "sandbox-testing-82d6c",
-  storageBucket: "sandbox-testing-82d6c.firebasestorage.app",
-  messagingSenderId: "145357779432",
-  appId: "1:145357779432:web:a2bdc6d988ef27b789745d",
+  apiKey: "AIzaSyBK3c5kRtnLQSwdOmnyU587hviQ6SlJSNk",
+  authDomain: "gapplussandbox.firebaseapp.com",
+  projectId: "gapplussandbox",
+  storageBucket: "gapplussandbox.firebasestorage.app",
+  messagingSenderId: "664123457962",
+  appId: "1:664123457962:web:0925ab17a52ce89952abd3",
 };
 
 // Initialize Firebase

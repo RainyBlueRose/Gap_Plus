@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import Header from "../layouts/Header";
 
@@ -45,8 +45,7 @@ const MyLearning = () => {
   const handleSave = async (competency, index) => {
     const file = files[index];
     if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
-    const url = await uploadCourseFile(competency, index, file);
-    console.log("url", url);
+    await uploadCourseFile(competency, index, file);
   };
   return (
     <div>
@@ -117,7 +116,7 @@ const MyLearning = () => {
                   />
                   <button
                     onClick={() => {
-                      handleSave(selectedSelective.id, index);
+                      handleSave(selectedSelective, index);
                     }}
                   >
                     handleSave

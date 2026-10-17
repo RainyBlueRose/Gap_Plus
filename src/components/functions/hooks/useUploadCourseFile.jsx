@@ -9,24 +9,18 @@ export const useUploadCourseFile = (competency, index, file) => {
   const uploadCourseFile = async (competency, index, file) => {
     if (!file) return console.log("เข้า useUpload แต่ไม่เจอไฟล์");
     console.log("เข้า useUpload เจอไฟล์");
-    console.log("competency", competency);
+    console.log("useUploadCourseFile competency", competency);
     console.log("file", file);
     const type = file.type.split("/").pop();
     setSavingIndex(index);
     try {
       const storageRef = ref(
         storage,
-        `certificates/${user.empId}/cert_${user.empId}_${competency}_${index}.${type}`,
-      );
-      console.log(
-        "useUploadCourseFile checking each value",
-        user.empId,
-        competency,
-        index,
-        type,
+        `certificates/${user.empId}/cert_${user.empId}_${competency.id}_${index}.${type}`,
       );
       await uploadBytes(storageRef, file);
-      return await getDownloadURL(storageRef);
+      const url = await getDownloadURL(storageRef);
+      console.log("useUploadCourseFile url", url);
     } finally {
       setSavingIndex(null);
     }
