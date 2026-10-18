@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../config/firebase";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { db, storage } from "../../config/firebase";
 
 import { useUserData } from "../../../store/userSlice";
 export const useUploadCourseFile = (competency, index, file) => {
@@ -21,6 +22,27 @@ export const useUploadCourseFile = (competency, index, file) => {
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
       console.log("useUploadCourseFile url", url);
+      const dataRef = doc(db, "idp_records", `${user.id}_${competency.id}`);
+      await setDoc(
+        dataRef,
+        {
+          certificates: {
+            [index]: {
+              institute: competency.courses[index].institute,
+              name: file.name,
+              url: url,
+              reflection: null,
+              ocrResult: null,
+              ocrText: null,
+              ocrError: null,
+            },
+          },
+          [`ocrStatus${index}`]: "pending",
+          status: "complete",
+        },
+
+        { merge: true },
+      );
     } finally {
       setSavingIndex(null);
     }
