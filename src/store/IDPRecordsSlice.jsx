@@ -18,7 +18,7 @@ export const idpRecordsSlice = createSlice({
   },
 });
 
-export const selectIDPRecords = (state) => state.IDPRecords;
+export const selectIDPRecords = (state) => state.idpRecords;
 export const useIDPRecordsData = () => useSelector(selectIDPRecords);
 export const { setIDPRecords } = idpRecordsSlice.actions;
 export default idpRecordsSlice.reducer;

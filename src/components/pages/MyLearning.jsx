@@ -8,6 +8,7 @@ import { useTrainingMatrix } from "../functions/hooks/useTrainingMatrix";
 import { useCompetencies } from "../functions/hooks/useCompetencies";
 import { useIDPRecords } from "../functions/hooks/useIDPRecords";
 import { useUploadCourseFile } from "../functions/hooks/useUploadCourseFile";
+import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
@@ -15,6 +16,7 @@ const MyLearning = () => {
 
   useTrainingMatrix();
   useCompetencies();
+  useCreateIDPRecords();
 
   console.log("competencies", competencies);
 
