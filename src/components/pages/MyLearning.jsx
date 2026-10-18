@@ -123,8 +123,26 @@ const MyLearning = () => {
                   </button>
                 </div>
               ))}
+              <div>
+                <div>เรียนรู้ด้วยตนเอง</div>
+                <FileInput
+                  file={files[selectedSelective.courses.length + 1]}
+                  onChange={(file) =>
+                    handleFileChange(selectedSelective.courses.length + 1, file)
+                  }
+                />
+                <button
+                  onClick={() => {
+                    handleSave(
+                      selectedSelective,
+                      selectedSelective.courses.length + 1,
+                    );
+                  }}
+                >
+                  handleSave
+                </button>
+              </div>
             </div>
-            <div></div>
           </div>
         </div>
       )}
@@ -152,13 +170,34 @@ const MyLearning = () => {
                   />
                   <button
                     onClick={() => {
-                      handleSave(selectedMandatory.id, index);
+                      handleSave(selectedMandatory, index);
                     }}
                   >
                     handleSave
                   </button>
                 </div>
               ))}
+              <div>
+                <div>เรียนรู้ด้วยตนเอง</div>
+                <FileInput
+                  file={files[selectedMandatory.courses.length + 1]}
+                  onChange={(file) =>
+                    handleFileChange(
+                      [selectedMandatory.courses.length + 1],
+                      file,
+                    )
+                  }
+                />
+                <button
+                  onClick={() => {
+                    handleSave(selectedMandatory, [
+                      selectedMandatory.courses.length + 1,
+                    ]);
+                  }}
+                >
+                  handleSave
+                </button>
+              </div>
             </div>
             <div></div>
           </div>

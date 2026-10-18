@@ -28,7 +28,7 @@ export const useUploadCourseFile = (competency, index, file) => {
         {
           certificates: {
             [index]: {
-              institute: competency.courses[index].institute,
+              institute: competency.courses[index]?.institute || "เรียนรู้ด้วยตนเอง",
               name: file.name,
               url: url,
               reflection: null,
