@@ -37,7 +37,6 @@ export const useUploadCourseFile = (competency, index, file) => {
               ocrError: null,
             },
           },
-          [`ocrStatus${index}`]: "pending",
           status: "complete",
         },
 
