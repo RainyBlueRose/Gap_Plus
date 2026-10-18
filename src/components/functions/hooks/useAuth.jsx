@@ -1,6 +1,4 @@
 //ไว้ใช้ใส่ฟังก์ชั่นเกี่ยวกับ Authentication ซึ่งตอนนี้มี Signout
-import React from "react";
-
 import { useDispatch } from "react-redux";
 
 import { handleSignout } from "../firebase/authService";

@@ -1,12 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useUserData } from "../../../store/userSlice";
+import { setIDPRecords } from "../../../store/IDPRecordsSlice";
 
 import { createElectiveIDPRecord } from "../utils/createIDPRecord";
 import { loadDocs } from "../utils/loadDocs";
 import { collection, query, where } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import { useDispatch } from "react-redux";
 
 export const useIDPRecords = () => {
+  const dispatch = useDispatch();
   const { user } = useUserData();
   const empId = user?.empId;
   let cancelled = false;
@@ -21,7 +24,8 @@ export const useIDPRecords = () => {
         where("empId", "==", empId),
       );
       const snap = await loadDocs(q, `gap:idp:${empId}`);
-      console.log("snap", snap);
+      console.log("useIDPRecords", snap);
+      dispatch(setIDPRecords(snap));
 
       if (cancelled) return;
     }
