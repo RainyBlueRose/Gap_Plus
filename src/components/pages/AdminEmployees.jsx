@@ -1,7 +1,14 @@
 import { AdminNavbar } from "../layouts/AdminNavbar";
 import { useState } from "react";
 import { db } from "../config/firebase";
-import { collection, query, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 
 const AdminEmployees = () => {
   const [editId, setEditId] = useState(null);
@@ -28,17 +35,53 @@ const AdminEmployees = () => {
   function handleEdit(item) {
     setEditId(item.id);
     setForm({
-      department: "",
-      email: "",
-      empId: "",
-      jobCode: "",
-      level: "",
-      managerId: "",
-      managerName: "",
-      name: "",
-      pointBalance: null,
-      position: "",
+      department: item.department ?? "",
+      email: item.email ?? "",
+      jobCode: item.jobCode ?? "",
+      level: item.level ?? "",
+      managerId: item.managerId ?? "",
+      managerName: item.managerName ?? "",
+      name: item.name ?? "",
+      pointBalance: item.pointBalance ?? 0,
+      position: item.position ?? "",
     });
+  }
+
+  async function handleSave() {
+    const newData = {
+      department: form.department.trim(),
+      email: form.email.trim(),
+      jobCode: form.jobCode.trim(),
+      level: form.level.trim(),
+      managerId: form.managerId.trim(),
+      managerName: form.managerName.trim(),
+      name: form.name.trim(),
+      pointBalance: Number(form.pointBalance),
+      position: form.position.trim(),
+    };
+    await updateDoc(doc(db, "employees", editId), newData);
+
+    setEmployees(
+      employees.map((item) =>
+        item.id === editId ? { ...item, ...newData } : item,
+      ),
+    );
+
+    setEditId(null);
+    setForm({});
+  }
+
+  function handleCancel() {
+    setIsAdding(false);
+    setEditId(null);
+    setForm({});
+  }
+
+  async function handleDelete() {
+    await deleteDoc(doc(collection(db, "employees"), editId));
+
+    setEmployees(employees.filter((item) => item.id !== editId));
+    setEditId(null);
   }
 
   return (
@@ -181,7 +224,7 @@ const AdminEmployees = () => {
                       type="text"
                       name="pointBalance"
                       placeholder="Point Balance"
-                      value={form.pointBalance}
+                      value={form.pointBalance ?? ""}
                       onChange={handleChange}
                     ></input>
                   ) : (
@@ -199,7 +242,7 @@ const AdminEmployees = () => {
                       onChange={handleChange}
                     ></input>
                   ) : (
-                    [item.position]
+                    item.position
                   )}
                 </td>
                 <td>
