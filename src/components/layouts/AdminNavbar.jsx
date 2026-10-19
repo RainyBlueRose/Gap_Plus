@@ -10,7 +10,7 @@ export const AdminNavbar = () => {
       <Link className="p-3 border" to={ROUTES.ADMINTRAININGMATRIX}>
         Training Matrix
       </Link>
-      <Link className="p-3 border" to={ROUTES.OCRRESULT}>
+      <Link className="p-3 border" to={ROUTES.ADMINOCRRESULT}>
         OCRResult
       </Link>
     </div>

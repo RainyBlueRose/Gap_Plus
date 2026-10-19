@@ -101,10 +101,10 @@ const MyLearning = () => {
           }}
         >
           <div
-            className="bg-white p-5 rounded"
+            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
             onClick={(event) => event.stopPropagation()}
           >
-            <div>
+            <div className="flex flex-col gap-3">
               <button
                 className="border p-5 "
                 onClick={() => {
@@ -114,41 +114,60 @@ const MyLearning = () => {
                 Select class
               </button>
               {selectedSelective.courses.map((course, index) => (
-                <div key={index}>
+                <div className="border" key={index}>
                   <div>
                     <a href={course.link}>{course.institute ?? course.link}</a>
                   </div>
-                  <FileInput
-                    file={files[index]}
-                    onChange={(file) => handleFileChange(index, file)}
-                  />
-                  <button
-                    onClick={() => {
-                      handleSaveElective(selectedSelective, index);
-                    }}
-                  >
-                    handleSave
-                  </button>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      type="text"
+                      placeholder="คำอธิบาย"
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() => {
+                        handleSaveElective(selectedSelective, index);
+                      }}
+                    >
+                      บันทึก
+                    </button>
+                  </div>
                 </div>
               ))}
-              <div>
+              <div className="border">
                 <div>เรียนรู้ด้วยตนเอง</div>
-                <FileInput
-                  file={files[selectedSelective.courses.length + 1]}
-                  onChange={(file) =>
-                    handleFileChange(selectedSelective.courses.length + 1, file)
-                  }
-                />
-                <button
-                  onClick={() => {
-                    handleSaveElective(
-                      selectedSelective,
-                      selectedSelective.courses.length + 1,
-                    );
-                  }}
-                >
-                  handleSave
-                </button>
+                <div className="flex flex-col gap-3">
+                  <FileInput
+                    file={files[selectedSelective.courses.length + 1]}
+                    onChange={(file) =>
+                      handleFileChange(
+                        selectedSelective.courses.length + 1,
+                        file,
+                      )
+                    }
+                  />
+                  <textarea
+                    className="border p-1 h-30"
+                    type="text"
+                    placeholder="คำอธิบาย"
+                  />
+                  <button
+                    className="border p-2 cursor-pointer"
+                    onClick={() => {
+                      handleSaveElective(
+                        selectedSelective,
+                        selectedSelective.courses.length + 1,
+                      );
+                    }}
+                  >
+                    บันทึก
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -163,7 +182,7 @@ const MyLearning = () => {
           }}
         >
           <div
-            className="bg-white p-5 rounded"
+            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
             onClick={(event) => event.stopPropagation()}
           >
             <div>
@@ -172,39 +191,55 @@ const MyLearning = () => {
                   <div>
                     <a href={course.link}>{course.institute ?? course.link}</a>
                   </div>
-                  <FileInput
-                    file={files[index]}
-                    onChange={(file) => handleFileChange(index, file)}
-                  />
-                  <button
-                    onClick={() => {
-                      handleSaveMandatory(selectedMandatory, index);
-                    }}
-                  >
-                    handleSave
-                  </button>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      type="text"
+                      placeholder="คำอธิบาย"
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() => {
+                        handleSaveMandatory(selectedMandatory, index);
+                      }}
+                    >
+                      บันทึก
+                    </button>
+                  </div>
                 </div>
               ))}
               <div>
-                <div>เรียนรู้ด้วยตนเอง</div>
-                <FileInput
-                  file={files[selectedMandatory.courses.length + 1]}
-                  onChange={(file) =>
-                    handleFileChange(
-                      [selectedMandatory.courses.length + 1],
-                      file,
-                    )
-                  }
-                />
-                <button
-                  onClick={() => {
-                    handleSaveMandatory(selectedMandatory, [
-                      selectedMandatory.courses.length + 1,
-                    ]);
-                  }}
-                >
-                  handleSave
-                </button>
+                <div className="flex flex-col gap-3">
+                  <div>เรียนรู้ด้วยตนเอง</div>
+                  <FileInput
+                    file={files[selectedMandatory.courses.length + 1]}
+                    onChange={(file) =>
+                      handleFileChange(
+                        [selectedMandatory.courses.length + 1],
+                        file,
+                      )
+                    }
+                  />
+                  <textarea
+                    className="border p-1 h-30"
+                    type="text"
+                    placeholder="คำอธิบาย"
+                  />
+                  <button
+                    className="border p-2 cursor-pointer"
+                    onClick={() => {
+                      handleSaveMandatory(selectedMandatory, [
+                        selectedMandatory.courses.length + 1,
+                      ]);
+                    }}
+                  >
+                    บันทึก
+                  </button>
+                </div>
               </div>
             </div>
             <div></div>
