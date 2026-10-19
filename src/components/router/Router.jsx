@@ -11,7 +11,8 @@ import Login from "../pages/Login";
 import Home from "../pages/Home";
 import MyLearning from "../pages/MyLearning";
 import Admin from "../pages/admin";
-import AdminTrainingMatrices from "../pages/AdminTrainingMatrices"
+import AdminTrainingMatrices from "../pages/AdminTrainingMatrices";
+import AdminOCRResult from "../pages/AdminOCRResult";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "/Admin", element: <Admin /> },
       { path: "/Admin/Training_matrices", element: <AdminTrainingMatrices /> },
+      { path: "/Admin/OCRResult", element: <AdminOCRResult /> },
     ],
   },
 ]);
