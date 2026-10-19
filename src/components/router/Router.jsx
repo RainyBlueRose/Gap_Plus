@@ -42,4 +42,5 @@ export const ROUTES = {
   MYLEARNING: "/MyLearning",
   ADMIN: "/Admin",
   ADMINTRAININGMATRIX: "/Admin/Training_matrices",
+  OCRRESULT:"/Admin/OCRResult"
 };
