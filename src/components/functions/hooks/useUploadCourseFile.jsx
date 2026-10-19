@@ -1,13 +1,53 @@
 import { useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../config/firebase";
 
 import { useUserData } from "../../../store/userSlice";
 export const useUploadCourseFile = (competency, index, file) => {
   const { user } = useUserData();
   const [savingIndex, setSavingIndex] = useState(null);
-  const uploadCourseFile = async (competency, index, file) => {
+  const date = new Date();
+  const uploadCourseFileElective = async (competency, index, file) => {
+    if (!file) return console.log("เข้า useUpload แต่ไม่เจอไฟล์");
+    console.log("เข้า useUpload เจอไฟล์");
+    console.log("useUploadCourseFile competency", competency);
+    console.log("file", file);
+
+    const type = file.type.split("/").pop();
+    setSavingIndex(index);
+    try {
+      const storageRef = ref(
+        storage,
+        `certificates/${user.empId}/cert_${user.empId}_${competency.id}_${index}.${type}`,
+      );
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      console.log("useUploadCourseFile url", url);
+      const dataRef = doc(db, "idp_records", `${user.id}_${competency.id}`);
+      await setDoc(
+        dataRef,
+        {
+          certificates: {
+            [index]: {
+              institute:
+                competency.courses[index]?.institute || "เรียนรู้ด้วยตนเอง",
+              name: file.name,
+              url: url,
+              reflection: null,
+            },
+          },
+          status: "complete",
+        },
+
+        { merge: true },
+      );
+    } finally {
+      setSavingIndex(null);
+    }
+  };
+
+  const uploadCourseFileMandatory = async (competency, index, file) => {
     if (!file) return console.log("เข้า useUpload แต่ไม่เจอไฟล์");
     console.log("เข้า useUpload เจอไฟล์");
     console.log("useUploadCourseFile competency", competency);
@@ -26,18 +66,22 @@ export const useUploadCourseFile = (competency, index, file) => {
       await setDoc(
         dataRef,
         {
+          actedBy: user.id,
           certificates: {
             [index]: {
-              institute: competency.courses[index]?.institute || "เรียนรู้ด้วยตนเอง",
+              institute:
+                competency.courses[index]?.institute || "เรียนรู้ด้วยตนเอง",
               name: file.name,
               url: url,
               reflection: null,
-              ocrResult: null,
-              ocrText: null,
-              ocrError: null,
             },
           },
+          compKey: competency.id,
+          empId: user.id,
+          empName: user.name,
           status: "complete",
+          timestamp: date.toISOString(),
+          type: "mandatory",
         },
 
         { merge: true },
@@ -47,5 +91,5 @@ export const useUploadCourseFile = (competency, index, file) => {
     }
   };
 
-  return { uploadCourseFile, savingIndex };
+  return { uploadCourseFileElective, uploadCourseFileMandatory, savingIndex };
 };

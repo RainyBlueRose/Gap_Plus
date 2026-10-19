@@ -12,7 +12,8 @@ import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
-  const { uploadCourseFile, savingIndex } = useUploadCourseFile();
+  const { uploadCourseFileElective, uploadCourseFileMandatory, savingIndex } =
+    useUploadCourseFile();
 
   useTrainingMatrix();
   useCompetencies();
@@ -44,10 +45,15 @@ const MyLearning = () => {
     </label>
   );
 
-  const handleSave = async (competency, index) => {
+  const handleSaveElective = async (competency, index) => {
     const file = files[index];
     if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
-    await uploadCourseFile(competency, index, file);
+    await uploadCourseFileElective(competency, index, file);
+  };
+  const handleSaveMandatory = async (competency, index) => {
+    const file = files[index];
+    if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
+    await uploadCourseFileMandatory(competency, index, file);
   };
   return (
     <div>
@@ -118,7 +124,7 @@ const MyLearning = () => {
                   />
                   <button
                     onClick={() => {
-                      handleSave(selectedSelective, index);
+                      handleSaveElective(selectedSelective, index);
                     }}
                   >
                     handleSave
@@ -135,7 +141,7 @@ const MyLearning = () => {
                 />
                 <button
                   onClick={() => {
-                    handleSave(
+                    handleSaveElective(
                       selectedSelective,
                       selectedSelective.courses.length + 1,
                     );
@@ -172,7 +178,7 @@ const MyLearning = () => {
                   />
                   <button
                     onClick={() => {
-                      handleSave(selectedMandatory, index);
+                      handleSaveMandatory(selectedMandatory, index);
                     }}
                   >
                     handleSave
@@ -192,7 +198,7 @@ const MyLearning = () => {
                 />
                 <button
                   onClick={() => {
-                    handleSave(selectedMandatory, [
+                    handleSaveMandatory(selectedMandatory, [
                       selectedMandatory.courses.length + 1,
                     ]);
                   }}
