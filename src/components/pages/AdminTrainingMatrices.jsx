@@ -165,7 +165,7 @@ const AdminTrainingMatrices = () => {
         >
           ค้นหาข้อมูล
         </button>
-        <button onClick={handleAddData}>เพิ่มข้อมูล</button>
+        <button className="border p-3" onClick={handleAddData}>เพิ่มข้อมูล</button>
         <table className="border">
           <thead className="">
             <tr>
