@@ -28,6 +28,22 @@ const AdminEmployees = () => {
     setEmployees(newData);
   }
 
+  function handleAddData() {
+    setEditId("");
+    setIsAdding(!isAdding);
+    setForm({
+      department: "",
+      email: "",
+      jobCode: "",
+      level: "",
+      managerId: "",
+      managerName: "",
+      name: "",
+      pointBalance: 100,
+      position: "",
+    });
+  }
+
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
