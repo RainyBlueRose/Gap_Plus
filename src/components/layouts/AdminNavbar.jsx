@@ -13,6 +13,9 @@ export const AdminNavbar = () => {
       <Link className="p-3 border" to={ROUTES.ADMINOCRRESULT}>
         OCRResult
       </Link>
+      <Link className="p-3 border" to={ROUTES.ADMINEMPLOYEES}>
+        Employees
+      </Link>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import MyLearning from "../pages/MyLearning";
 import Admin from "../pages/admin";
 import AdminTrainingMatrices from "../pages/AdminTrainingMatrices";
 import AdminOCRResult from "../pages/AdminOCRResult";
+import AdminEmployees from "../pages/AdminEmployees";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: "/Admin", element: <Admin /> },
       { path: "/Admin/Training_matrices", element: <AdminTrainingMatrices /> },
       { path: "/Admin/OCRResult", element: <AdminOCRResult /> },
+      { path: "/Admin/Employees", element: <AdminEmployees /> },
     ],
   },
 ]);
