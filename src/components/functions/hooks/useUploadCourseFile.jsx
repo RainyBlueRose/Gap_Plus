@@ -4,14 +4,24 @@ import { doc, setDoc } from "firebase/firestore";
 import { db, storage } from "../../config/firebase";
 
 import { useUserData } from "../../../store/userSlice";
+import {
+  setIDPRecords,
+  useIDPRecordsData,
+} from "../../../store/IDPRecordsSlice";
 
 const SELF_LEARNING_LABEL = "เรียนรู้ด้วยตนเอง";
 
 export const useUploadCourseFile = () => {
   const { user } = useUserData();
+  const { idpRecords } = useIDPRecordsData;
   const [savingIndex, setSavingIndex] = useState(null);
 
-  const uploadCertificate = async (competency, index, file, extraFields = {}) => {
+  const uploadCertificate = async (
+    competency,
+    index,
+    file,
+    extraFields = {},
+  ) => {
     if (!file) return;
 
     const extension = file.type.split("/").pop();
@@ -42,6 +52,39 @@ export const useUploadCourseFile = () => {
         },
         { merge: true },
       );
+
+      const targetId = `${user.id}_${competency.id}`;
+      const certificate = {
+        institute: competency.courses[index]?.institute || SELF_LEARNING_LABEL,
+        name: file.name,
+        url,
+        reflection: null,
+      };
+
+      const exists = idpRecords.some((item) => item.id === targetId);
+
+      const newIDPRecords = exists
+        ? idpRecords.map((item) =>
+            item.id === targetId
+              ? {
+                  ...item,
+                  certificates: { ...item.certificates, [index]: certificate },
+                  status: "complete",
+                }
+              : item,
+          )
+        : [
+            ...idpRecords,
+            {
+              id: targetId,
+              certificates: { [index]: certificate },
+              status: "complete",
+              // ถ้าเป็น Mandatory ใส่ฟิลด์เพิ่มเติมตรงนี้ด้วย (extraFields)
+              ...extraFields,
+            },
+          ];
+
+      dispatch(setIDPRecords(newIDPRecords));
     } finally {
       setSavingIndex(null);
     }

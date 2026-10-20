@@ -68,7 +68,6 @@ export const useIDPRecords = () => {
       (item) => item.compKey === competency.id,
     );
     if (selectedCompetency.length === 0) {
-      console.log("ผู้ใช้ไม่ได้เลือก", competency.id);
       return;
     }
     return selectedCompetency[0].status;
