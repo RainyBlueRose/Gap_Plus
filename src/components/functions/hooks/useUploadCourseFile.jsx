@@ -1,45 +1,45 @@
 import { useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db, storage } from "../../config/firebase";
 
 import { useUserData } from "../../../store/userSlice";
-export const useUploadCourseFile = (competency, index, file) => {
+
+const SELF_LEARNING_LABEL = "เรียนรู้ด้วยตนเอง";
+
+export const useUploadCourseFile = () => {
   const { user } = useUserData();
   const [savingIndex, setSavingIndex] = useState(null);
-  const date = new Date();
-  const uploadCourseFileElective = async (competency, index, file) => {
-    if (!file) return console.log("เข้า useUpload แต่ไม่เจอไฟล์");
-    console.log("เข้า useUpload เจอไฟล์");
-    console.log("useUploadCourseFile competency", competency);
-    console.log("file", file);
 
-    const type = file.type.split("/").pop();
+  const uploadCertificate = async (competency, index, file, extraFields = {}) => {
+    if (!file) return;
+
+    const extension = file.type.split("/").pop();
+    const storageRef = ref(
+      storage,
+      `certificates/${user.empId}/cert_${user.empId}_${competency.id}_${index}.${extension}`,
+    );
+
     setSavingIndex(index);
     try {
-      const storageRef = ref(
-        storage,
-        `certificates/${user.empId}/cert_${user.empId}_${competency.id}_${index}.${type}`,
-      );
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
-      console.log("useUploadCourseFile url", url);
-      const dataRef = doc(db, "idp_records", `${user.id}_${competency.id}`);
+
       await setDoc(
-        dataRef,
+        doc(db, "idp_records", `${user.id}_${competency.id}`),
         {
+          ...extraFields,
           certificates: {
             [index]: {
               institute:
-                competency.courses[index]?.institute || "เรียนรู้ด้วยตนเอง",
+                competency.courses[index]?.institute || SELF_LEARNING_LABEL,
               name: file.name,
-              url: url,
+              url,
               reflection: null,
             },
           },
           status: "complete",
         },
-
         { merge: true },
       );
     } finally {
@@ -47,49 +47,18 @@ export const useUploadCourseFile = (competency, index, file) => {
     }
   };
 
-  const uploadCourseFileMandatory = async (competency, index, file) => {
-    if (!file) return console.log("เข้า useUpload แต่ไม่เจอไฟล์");
-    console.log("เข้า useUpload เจอไฟล์");
-    console.log("useUploadCourseFile competency", competency);
-    console.log("file", file);
-    const type = file.type.split("/").pop();
-    setSavingIndex(index);
-    try {
-      const storageRef = ref(
-        storage,
-        `certificates/${user.empId}/cert_${user.empId}_${competency.id}_${index}.${type}`,
-      );
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      console.log("useUploadCourseFile url", url);
-      const dataRef = doc(db, "idp_records", `${user.id}_${competency.id}`);
-      await setDoc(
-        dataRef,
-        {
-          actedBy: user.id,
-          certificates: {
-            [index]: {
-              institute:
-                competency.courses[index]?.institute || "เรียนรู้ด้วยตนเอง",
-              name: file.name,
-              url: url,
-              reflection: null,
-            },
-          },
-          compKey: competency.id,
-          empId: user.id,
-          empName: user.name,
-          status: "complete",
-          timestamp: date.toISOString(),
-          type: "mandatory",
-        },
+  const uploadCourseFileElective = (competency, index, file) =>
+    uploadCertificate(competency, index, file);
 
-        { merge: true },
-      );
-    } finally {
-      setSavingIndex(null);
-    }
-  };
+  const uploadCourseFileMandatory = (competency, index, file) =>
+    uploadCertificate(competency, index, file, {
+      actedBy: user.id,
+      compKey: competency.id,
+      empId: user.id,
+      empName: user.name,
+      timestamp: new Date().toISOString(),
+      type: "mandatory",
+    });
 
   return { uploadCourseFileElective, uploadCourseFileMandatory, savingIndex };
 };
