@@ -104,41 +104,42 @@ const AdminEmployees = () => {
     <div className="flex min-h-screen">
       <AdminNavbar />
 
-      <div>
+      <div className="min-w-0 flex-1 p-6">
         <button
-          className="p-3 border"
+          className="mb-4 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
           onClick={() => {
             loadEmployees();
           }}
         >
           ค้นหาข้อมูล
         </button>
-        <table className="border">
-          <thead className="border">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+        <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
             <tr>
-              <th>#</th>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>department</th>
-              <th>Job Code</th>
-              <th>Level</th>
-              <th>Manager ID</th>
-              <th>Manager Name</th>
-              <th>Point Balance</th>
-              <th>Position</th>
-              <th>Action</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">#</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">ID</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Name</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Email</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Department</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Job Code</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Level</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Manager ID</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Manager Name</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Point Balance</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Position</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
             {employees.map((item, index) => (
-              <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{item.empId}</td>
-                <td>
+              <tr key={index} className="border-b border-slate-100 transition-colors last:border-0 hover:bg-sky-50/50">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-slate-500">{index + 1}</th>
+                <td className="whitespace-nowrap px-4 py-3 text-slate-600">{item.empId}</td>
+                <td className="px-4 py-3 text-slate-800">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="name"
                       placeholder="Name"
@@ -149,10 +150,10 @@ const AdminEmployees = () => {
                     item.name
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="email"
                       placeholder="Email"
@@ -163,10 +164,10 @@ const AdminEmployees = () => {
                     item.email
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="department"
                       placeholder="Department"
@@ -177,10 +178,10 @@ const AdminEmployees = () => {
                     item.department
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-24 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="jobCode"
                       placeholder="Job Code"
@@ -191,10 +192,10 @@ const AdminEmployees = () => {
                     item.jobCode
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-24 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="level"
                       placeholder="Level"
@@ -205,10 +206,10 @@ const AdminEmployees = () => {
                     item.level
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-24 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="managerId"
                       placeholder="Manager ID"
@@ -219,10 +220,10 @@ const AdminEmployees = () => {
                     item.managerId
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="managerName"
                       placeholder="Manager Name"
@@ -233,10 +234,10 @@ const AdminEmployees = () => {
                     item.managerName
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 font-medium tabular-nums text-slate-700">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-24 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="pointBalance"
                       placeholder="Point Balance"
@@ -247,10 +248,10 @@ const AdminEmployees = () => {
                     [item.pointBalance]
                   )}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="position"
                       placeholder="Position"
@@ -261,15 +262,16 @@ const AdminEmployees = () => {
                     item.position
                   )}
                 </td>
-                <td>
+                <td className="whitespace-nowrap px-4 py-3">
                   {editId === item.id ? (
-                    <div>
-                      <button onClick={handleSave}>Save</button>
-                      <button onClick={handleCancel}>Cancel</button>
-                      <button onClick={handleDelete}>Remove</button>
+                    <div className="flex items-center gap-2">
+                      <button className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700" onClick={handleSave}>Save</button>
+                      <button className="rounded border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100" onClick={handleCancel}>Cancel</button>
+                      <button className="rounded bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700" onClick={handleDelete}>Remove</button>
                     </div>
                   ) : (
                     <button
+                      className="rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
                       onClick={() => {
                         handleEdit(item);
                       }}
@@ -282,6 +284,7 @@ const AdminEmployees = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
