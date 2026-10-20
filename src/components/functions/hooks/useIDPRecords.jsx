@@ -58,7 +58,8 @@ export const useIDPRecords = () => {
       ]),
     );
   }
-
+  /*เอาไว้เช็ค status ของ idp records ที่ใส่เข้ามา เอาไปเทียบกับข้อมูลใน redux ถ้าไม่เจอแปลว่าไม่มีใน redux ก็จะไมม่คืนค่าอะไร ถ้าเจอก็แปลว่ามี 
+แปลว่าไม่กดลงทะเบียนแล้วใน selective ก็เคยส่งแล้วใน mandatory */
   function checkSelectedCourse(competency) {
     if (!competency) return;
     const selectedCompetency = idpRecords.filter(

@@ -26,6 +26,8 @@ const MyLearning = () => {
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
 
+  console.log("selectedSelective", selectedSelective);
+
   const [files, setFiles] = useState({});
 
   const handleFileChange = (courseKey, file) => {
@@ -54,6 +56,264 @@ const MyLearning = () => {
     const file = files[index];
     if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
     await uploadCourseFileMandatory(competency, index, file);
+  };
+
+  const renderCourseElective = () => {
+    if (!selectedSelective) return null;
+
+    const status = checkSelectedCourse(selectedSelective);
+
+    if (!status) {
+      return (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => {
+            setSelectedSelective(null);
+            setFiles({});
+          }}
+        >
+          <div
+            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex flex-col gap-3">
+              <button
+                className="border p-5 "
+                onClick={() => {
+                  setElectiveIDPRecords(selectedSelective);
+                }}
+              >
+                Select class
+              </button>
+              {selectedSelective.courses.map((course, index) => (
+                <div className="border" key={index}>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      type="text"
+                      placeholder="คำอธิบาย"
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() => {
+                        handleSaveElective(selectedSelective, index);
+                      }}
+                    >
+                      บันทึก
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div className="border">
+                <div>เรียนรู้ด้วยตนเอง</div>
+                <div className="flex flex-col gap-3">
+                  <FileInput
+                    file={files[selectedSelective.courses.length + 1]}
+                    onChange={(file) =>
+                      handleFileChange(
+                        selectedSelective.courses.length + 1,
+                        file,
+                      )
+                    }
+                  />
+                  <textarea
+                    className="border p-1 h-30"
+                    type="text"
+                    placeholder="คำอธิบาย"
+                  />
+                  <button
+                    className="border p-2 cursor-pointer"
+                    onClick={() => {
+                      handleSaveElective(
+                        selectedSelective,
+                        selectedSelective.courses.length + 1,
+                      );
+                    }}
+                  >
+                    บันทึก
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if (status === "In Progress") {
+      return (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => {
+            setSelectedSelective(null);
+            setFiles({});
+          }}
+        >
+          <div
+            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex flex-col gap-3">
+              <button
+                className="border p-5 "
+                onClick={() => {
+                  setElectiveIDPRecords(selectedSelective);
+                }}
+                disabled
+              >
+                Select class
+              </button>
+              {selectedSelective.courses.map((course, index) => (
+                <div className="border" key={index}>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      type="text"
+                      placeholder="คำอธิบาย"
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() => {
+                        handleSaveElective(selectedSelective, index);
+                      }}
+                    >
+                      บันทึก
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div className="border">
+                <div>เรียนรู้ด้วยตนเอง</div>
+                <div className="flex flex-col gap-3">
+                  <FileInput
+                    file={files[selectedSelective.courses.length + 1]}
+                    onChange={(file) =>
+                      handleFileChange(
+                        selectedSelective.courses.length + 1,
+                        file,
+                      )
+                    }
+                  />
+                  <textarea
+                    className="border p-1 h-30"
+                    type="text"
+                    placeholder="คำอธิบาย"
+                  />
+                  <button
+                    className="border p-2 cursor-pointer"
+                    onClick={() => {
+                      handleSaveElective(
+                        selectedSelective,
+                        selectedSelective.courses.length + 1,
+                      );
+                    }}
+                  >
+                    บันทึก
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if (status === "Complete") {
+      return (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => {
+            setSelectedSelective(null);
+            setFiles({});
+          }}
+        >
+          <div
+            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex flex-col gap-3">
+              <button
+                className="border p-5 "
+                onClick={() => {
+                  setElectiveIDPRecords(selectedSelective);
+                }}
+                disabled
+              >
+                Select class
+              </button>
+              {selectedSelective.courses.map((course, index) => (
+                <div className="border" key={index}>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      type="text"
+                      placeholder="คำอธิบาย"
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() => {
+                        handleSaveElective(selectedSelective, index);
+                      }}
+                    >
+                      บันทึก
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div className="border">
+                <div>เรียนรู้ด้วยตนเอง</div>
+                <div className="flex flex-col gap-3">
+                  <FileInput
+                    file={files[selectedSelective.courses.length + 1]}
+                    onChange={(file) =>
+                      handleFileChange(
+                        selectedSelective.courses.length + 1,
+                        file,
+                      )
+                    }
+                  />
+                  <textarea
+                    className="border p-1 h-30"
+                    type="text"
+                    placeholder="คำอธิบาย"
+                  />
+                  <button
+                    className="border p-2 cursor-pointer"
+                    onClick={() => {
+                      handleSaveElective(
+                        selectedSelective,
+                        selectedSelective.courses.length + 1,
+                      );
+                    }}
+                  >
+                    บันทึก
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
   };
   return (
     <div>
@@ -172,87 +432,7 @@ const MyLearning = () => {
         </div>
       ))} */}
 
-      {selectedSelective && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => {
-            setSelectedSelective(null);
-            setFiles({});
-          }}
-        >
-          <div
-            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex flex-col gap-3">
-              <button
-                className="border p-5 "
-                onClick={() => {
-                  setElectiveIDPRecords(selectedSelective);
-                }}
-              >
-                Select class
-              </button>
-              {selectedSelective.courses.map((course, index) => (
-                <div className="border" key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <FileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      type="text"
-                      placeholder="คำอธิบาย"
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() => {
-                        handleSaveElective(selectedSelective, index);
-                      }}
-                    >
-                      บันทึก
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <div className="border">
-                <div>เรียนรู้ด้วยตนเอง</div>
-                <div className="flex flex-col gap-3">
-                  <FileInput
-                    file={files[selectedSelective.courses.length + 1]}
-                    onChange={(file) =>
-                      handleFileChange(
-                        selectedSelective.courses.length + 1,
-                        file,
-                      )
-                    }
-                  />
-                  <textarea
-                    className="border p-1 h-30"
-                    type="text"
-                    placeholder="คำอธิบาย"
-                  />
-                  <button
-                    className="border p-2 cursor-pointer"
-                    onClick={() => {
-                      handleSaveElective(
-                        selectedSelective,
-                        selectedSelective.courses.length + 1,
-                      );
-                    }}
-                  >
-                    บันทึก
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {selectedSelective && <div>{renderCourseElective()}</div>}
       {selectedMandatory && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
