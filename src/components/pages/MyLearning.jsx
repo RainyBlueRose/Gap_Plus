@@ -22,7 +22,7 @@ const MyLearning = () => {
 
   console.log("competencies", competencies);
 
-  const { setElectiveIDPRecords, checkSelectedElective } = useIDPRecords();
+  const { setElectiveIDPRecords, checkSelectedCourse } = useIDPRecords();
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
 
@@ -63,7 +63,40 @@ const MyLearning = () => {
 
       <div>Mandatory</div>
 
-      {competencies.mandatory.map((m) => (
+      {competencies.mandatory.map((m) => {
+        const status = checkSelectedCourse(m);
+        if (!status) {
+          return (
+            <div key={m.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedMandatory(m);
+                }}
+              >
+                <div>{m.competencyName}</div>
+                <div>{m.description}</div>
+              </div>
+            </div>
+          );
+        }
+        if (status === "Complete") {
+          return (
+            <div key={m.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedMandatory(m);
+                }}
+              >
+                <div>{m.competencyName} (Complete)</div>
+                <div>{m.description}</div>
+              </div>
+            </div>
+          );
+        }
+      })}
+      {/* {competencies.mandatory.map((m) => (
         <div key={m.id}>
           <div
             className="border p-5 hover:cursor-pointer"
@@ -75,11 +108,11 @@ const MyLearning = () => {
             <div>{m.description}</div>
           </div>
         </div>
-      ))}
+      ))} */}
       <div>Elective</div>
 
       {competencies.electives.map((e) => {
-        const status = checkSelectedElective(e);
+        const status = checkSelectedCourse(e);
         if (!status) {
           return (
             <div key={e.id}>

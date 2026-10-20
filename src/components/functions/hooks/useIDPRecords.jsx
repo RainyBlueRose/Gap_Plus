@@ -20,7 +20,6 @@ export const useIDPRecords = () => {
 
   useEffect(() => {
     if (!empId) {
-      return console.log("useIDPRecords ไม่ได้ไปต่อ");
     }
     async function load() {
       const q = query(
@@ -28,7 +27,6 @@ export const useIDPRecords = () => {
         where("empId", "==", empId),
       );
       const snap = await loadDocs(q, `gap:idp:${empId}`);
-      console.log("useIDPRecords", snap);
       dispatch(setIDPRecords(snap));
 
       if (cancelled) return;
@@ -61,10 +59,8 @@ export const useIDPRecords = () => {
     );
   }
 
-  function checkSelectedElective(competency) {
+  function checkSelectedCourse(competency) {
     if (!competency) return;
-    console.log("checkSelectedElective idpRecords", idpRecords);
-    console.log("checkSelectedElective competency", competency);
     const selectedCompetency = idpRecords.filter(
       (item) => item.compKey === competency.id,
     );
@@ -75,6 +71,6 @@ export const useIDPRecords = () => {
   }
   return {
     setElectiveIDPRecords,
-    checkSelectedElective,
+    checkSelectedCourse,
   };
 };
