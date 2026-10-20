@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 export const useIDPRecords = () => {
   const dispatch = useDispatch();
   const { user } = useUserData();
+  const { idpRecords } = useIDPRecordsData();
   const empId = user?.empId;
   let cancelled = false;
 
@@ -44,8 +45,13 @@ export const useIDPRecords = () => {
   }
 
   function checkSelectedElective(competency) {
-    const { idpRecords } = useIDPRecordsData();
+    if (!competency) return;
     console.log("checkSelectedElective idpRecords", idpRecords);
+    console.log("checkSelectedElective competency", competency);
+    const selectedCompetency = idpRecords.filter(
+      (item) => item.compKey === competency.id,
+    );
+    console.log("selectedCompetency", selectedCompetency);
   }
   return { setElectiveIDPRecords, checkSelectedElective };
 };

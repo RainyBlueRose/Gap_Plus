@@ -24,6 +24,8 @@ const MyLearning = () => {
   const { setElectiveIDPRecords, checkSelectedElective } = useIDPRecords();
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
+  checkSelectedElective(competencies.electives[1]);
+  console.log("competencies[1]", competencies.electives[1]);
 
   const [files, setFiles] = useState({});
 
