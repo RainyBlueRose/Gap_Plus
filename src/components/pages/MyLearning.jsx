@@ -109,7 +109,7 @@ const MyLearning = () => {
               </div>
             </div>
           );
-        if (status === "complete")
+        if (status === "Complete")
           return (
             <div key={e.id}>
               <div

@@ -50,7 +50,7 @@ export const useUploadCourseFile = () => {
               reflection: null,
             },
           },
-          status: "complete",
+          status: "Complete",
         },
         { merge: true },
       );
@@ -71,7 +71,7 @@ export const useUploadCourseFile = () => {
               ? {
                   ...item,
                   certificates: { ...item.certificates, [index]: certificate },
-                  status: "complete",
+                  status: "Complete",
                 }
               : item,
           )
@@ -80,7 +80,7 @@ export const useUploadCourseFile = () => {
             {
               id: targetId,
               certificates: { [index]: certificate },
-              status: "complete",
+              status: "Complete",
               ...extraFields,
             },
           ];
