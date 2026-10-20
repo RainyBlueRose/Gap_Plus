@@ -71,7 +71,7 @@ export const useIDPRecords = () => {
       console.log("ผู้ใช้ไม่ได้เลือก", competency.id);
       return;
     }
-    console.log("ผู้ใช้เลือก", selectedCompetency[0].compKey);
+    return selectedCompetency[0].status;
   }
   return {
     setElectiveIDPRecords,

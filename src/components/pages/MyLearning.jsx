@@ -25,8 +25,6 @@ const MyLearning = () => {
   const { setElectiveIDPRecords, checkSelectedElective } = useIDPRecords();
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
-  checkSelectedElective(competencies.electives[1]);
-  console.log("competencies[1]", competencies.electives[1]);
 
   const [files, setFiles] = useState({});
 
@@ -93,6 +91,20 @@ const MyLearning = () => {
           </div>
         </div>
       ))}
+      
+      {/* {competencies.electives.map((e) => (
+        <div key={e.id}>
+          <div
+            className="border p-5 hover:cursor-pointer"
+            onClick={() => {
+              setSelectedSelective(e);
+            }}
+          >
+            <div>{e.competencyName}</div>
+            <div>{e.description}</div>
+          </div>
+        </div>
+      ))} */}
 
       {selectedSelective && (
         <div
