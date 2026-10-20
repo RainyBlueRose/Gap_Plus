@@ -41,7 +41,23 @@ export const useIDPRecords = () => {
   }, [empId]);
 
   function setElectiveIDPRecords(comp) {
+    const date = new Date();
     createElectiveIDPRecord(user, comp);
+    dispatch(
+      setIDPRecords([
+        ...idpRecords,
+        {
+          actedBy: user.id,
+          certificates: {},
+          compKey: comp.id,
+          empId: user.id,
+          empName: user.name,
+          status: "In Progress",
+          timestamp: date.toISOString(),
+          type: "selective",
+        },
+      ]),
+    );
   }
 
   function checkSelectedElective(competency) {
@@ -51,7 +67,14 @@ export const useIDPRecords = () => {
     const selectedCompetency = idpRecords.filter(
       (item) => item.compKey === competency.id,
     );
-    console.log("selectedCompetency", selectedCompetency);
+    if (selectedCompetency.length === 0) {
+      console.log("ผู้ใช้ไม่ได้เลือก", competency.id);
+      return;
+    }
+    console.log("ผู้ใช้เลือก", selectedCompetency[0].compKey);
   }
-  return { setElectiveIDPRecords, checkSelectedElective };
+  return {
+    setElectiveIDPRecords,
+    checkSelectedElective,
+  };
 };

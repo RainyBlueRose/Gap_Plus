@@ -18,6 +18,7 @@ const MyLearning = () => {
   useTrainingMatrix();
   useCompetencies();
   useCreateIDPRecords();
+  useIDPRecords();
 
   console.log("competencies", competencies);
 
