@@ -315,125 +315,14 @@ const MyLearning = () => {
       );
     }
   };
-  return (
-    <div>
-      <Header />
 
-      {status === "loading" && <p>กำลังโหลด...</p>}
+  const renderCourseMandatory = () => {
+    if (!selectedMandatory) return;
 
-      <div>Mandatory</div>
+    const status = checkSelectedCourse(selectedMandatory);
 
-      {competencies.mandatory.map((m) => {
-        const status = checkSelectedCourse(m);
-        if (!status) {
-          return (
-            <div key={m.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedMandatory(m);
-                }}
-              >
-                <div>{m.competencyName}</div>
-                <div>{m.description}</div>
-              </div>
-            </div>
-          );
-        }
-        if (status === "Complete") {
-          return (
-            <div key={m.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedMandatory(m);
-                }}
-              >
-                <div>{m.competencyName} (Complete)</div>
-                <div>{m.description}</div>
-              </div>
-            </div>
-          );
-        }
-      })}
-      {/* {competencies.mandatory.map((m) => (
-        <div key={m.id}>
-          <div
-            className="border p-5 hover:cursor-pointer"
-            onClick={() => {
-              setSelectedMandatory(m);
-            }}
-          >
-            <div>{m.competencyName} (Not Selected)</div>
-            <div>{m.description}</div>
-          </div>
-        </div>
-      ))} */}
-      <div>Elective</div>
-
-      {competencies.electives.map((e) => {
-        const status = checkSelectedCourse(e);
-        if (!status) {
-          return (
-            <div key={e.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedSelective(e);
-                }}
-              >
-                <div>{e.competencyName}</div>
-                <div>{e.description}</div>
-              </div>
-            </div>
-          );
-        }
-        if (status === "In Progress")
-          return (
-            <div key={e.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedSelective(e);
-                }}
-              >
-                <div>{e.competencyName} (In Progress)</div>
-                <div>{e.description}</div>
-              </div>
-            </div>
-          );
-        if (status === "Complete")
-          return (
-            <div key={e.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedSelective(e);
-                }}
-              >
-                <div>{e.competencyName} (Complete)</div>
-                <div>{e.description}</div>
-              </div>
-            </div>
-          );
-      })}
-
-      {/* {competencies.electives.map((e) => (
-        <div key={e.id}>
-          <div
-            className="border p-5 hover:cursor-pointer"
-            onClick={() => {
-              setSelectedSelective(e);
-            }}
-          >
-            <div>{e.competencyName}</div>
-            <div>{e.description}</div>
-          </div>
-        </div>
-      ))} */}
-
-      {selectedSelective && <div>{renderCourseElective()}</div>}
-      {selectedMandatory && (
+    if (!status) {
+      return (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
           onClick={() => {
@@ -505,7 +394,176 @@ const MyLearning = () => {
             <div></div>
           </div>
         </div>
-      )}
+      );
+    }
+    if (status === "Complete") {
+      return (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => {
+            setSelectedMandatory(null);
+            setFiles({});
+          }}
+        >
+          <div
+            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div>
+              <div>(complete)</div>
+              {selectedMandatory.courses.map((course, index) => (
+                <div key={index}>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      type="text"
+                      placeholder="คำอธิบาย"
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() => {
+                        handleSaveMandatory(selectedMandatory, index);
+                      }}
+                    >
+                      บันทึก
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div>
+                <div className="flex flex-col gap-3">
+                  <div>เรียนรู้ด้วยตนเอง</div>
+                  <FileInput
+                    file={files[selectedMandatory.courses.length + 1]}
+                    onChange={(file) =>
+                      handleFileChange(
+                        [selectedMandatory.courses.length + 1],
+                        file,
+                      )
+                    }
+                  />
+                  <textarea
+                    className="border p-1 h-30"
+                    type="text"
+                    placeholder="คำอธิบาย"
+                  />
+                  <button
+                    className="border p-2 cursor-pointer"
+                    onClick={() => {
+                      handleSaveMandatory(selectedMandatory, [
+                        selectedMandatory.courses.length + 1,
+                      ]);
+                    }}
+                  >
+                    บันทึก
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div></div>
+          </div>
+        </div>
+      );
+    }
+  };
+  return (
+    <div>
+      <Header />
+
+      {status === "loading" && <p>กำลังโหลด...</p>}
+
+      <div>Mandatory</div>
+
+      {competencies.mandatory.map((m) => {
+        const status = checkSelectedCourse(m);
+        if (!status) {
+          return (
+            <div key={m.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedMandatory(m);
+                }}
+              >
+                <div>{m.competencyName}</div>
+                <div>{m.description}</div>
+              </div>
+            </div>
+          );
+        }
+        if (status === "Complete") {
+          return (
+            <div key={m.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedMandatory(m);
+                }}
+              >
+                <div>{m.competencyName} (Complete)</div>
+                <div>{m.description}</div>
+              </div>
+            </div>
+          );
+        }
+      })}
+      <div>Elective</div>
+
+      {competencies.electives.map((e) => {
+        const status = checkSelectedCourse(e);
+        if (!status) {
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedSelective(e);
+                }}
+              >
+                <div>{e.competencyName}</div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+        }
+        if (status === "In Progress")
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedSelective(e);
+                }}
+              >
+                <div>{e.competencyName} (In Progress)</div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+        if (status === "Complete")
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedSelective(e);
+                }}
+              >
+                <div>{e.competencyName} (Complete)</div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+      })}
+      {selectedSelective && <div>{renderCourseElective()}</div>}
+      {selectedMandatory && <div>{renderCourseMandatory()}</div>}
     </div>
   );
 };
