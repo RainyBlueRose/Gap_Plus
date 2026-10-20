@@ -71,27 +71,60 @@ const MyLearning = () => {
               setSelectedMandatory(m);
             }}
           >
-            <div>{m.competencyName}</div>
+            <div>{m.competencyName} (Not Selected)</div>
             <div>{m.description}</div>
           </div>
         </div>
       ))}
       <div>Elective</div>
 
-      {competencies.electives.map((e) => (
-        <div key={e.id}>
-          <div
-            className="border p-5 hover:cursor-pointer"
-            onClick={() => {
-              setSelectedSelective(e);
-            }}
-          >
-            <div>{e.competencyName}</div>
-            <div>{e.description}</div>
-          </div>
-        </div>
-      ))}
-      
+      {competencies.electives.map((e) => {
+        const status = checkSelectedElective(e);
+        if (!status) {
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedSelective(e);
+                }}
+              >
+                <div>{e.competencyName}</div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+        }
+        if (status === "In Progress")
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedSelective(e);
+                }}
+              >
+                <div>{e.competencyName} (In Progress)</div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+        if (status === "complete")
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedSelective(e);
+                }}
+              >
+                <div>{e.competencyName} (Complete)</div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+      })}
+
       {/* {competencies.electives.map((e) => (
         <div key={e.id}>
           <div
