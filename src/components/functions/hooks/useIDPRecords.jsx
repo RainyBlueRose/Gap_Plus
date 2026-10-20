@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useUserData } from "../../../store/userSlice";
-import { setIDPRecords } from "../../../store/IDPRecordsSlice";
+import {
+  setIDPRecords,
+  useIDPRecordsData,
+} from "../../../store/IDPRecordsSlice";
 
 import { createElectiveIDPRecord } from "../utils/createIDPRecord";
 import { loadDocs } from "../utils/loadDocs";
@@ -39,5 +42,10 @@ export const useIDPRecords = () => {
   function setElectiveIDPRecords(comp) {
     createElectiveIDPRecord(user, comp);
   }
-  return { setElectiveIDPRecords };
+
+  function checkSelectedElective(competency) {
+    const { idpRecords } = useIDPRecordsData();
+    console.log("checkSelectedElective idpRecords", idpRecords);
+  }
+  return { setElectiveIDPRecords, checkSelectedElective };
 };

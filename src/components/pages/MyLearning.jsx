@@ -21,8 +21,7 @@ const MyLearning = () => {
 
   console.log("competencies", competencies);
 
-  const { setElectiveIDPRecords } = useIDPRecords();
-
+  const { setElectiveIDPRecords, checkSelectedElective } = useIDPRecords();
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
 
