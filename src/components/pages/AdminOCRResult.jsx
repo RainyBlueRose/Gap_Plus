@@ -7,12 +7,13 @@ const AdminOCRResult = () => {
   const [ocrResults, setOCRResults] = useState([]);
 
   const rows = ocrResults.flatMap(
-    ({ id, empId, empName, compKey, certificates }) =>
+    ({ id, empId, empName, compKey, status, certificates }) =>
       Object.entries(certificates ?? {}).map(([certKey, cert]) => ({
         key: `${id}-${certKey}`,
         empId,
         empName,
         compKey,
+        status,
         ...cert,
       })),
   );
@@ -58,6 +59,9 @@ const AdminOCRResult = () => {
                   Competency Key
                 </th>
                 <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  Status
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
                   OCR Result
                 </th>
                 <th className="whitespace-nowrap px-4 py-3 font-semibold">
@@ -83,6 +87,9 @@ const AdminOCRResult = () => {
                   <td className="px-4 py-3 text-slate-800">{item.empName}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {item.compKey}
+                  </td>
+                  <td className="px-4 py-3 text-slate-800">
+                    {item.status ?? "-"}
                   </td>
                   <td className="px-4 py-3 text-slate-800">
                     {item.ocrResult ?? "-"}
