@@ -47,6 +47,7 @@ export const useIDPRecords = () => {
       setIDPRecords([
         ...idpRecords,
         {
+          id: `${user.id}_${comp.id}`,
           actedBy: user.id,
           certificates: {},
           compKey: comp.id,

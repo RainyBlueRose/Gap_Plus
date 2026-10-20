@@ -3,6 +3,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { db, storage } from "../../config/firebase";
 
+import { useDispatch } from "react-redux";
 import { useUserData } from "../../../store/userSlice";
 import {
   setIDPRecords,
@@ -12,8 +13,9 @@ import {
 const SELF_LEARNING_LABEL = "เรียนรู้ด้วยตนเอง";
 
 export const useUploadCourseFile = () => {
+  const dispatch = useDispatch();
   const { user } = useUserData();
-  const { idpRecords } = useIDPRecordsData;
+  const { idpRecords } = useIDPRecordsData();
   const [savingIndex, setSavingIndex] = useState(null);
 
   const uploadCertificate = async (
@@ -79,7 +81,6 @@ export const useUploadCourseFile = () => {
               id: targetId,
               certificates: { [index]: certificate },
               status: "complete",
-              // ถ้าเป็น Mandatory ใส่ฟิลด์เพิ่มเติมตรงนี้ด้วย (extraFields)
               ...extraFields,
             },
           ];
