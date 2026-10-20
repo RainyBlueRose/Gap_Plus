@@ -148,9 +148,9 @@ const AdminTrainingMatrices = () => {
   return (
     <div className="flex min-h-screen">
       <AdminNavbar />
-      <main>
+      <main className="min-w-0 flex-1 p-6">
         <input
-          className="border p-6"
+          className="mb-3 mr-2 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
           type="text"
           name="jobCode"
           value={search}
@@ -158,44 +158,50 @@ const AdminTrainingMatrices = () => {
           onChange={handleQuery}
         />
         <button
-          className="p-3 border"
+          className="mb-3 mr-2 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
           onClick={() => {
             loadTrainingMatrix();
           }}
         >
           ค้นหาข้อมูล
         </button>
-        <button className="border p-3" onClick={handleAddData}>เพิ่มข้อมูล</button>
-        <table className="border">
-          <thead className="">
+        <button
+          className="mb-3 rounded-md border border-sky-200 px-4 py-2 text-sm font-medium text-sky-700 transition hover:bg-sky-50"
+          onClick={handleAddData}
+        >
+          เพิ่มข้อมูล
+        </button>
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+        <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
             <tr>
-              <th>#</th>
-              <th>id</th>
-              <th>Job Code</th>
-              <th>Elective</th>
-              <th>Mandatory</th>
-              <th>action</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">#</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">ID</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Job Code</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Elective</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Mandatory</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
             {isAdding && (
-              <tr>
-                <th>+</th>
-                <td>สร้างอัตโนมัติ</td>
-                <td>
+              <tr className="border-b border-slate-100 bg-sky-50/50">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-slate-500">+</th>
+                <td className="whitespace-nowrap px-4 py-3 text-slate-600">สร้างอัตโนมัติ</td>
+                <td className="px-4 py-3">
                   <input
-                    className="border"
+                    className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                     type="text"
                     name="jobCode"
                     value={form.jobCode}
                     onChange={handleAddEdit}
                   />
                 </td>
-                <td>
+                <td className="min-w-56 px-4 py-3">
                   {form.electives.map((e, index) => (
-                    <div key={index}>
+                    <div className="mb-2 flex items-center gap-2 last:mb-0" key={index}>
                       <input
-                        className="border"
+                        className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                         value={e}
                         onChange={(ev) => {
                           handleArrayChange(
@@ -206,6 +212,7 @@ const AdminTrainingMatrices = () => {
                         }}
                       />
                       <button
+                        className="rounded border border-rose-200 px-2 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-50"
                         onClick={() => {
                           handleArrayRemove("electives", index);
                         }}
@@ -215,6 +222,7 @@ const AdminTrainingMatrices = () => {
                     </div>
                   ))}
                   <button
+                    className="mt-2 rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
                     onClick={() => {
                       handleAddArray("electives");
                     }}
@@ -222,11 +230,11 @@ const AdminTrainingMatrices = () => {
                     add
                   </button>
                 </td>
-                <td>
+                <td className="min-w-56 px-4 py-3">
                   {form.mandatory.map((m, index) => (
-                    <div key={index}>
+                    <div className="mb-2 flex items-center gap-2 last:mb-0" key={index}>
                       <input
-                        className="border"
+                        className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                         type="text"
                         value={m}
                         onChange={(ev) => {
@@ -238,6 +246,7 @@ const AdminTrainingMatrices = () => {
                         }}
                       />
                       <button
+                        className="rounded border border-rose-200 px-2 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-50"
                         onClick={() => {
                           handleArrayRemove("mandatory", index);
                         }}
@@ -247,6 +256,7 @@ const AdminTrainingMatrices = () => {
                     </div>
                   ))}
                   <button
+                    className="mt-2 rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
                     onClick={() => {
                       handleAddArray("mandatory");
                     }}
@@ -254,20 +264,22 @@ const AdminTrainingMatrices = () => {
                     add
                   </button>
                 </td>
-                <td>
-                  <button onClick={handleAddSave}>Save</button>
-                  <button onClick={handleCancel}>Cancel</button>
+                <td className="whitespace-nowrap px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <button className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700" onClick={handleAddSave}>Save</button>
+                    <button className="rounded border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100" onClick={handleCancel}>Cancel</button>
+                  </div>
                 </td>
               </tr>
             )}
             {training_matrices.map((item, index) => (
-              <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{item.id}</td>
-                <td>
+              <tr key={index} className="border-b border-slate-100 transition-colors last:border-0 hover:bg-sky-50/50">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-slate-500">{index + 1}</th>
+                <td className="whitespace-nowrap px-4 py-3 text-slate-600">{item.id}</td>
+                <td className="px-4 py-3 text-slate-800">
                   {editId === item.id ? (
                     <input
-                      className="border"
+                      className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                       type="text"
                       name="jobCode"
                       placeholder="Job Code"
@@ -278,13 +290,13 @@ const AdminTrainingMatrices = () => {
                     item.jobCode
                   )}
                 </td>
-                <td>
+                <td className="min-w-56 px-4 py-3 text-slate-600">
                   {editId === item.id ? (
                     <div>
                       {form.electives.map((e, i) => (
-                        <div key={i}>
+                        <div className="mb-2 flex items-center gap-2 last:mb-0" key={i}>
                           <input
-                            className="border"
+                            className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                             type="text"
                             value={form.electives[i]}
                             onChange={(ev) =>
@@ -292,7 +304,7 @@ const AdminTrainingMatrices = () => {
                             }
                           />
                           <button
-                            className="border"
+                            className="rounded border border-rose-200 px-2 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-50"
                             onClick={() => {
                               handleArrayRemove("electives", i);
                             }}
@@ -303,7 +315,7 @@ const AdminTrainingMatrices = () => {
                       ))}
                       <div>
                         <button
-                          className="border"
+                          className="rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
                           onClick={() => handleAddArray("electives")}
                         >
                           Add
@@ -312,28 +324,29 @@ const AdminTrainingMatrices = () => {
                     </div>
                   ) : (
                     item.electives.map((e, index) => (
-                      <div key={index}>
-                        {index + 1}. {e}
+                      <div className="mb-1 last:mb-0" key={index}>
+                        <span className="mr-2 text-slate-400">{index + 1}.</span>{e}
                       </div>
                     ))
                   )}
                 </td>
-                <td>
+                <td className="min-w-56 px-4 py-3 text-slate-600">
                   {item.mandatory.map((m, index) => (
-                    <div key={index}>
-                      {index + 1}. {m}
+                    <div className="mb-1 last:mb-0" key={index}>
+                      <span className="mr-2 text-slate-400">{index + 1}.</span>{m}
                     </div>
                   ))}
                 </td>
-                <td>
+                <td className="whitespace-nowrap px-4 py-3">
                   {editId === item.id ? (
-                    <div>
-                      <button onClick={handleSave}>Save</button>
-                      <button onClick={handleCancel}>Cancel</button>
-                      <button onClick={handleDelete}>Remove</button>
+                    <div className="flex items-center gap-2">
+                      <button className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700" onClick={handleSave}>Save</button>
+                      <button className="rounded border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100" onClick={handleCancel}>Cancel</button>
+                      <button className="rounded bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700" onClick={handleDelete}>Remove</button>
                     </div>
                   ) : (
                     <button
+                      className="rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
                       onClick={() => {
                         handleEdit(item);
                       }}
@@ -346,6 +359,7 @@ const AdminTrainingMatrices = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </main>
     </div>
   );

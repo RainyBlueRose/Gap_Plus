@@ -32,10 +32,10 @@ const AdminOCRResult = () => {
   return (
     <div className="flex min-h-screen">
       <AdminNavbar />
-      <div>
+      <div className="min-w-0 flex-1 p-6">
         <div>
           <button
-            className="border p-3"
+            className="mb-4 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
             onClick={() => {
               loadOCRResult();
             }}
@@ -43,50 +43,65 @@ const AdminOCRResult = () => {
             ค้นหาข้อมูล
           </button>
         </div>
-        <div>
-          <table className="border">
-            <thead>
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+          <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
               <tr>
-                <th>#</th>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Competency Key</th>
-                <th>OCR Result</th>
-                <th>Image</th>
-                <th>Action</th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">#</th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  ID
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  Name
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  Competency Key
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  OCR Result
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  Image
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((item, index) => (
                 <tr
                   key={item.key}
-                  className="border border-gray-300 hover:bg-gray-50"
+                  className="border-b border-slate-100 transition-colors last:border-0 hover:bg-sky-50/50"
                 >
-                  <th className="border border-gray-300 px-4 py-3">
+                  <th className="whitespace-nowrap px-4 py-3 font-medium text-slate-500">
                     {index + 1}
                   </th>
-                  <td className="border border-gray-300 px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {item.empId}
                   </td>
-                  <td className="border border-gray-300 px-4 py-3">
-                    {item.empName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3">
+                  <td className="px-4 py-3 text-slate-800">{item.empName}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {item.compKey}
                   </td>
-                  <td className="border border-gray-300 px-4 py-3">
+                  <td className="px-4 py-3 text-slate-800">
                     {item.ocrResult ?? "-"}
                   </td>
-                  <td className="border border-gray-300 px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {item.url ? (
-                      <a href={item.url} target="_blank" rel="noreferrer">
+                      <a
+                        className="text-sky-700 hover:underline"
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         {item.name || "ดูไฟล์"}
                       </a>
                     ) : (
                       "-"
                     )}
                   </td>
-                  <td>-</td>
+                  <td className="px-4 py-3 text-slate-600">-</td>
                 </tr>
               ))}
             </tbody>
