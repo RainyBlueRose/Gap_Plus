@@ -26,7 +26,8 @@ const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
   const { uploadCourseFileElective, uploadCourseFileMandatory } =
     useUploadCourseFile();
-  const { setElectiveIDPRecords, checkSelectedCourse } = useIDPRecords();
+  const { setElectiveIDPRecords, checkSelectedCourse, getIDPRecord } =
+    useIDPRecords();
 
   useTrainingMatrix();
   useCompetencies();
@@ -64,6 +65,7 @@ const MyLearning = () => {
   const closeElective = () => {
     setSelectedSelective(null);
     setFiles({});
+    setReflection({})
   };
 
   const closeMandatory = () => {
@@ -78,7 +80,11 @@ const MyLearning = () => {
 
     const courseStatus = checkSelectedCourse(selectedSelective);
     // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
-    if (courseStatus && courseStatus !== "In Progress" && courseStatus !== "Complete") {
+    if (
+      courseStatus &&
+      courseStatus !== "In Progress" &&
+      courseStatus !== "Complete"
+    ) {
       return null;
     }
 
@@ -103,31 +109,37 @@ const MyLearning = () => {
               Select class
             </button>
 
-            {selectedSelective.courses.map((course, index) => (
-              <div className="border" key={index}>
-                <div>
-                  <a href={course.link}>{course.institute ?? course.link}</a>
+            {selectedSelective.courses.map((course, index) => {
+              const record = getIDPRecord(selectedSelective);
+              const saved = record?.certificates?.[index];
+              return (
+                <div className="border" key={index}>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      placeholder="คำอธิบาย"
+                      value={reflections[index] ?? saved?.reflection ?? ""}
+                      onChange={(e) => handleReflectionChange(index, e)}
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() =>
+                        handleSaveElective(selectedSelective, index)
+                      }
+                    >
+                      บันทึก
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-3">
-                  <FileInput
-                    file={files[index]}
-                    onChange={(file) => handleFileChange(index, file)}
-                  />
-                  <textarea
-                    className="border p-1 h-30"
-                    placeholder="คำอธิบาย"
-                    value={reflections[index] ?? ""}
-                    onChange={(e) => handleReflectionChange(index, e)}
-                  />
-                  <button
-                    className="border p-2 cursor-pointer"
-                    onClick={() => handleSaveElective(selectedSelective, index)}
-                  >
-                    บันทึก
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             <div className="border">
               <div>เรียนรู้ด้วยตนเอง</div>
@@ -195,7 +207,9 @@ const MyLearning = () => {
                   />
                   <button
                     className="border p-2 cursor-pointer"
-                    onClick={() => handleSaveMandatory(selectedMandatory, index)}
+                    onClick={() =>
+                      handleSaveMandatory(selectedMandatory, index)
+                    }
                   >
                     บันทึก
                   </button>
@@ -210,10 +224,7 @@ const MyLearning = () => {
                   file={files[selfLearningIndex]}
                   onChange={(file) => handleFileChange(selfLearningIndex, file)}
                 />
-                <textarea
-                  className="border p-1 h-30"
-                  placeholder="คำอธิบาย"
-                />
+                <textarea className="border p-1 h-30" placeholder="คำอธิบาย" />
                 <button
                   className="border p-2 cursor-pointer"
                   onClick={() =>
@@ -262,7 +273,11 @@ const MyLearning = () => {
       <div>Elective</div>
       {competencies.electives.map((e) => {
         const itemStatus = checkSelectedCourse(e);
-        if (itemStatus && itemStatus !== "In Progress" && itemStatus !== "Complete") {
+        if (
+          itemStatus &&
+          itemStatus !== "In Progress" &&
+          itemStatus !== "Complete"
+        ) {
           return null;
         }
 
