@@ -10,22 +10,34 @@ import { useIDPRecords } from "../functions/hooks/useIDPRecords";
 import { useUploadCourseFile } from "../functions/hooks/useUploadCourseFile";
 import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 
+const FileInput = ({ file, onChange }) => (
+  <label className="border px-3 py-1 cursor-pointer inline-block">
+    {file ? file.name : "เลือกไฟล์"}
+    <input
+      type="file"
+      accept="image/*"
+      hidden
+      onChange={(e) => onChange(e.target.files[0])}
+    />
+  </label>
+);
+
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
-  const { uploadCourseFileElective, uploadCourseFileMandatory, savingIndex } =
+  const { uploadCourseFileElective, uploadCourseFileMandatory } =
     useUploadCourseFile();
+  const { setElectiveIDPRecords, checkSelectedCourse } = useIDPRecords();
 
   useTrainingMatrix();
   useCompetencies();
   useCreateIDPRecords();
-  useIDPRecords();
 
-  const { setElectiveIDPRecords, checkSelectedCourse } = useIDPRecords();
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
   const [files, setFiles] = useState({});
   const [reflections, setReflection] = useState({});
-  console.log("reflections", reflections);
+
+  // ---------- handlers ----------
 
   const handleFileChange = (courseKey, file) => {
     if (!file) return;
@@ -36,447 +48,190 @@ const MyLearning = () => {
     setReflection((prev) => ({ ...prev, [courseKey]: e.target.value }));
   };
 
-  const FileInput = ({ file, onChange }) => (
-    <label className="border px-3 py-1 cursor-pointer inline-block">
-      {file ? file.name : "เลือกไฟล์"}
-      <input
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={(e) => onChange(e.target.files[0])}
-      />
-    </label>
-  );
-
   const handleSaveElective = async (competency, index) => {
     const file = files[index];
     const reflection = reflections[index];
     if (!file) return;
     await uploadCourseFileElective(competency, index, file, reflection);
   };
+
   const handleSaveMandatory = async (competency, index) => {
     const file = files[index];
     if (!file) return;
     await uploadCourseFileMandatory(competency, index, file);
   };
 
+  const closeElective = () => {
+    setSelectedSelective(null);
+    setFiles({});
+  };
+
+  const closeMandatory = () => {
+    setSelectedMandatory(null);
+    setFiles({});
+  };
+
+  // ---------- modals ----------
+
   const renderCourseElective = () => {
     if (!selectedSelective) return null;
 
-    const status = checkSelectedCourse(selectedSelective);
+    const courseStatus = checkSelectedCourse(selectedSelective);
+    // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
+    if (courseStatus && courseStatus !== "In Progress" && courseStatus !== "Complete") {
+      return null;
+    }
 
-    if (!status) {
-      return (
+    const selfLearningIndex = selectedSelective.courses.length + 1;
+
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+        onClick={closeElective}
+      >
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => {
-            setSelectedSelective(null);
-            setFiles({});
-          }}
+          className="bg-white p-5 rounded w-3/4 h-3/4 overflow-y-auto"
+          onClick={(event) => event.stopPropagation()}
         >
-          <div
-            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex flex-col gap-3">
-              <button
-                className="border p-5 "
-                onClick={() => {
-                  setElectiveIDPRecords(selectedSelective);
-                }}
-              >
-                Select class
-              </button>
-              {selectedSelective.courses.map((course, index) => (
-                <div className="border" key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <FileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      type="text"
-                      placeholder="คำอธิบาย"
-                      value={reflections[index]}
-                      onChange={(e) => handleReflectionChange(index, e)}
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() => {
-                        handleSaveElective(selectedSelective, index);
-                      }}
-                    >
-                      บันทึก
-                    </button>
-                  </div>
+          <div className="flex flex-col gap-3">
+            {/* ถ้ามีสถานะแล้ว (In Progress / Complete) จะกดเลือกซ้ำไม่ได้ */}
+            <button
+              className="border p-5"
+              disabled={!!courseStatus}
+              onClick={() => setElectiveIDPRecords(selectedSelective)}
+            >
+              Select class
+            </button>
+
+            {selectedSelective.courses.map((course, index) => (
+              <div className="border" key={index}>
+                <div>
+                  <a href={course.link}>{course.institute ?? course.link}</a>
                 </div>
-              ))}
-              <div className="border">
-                <div>เรียนรู้ด้วยตนเอง</div>
                 <div className="flex flex-col gap-3">
                   <FileInput
-                    file={files[selectedSelective.courses.length + 1]}
-                    onChange={(file) =>
-                      handleFileChange(
-                        selectedSelective.courses.length + 1,
-                        file,
-                      )
-                    }
+                    file={files[index]}
+                    onChange={(file) => handleFileChange(index, file)}
                   />
                   <textarea
                     className="border p-1 h-30"
-                    type="text"
                     placeholder="คำอธิบาย"
+                    value={reflections[index] ?? ""}
+                    onChange={(e) => handleReflectionChange(index, e)}
                   />
                   <button
                     className="border p-2 cursor-pointer"
-                    onClick={() => {
-                      handleSaveElective(
-                        selectedSelective,
-                        selectedSelective.courses.length + 1,
-                      );
-                    }}
+                    onClick={() => handleSaveElective(selectedSelective, index)}
                   >
                     บันทึก
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    if (status === "In Progress") {
-      return (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => {
-            setSelectedSelective(null);
-            setFiles({});
-          }}
-        >
-          <div
-            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex flex-col gap-3">
-              <button
-                className="border p-5 "
-                onClick={() => {
-                  setElectiveIDPRecords(selectedSelective);
-                }}
-                disabled
-              >
-                Select class
-              </button>
-              {selectedSelective.courses.map((course, index) => (
-                <div className="border" key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <FileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      type="text"
-                      placeholder="คำอธิบาย"
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() => {
-                        handleSaveElective(selectedSelective, index);
-                      }}
-                    >
-                      บันทึก
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <div className="border">
-                <div>เรียนรู้ด้วยตนเอง</div>
-                <div className="flex flex-col gap-3">
-                  <FileInput
-                    file={files[selectedSelective.courses.length + 1]}
-                    onChange={(file) =>
-                      handleFileChange(
-                        selectedSelective.courses.length + 1,
-                        file,
-                      )
-                    }
-                  />
-                  <textarea
-                    className="border p-1 h-30"
-                    type="text"
-                    placeholder="คำอธิบาย"
-                  />
-                  <button
-                    className="border p-2 cursor-pointer"
-                    onClick={() => {
-                      handleSaveElective(
-                        selectedSelective,
-                        selectedSelective.courses.length + 1,
-                      );
-                    }}
-                  >
-                    บันทึก
-                  </button>
-                </div>
+            ))}
+
+            <div className="border">
+              <div>เรียนรู้ด้วยตนเอง</div>
+              <div className="flex flex-col gap-3">
+                <FileInput
+                  file={files[selfLearningIndex]}
+                  onChange={(file) => handleFileChange(selfLearningIndex, file)}
+                />
+                <textarea
+                  className="border p-1 h-30"
+                  placeholder="คำอธิบาย"
+                  value={reflections[selfLearningIndex] ?? ""}
+                  onChange={(e) => handleReflectionChange(selfLearningIndex, e)}
+                />
+                <button
+                  className="border p-2 cursor-pointer"
+                  onClick={() =>
+                    handleSaveElective(selectedSelective, selfLearningIndex)
+                  }
+                >
+                  บันทึก
+                </button>
               </div>
             </div>
           </div>
         </div>
-      );
-    }
-    if (status === "Complete") {
-      return (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => {
-            setSelectedSelective(null);
-            setFiles({});
-          }}
-        >
-          <div
-            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex flex-col gap-3">
-              <button
-                className="border p-5 "
-                onClick={() => {
-                  setElectiveIDPRecords(selectedSelective);
-                }}
-                disabled
-              >
-                Select class
-              </button>
-              {selectedSelective.courses.map((course, index) => (
-                <div className="border" key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <FileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      type="text"
-                      placeholder="คำอธิบาย"
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() => {
-                        handleSaveElective(selectedSelective, index);
-                      }}
-                    >
-                      บันทึก
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <div className="border">
-                <div>เรียนรู้ด้วยตนเอง</div>
-                <div className="flex flex-col gap-3">
-                  <FileInput
-                    file={files[selectedSelective.courses.length + 1]}
-                    onChange={(file) =>
-                      handleFileChange(
-                        selectedSelective.courses.length + 1,
-                        file,
-                      )
-                    }
-                  />
-                  <textarea
-                    className="border p-1 h-30"
-                    type="text"
-                    placeholder="คำอธิบาย"
-                  />
-                  <button
-                    className="border p-2 cursor-pointer"
-                    onClick={() => {
-                      handleSaveElective(
-                        selectedSelective,
-                        selectedSelective.courses.length + 1,
-                      );
-                    }}
-                  >
-                    บันทึก
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
+      </div>
+    );
   };
 
   const renderCourseMandatory = () => {
-    if (!selectedMandatory) return;
+    if (!selectedMandatory) return null;
 
-    const status = checkSelectedCourse(selectedMandatory);
+    const courseStatus = checkSelectedCourse(selectedMandatory);
+    // รองรับ 2 กรณี: ยังไม่เลือก / Complete
+    if (courseStatus && courseStatus !== "Complete") return null;
 
-    if (!status) {
-      return (
+    const selfLearningIndex = selectedMandatory.courses.length + 1;
+
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+        onClick={closeMandatory}
+      >
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => {
-            setSelectedMandatory(null);
-            setFiles({});
-          }}
+          className="bg-white p-5 rounded w-3/4 h-3/4 overflow-y-auto"
+          onClick={(event) => event.stopPropagation()}
         >
-          <div
-            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div>
-              {selectedMandatory.courses.map((course, index) => (
-                <div key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <FileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      type="text"
-                      placeholder="คำอธิบาย"
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() => {
-                        handleSaveMandatory(selectedMandatory, index);
-                      }}
-                    >
-                      บันทึก
-                    </button>
-                  </div>
+          <div>
+            {courseStatus === "Complete" && <div>(complete)</div>}
+
+            {selectedMandatory.courses.map((course, index) => (
+              <div key={index}>
+                <div>
+                  <a href={course.link}>{course.institute ?? course.link}</a>
                 </div>
-              ))}
-              <div>
                 <div className="flex flex-col gap-3">
-                  <div>เรียนรู้ด้วยตนเอง</div>
                   <FileInput
-                    file={files[selectedMandatory.courses.length + 1]}
-                    onChange={(file) =>
-                      handleFileChange(
-                        [selectedMandatory.courses.length + 1],
-                        file,
-                      )
-                    }
+                    file={files[index]}
+                    onChange={(file) => handleFileChange(index, file)}
                   />
                   <textarea
                     className="border p-1 h-30"
-                    type="text"
                     placeholder="คำอธิบาย"
                   />
                   <button
                     className="border p-2 cursor-pointer"
-                    onClick={() => {
-                      handleSaveMandatory(selectedMandatory, [
-                        selectedMandatory.courses.length + 1,
-                      ]);
-                    }}
+                    onClick={() => handleSaveMandatory(selectedMandatory, index)}
                   >
                     บันทึก
                   </button>
                 </div>
               </div>
-            </div>
-            <div></div>
-          </div>
-        </div>
-      );
-    }
-    if (status === "Complete") {
-      return (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-          onClick={() => {
-            setSelectedMandatory(null);
-            setFiles({});
-          }}
-        >
-          <div
-            className="bg-white p-5 rounded w-3/4 h-3/4  overflow-y-auto"
-            onClick={(event) => event.stopPropagation()}
-          >
+            ))}
+
             <div>
-              <div>(complete)</div>
-              {selectedMandatory.courses.map((course, index) => (
-                <div key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <FileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      type="text"
-                      placeholder="คำอธิบาย"
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() => {
-                        handleSaveMandatory(selectedMandatory, index);
-                      }}
-                    >
-                      บันทึก
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <div>
-                <div className="flex flex-col gap-3">
-                  <div>เรียนรู้ด้วยตนเอง</div>
-                  <FileInput
-                    file={files[selectedMandatory.courses.length + 1]}
-                    onChange={(file) =>
-                      handleFileChange(
-                        [selectedMandatory.courses.length + 1],
-                        file,
-                      )
-                    }
-                  />
-                  <textarea
-                    className="border p-1 h-30"
-                    type="text"
-                    placeholder="คำอธิบาย"
-                  />
-                  <button
-                    className="border p-2 cursor-pointer"
-                    onClick={() => {
-                      handleSaveMandatory(selectedMandatory, [
-                        selectedMandatory.courses.length + 1,
-                      ]);
-                    }}
-                  >
-                    บันทึก
-                  </button>
-                </div>
+              <div className="flex flex-col gap-3">
+                <div>เรียนรู้ด้วยตนเอง</div>
+                <FileInput
+                  file={files[selfLearningIndex]}
+                  onChange={(file) => handleFileChange(selfLearningIndex, file)}
+                />
+                <textarea
+                  className="border p-1 h-30"
+                  placeholder="คำอธิบาย"
+                />
+                <button
+                  className="border p-2 cursor-pointer"
+                  onClick={() =>
+                    handleSaveMandatory(selectedMandatory, selfLearningIndex)
+                  }
+                >
+                  บันทึก
+                </button>
               </div>
             </div>
-            <div></div>
           </div>
         </div>
-      );
-    }
+      </div>
+    );
   };
+
+  // ---------- page ----------
+
   return (
     <div>
       <Header />
@@ -484,90 +239,51 @@ const MyLearning = () => {
       {status === "loading" && <p>กำลังโหลด...</p>}
 
       <div>Mandatory</div>
-
       {competencies.mandatory.map((m) => {
-        const status = checkSelectedCourse(m);
-        if (!status) {
-          return (
-            <div key={m.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedMandatory(m);
-                }}
-              >
-                <div>{m.competencyName}</div>
-                <div>{m.description}</div>
-              </div>
-            </div>
-          );
-        }
-        if (status === "Complete") {
-          return (
-            <div key={m.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedMandatory(m);
-                }}
-              >
-                <div>{m.competencyName} (Complete)</div>
-                <div>{m.description}</div>
-              </div>
-            </div>
-          );
-        }
-      })}
-      <div>Elective</div>
+        const itemStatus = checkSelectedCourse(m);
+        if (itemStatus && itemStatus !== "Complete") return null;
 
-      {competencies.electives.map((e) => {
-        const status = checkSelectedCourse(e);
-        if (!status) {
-          return (
-            <div key={e.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedSelective(e);
-                }}
-              >
-                <div>{e.competencyName}</div>
-                <div>{e.description}</div>
+        return (
+          <div key={m.id}>
+            <div
+              className="border p-5 hover:cursor-pointer"
+              onClick={() => setSelectedMandatory(m)}
+            >
+              <div>
+                {m.competencyName}
+                {itemStatus && ` (${itemStatus})`}
               </div>
+              <div>{m.description}</div>
             </div>
-          );
-        }
-        if (status === "In Progress")
-          return (
-            <div key={e.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedSelective(e);
-                }}
-              >
-                <div>{e.competencyName} (In Progress)</div>
-                <div>{e.description}</div>
-              </div>
-            </div>
-          );
-        if (status === "Complete")
-          return (
-            <div key={e.id}>
-              <div
-                className="border p-5 hover:cursor-pointer"
-                onClick={() => {
-                  setSelectedSelective(e);
-                }}
-              >
-                <div>{e.competencyName} (Complete)</div>
-                <div>{e.description}</div>
-              </div>
-            </div>
-          );
+          </div>
+        );
       })}
-      {selectedSelective && <div>{renderCourseElective()}</div>}
-      {selectedMandatory && <div>{renderCourseMandatory()}</div>}
+
+      <div>Elective</div>
+      {competencies.electives.map((e) => {
+        const itemStatus = checkSelectedCourse(e);
+        if (itemStatus && itemStatus !== "In Progress" && itemStatus !== "Complete") {
+          return null;
+        }
+
+        return (
+          <div key={e.id}>
+            <div
+              className="border p-5 hover:cursor-pointer"
+              onClick={() => setSelectedSelective(e)}
+            >
+              <div>
+                {e.competencyName}
+                {itemStatus && ` (${itemStatus})`}
+              </div>
+              <div>{e.description}</div>
+            </div>
+          </div>
+        );
+      })}
+
+      {renderCourseElective()}
+      {renderCourseMandatory()}
     </div>
   );
 };
