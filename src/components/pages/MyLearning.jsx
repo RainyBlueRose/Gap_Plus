@@ -74,8 +74,9 @@ const MyLearning = () => {
 
   const handleSaveMandatory = async (competency, index) => {
     const file = files[index];
+    const reflection = reflections[index];
     if (!file) return;
-    await uploadCourseFileMandatory(competency, index, file);
+    await uploadCourseFileMandatory(competency, index, file, reflection);
   };
 
   const closeElective = () => {
@@ -200,6 +201,8 @@ const MyLearning = () => {
     if (courseStatus && courseStatus !== "Complete") return null;
 
     const selfLearningIndex = selectedMandatory.courses.length + 1;
+    const record = getIDPRecord(selectedMandatory);
+    const savedSelfLearning = record?.certificates?.[selfLearningIndex];
 
     return (
       <div
@@ -213,31 +216,37 @@ const MyLearning = () => {
           <div>
             {courseStatus === "Complete" && <div>(complete)</div>}
 
-            {selectedMandatory.courses.map((course, index) => (
-              <div key={index}>
-                <div>
-                  <a href={course.link}>{course.institute ?? course.link}</a>
+            {selectedMandatory.courses.map((course, index) => {
+              const saved = record?.certificates?.[index];
+              return (
+                <div key={index}>
+                  <div>
+                    <a href={course.link}>{course.institute ?? course.link}</a>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <FileInput
+                      file={files[index]}
+                      onChange={(file) => handleFileChange(index, file)}
+                      record={saved}
+                    />
+                    <textarea
+                      className="border p-1 h-30"
+                      placeholder="คำอธิบาย"
+                      value={reflections[index] ?? saved?.reflection ?? ""}
+                      onChange={(e) => handleReflectionChange(index, e)}
+                    />
+                    <button
+                      className="border p-2 cursor-pointer"
+                      onClick={() =>
+                        handleSaveMandatory(selectedMandatory, index)
+                      }
+                    >
+                      บันทึก
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-3">
-                  <FileInput
-                    file={files[index]}
-                    onChange={(file) => handleFileChange(index, file)}
-                  />
-                  <textarea
-                    className="border p-1 h-30"
-                    placeholder="คำอธิบาย"
-                  />
-                  <button
-                    className="border p-2 cursor-pointer"
-                    onClick={() =>
-                      handleSaveMandatory(selectedMandatory, index)
-                    }
-                  >
-                    บันทึก
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             <div>
               <div className="flex flex-col gap-3">
