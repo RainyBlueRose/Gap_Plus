@@ -95,8 +95,8 @@ export const useUploadCourseFile = () => {
   const uploadCourseFileElective = (competency, index, file, reflection) =>
     uploadCertificate(competency, index, file, reflection);
 
-  const uploadCourseFileMandatory = (competency, index, file) =>
-    uploadCertificate(competency, index, file, {
+  const uploadCourseFileMandatory = (competency, index, file, reflection) =>
+    uploadCertificate(competency, index, file, reflection, {
       actedBy: user.id,
       compKey: competency.id,
       empId: user.id,
