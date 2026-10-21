@@ -60,18 +60,14 @@ export const useIDPRecords = () => {
   }
   /*เอาไว้เช็ค status ของ idp records ที่ใส่เข้ามา เอาไปเทียบกับข้อมูลใน redux ถ้าไม่เจอแปลว่าไม่มีใน redux ก็จะไมม่คืนค่าอะไร ถ้าเจอก็แปลว่ามี 
 แปลว่าไม่กดลงทะเบียนแล้วใน selective ก็เคยส่งแล้วใน mandatory */
-  function checkSelectedCourse(competency) {
-    if (!competency) return;
-    const selectedCompetency = idpRecords.filter(
-      (item) => item.compKey === competency.id,
-    );
-    if (selectedCompetency.length === 0) {
-      return;
-    }
-    return selectedCompetency[0].status;
-  }
+  const getIDPRecord = (competency) =>
+    idpRecords.find((r) => r.compKey === competency.id); // ปรับ key ให้ตรงกับของจริง
+
+  const checkSelectedCourse = (competency) => getIDPRecord(competency)?.status;
+
   return {
     setElectiveIDPRecords,
     checkSelectedCourse,
+    getIDPRecord,
   };
 };
