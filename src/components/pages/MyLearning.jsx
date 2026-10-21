@@ -10,17 +10,33 @@ import { useIDPRecords } from "../functions/hooks/useIDPRecords";
 import { useUploadCourseFile } from "../functions/hooks/useUploadCourseFile";
 import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 
-const FileInput = ({ file, onChange }) => (
-  <label className="border px-3 py-1 cursor-pointer inline-block">
-    {file ? file.name : "เลือกไฟล์"}
-    <input
-      type="file"
-      accept="image/*"
-      hidden
-      onChange={(e) => onChange(e.target.files[0])}
-    />
-  </label>
-);
+const FileInput = ({ file, onChange, record }) => {
+  const imgName = record?.name;
+  const imgUrl = record?.url;
+  return (
+    <div>
+      <label className="border px-3 py-1 cursor-pointer inline-block">
+        {file ? file.name : "เลือกไฟล์"}
+        <input
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => onChange(e.target.files[0])}
+        />
+      </label>
+      {imgUrl && (
+        <a
+          href={imgUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-2 text-blue-600 underline inline-block"
+        >
+          {imgName || "ดูรูปภาพ"}
+        </a>
+      )}
+    </div>
+  );
+};
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
@@ -122,6 +138,7 @@ const MyLearning = () => {
                     <FileInput
                       file={files[index]}
                       onChange={(file) => handleFileChange(index, file)}
+                      record={saved}
                     />
                     <textarea
                       className="border p-1 h-30"
