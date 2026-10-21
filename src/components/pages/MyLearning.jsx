@@ -65,7 +65,7 @@ const MyLearning = () => {
   const closeElective = () => {
     setSelectedSelective(null);
     setFiles({});
-    setReflection({})
+    setReflection({});
   };
 
   const closeMandatory = () => {
@@ -89,6 +89,8 @@ const MyLearning = () => {
     }
 
     const selfLearningIndex = selectedSelective.courses.length + 1;
+    const record = getIDPRecord(selectedSelective);
+    const savedSelfLearning = record?.certificates?.[selfLearningIndex];
 
     return (
       <div
@@ -110,7 +112,6 @@ const MyLearning = () => {
             </button>
 
             {selectedSelective.courses.map((course, index) => {
-              const record = getIDPRecord(selectedSelective);
               const saved = record?.certificates?.[index];
               return (
                 <div className="border" key={index}>
@@ -151,7 +152,11 @@ const MyLearning = () => {
                 <textarea
                   className="border p-1 h-30"
                   placeholder="คำอธิบาย"
-                  value={reflections[selfLearningIndex] ?? ""}
+                  value={
+                    reflections[selfLearningIndex] ??
+                    savedSelfLearning?.reflection ??
+                    ""
+                  }
                   onChange={(e) => handleReflectionChange(selfLearningIndex, e)}
                 />
                 <button
