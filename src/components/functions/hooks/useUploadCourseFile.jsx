@@ -22,6 +22,7 @@ export const useUploadCourseFile = () => {
     competency,
     index,
     file,
+    reflection,
     extraFields = {},
   ) => {
     if (!file) return;
@@ -47,7 +48,7 @@ export const useUploadCourseFile = () => {
                 competency.courses[index]?.institute || SELF_LEARNING_LABEL,
               name: file.name,
               url,
-              reflection: null,
+              reflection: reflection,
             },
           },
           status: "Complete",
@@ -60,7 +61,7 @@ export const useUploadCourseFile = () => {
         institute: competency.courses[index]?.institute || SELF_LEARNING_LABEL,
         name: file.name,
         url,
-        reflection: null,
+        reflection: reflection,
       };
 
       const exists = idpRecords.some((item) => item.id === targetId);
@@ -91,8 +92,8 @@ export const useUploadCourseFile = () => {
     }
   };
 
-  const uploadCourseFileElective = (competency, index, file) =>
-    uploadCertificate(competency, index, file);
+  const uploadCourseFileElective = (competency, index, file, reflection) =>
+    uploadCertificate(competency, index, file, reflection);
 
   const uploadCourseFileMandatory = (competency, index, file) =>
     uploadCertificate(competency, index, file, {

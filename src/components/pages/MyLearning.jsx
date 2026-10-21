@@ -20,19 +20,20 @@ const MyLearning = () => {
   useCreateIDPRecords();
   useIDPRecords();
 
-  console.log("competencies", competencies);
-
   const { setElectiveIDPRecords, checkSelectedCourse } = useIDPRecords();
   const [selectedMandatory, setSelectedMandatory] = useState(null);
   const [selectedSelective, setSelectedSelective] = useState(null);
-
-  console.log("selectedSelective", selectedSelective);
-
   const [files, setFiles] = useState({});
+  const [reflections, setReflection] = useState({});
+  console.log("reflections", reflections);
 
   const handleFileChange = (courseKey, file) => {
     if (!file) return;
     setFiles((prev) => ({ ...prev, [courseKey]: file }));
+  };
+
+  const handleReflectionChange = (courseKey, e) => {
+    setReflection((prev) => ({ ...prev, [courseKey]: e.target.value }));
   };
 
   const FileInput = ({ file, onChange }) => (
@@ -49,12 +50,13 @@ const MyLearning = () => {
 
   const handleSaveElective = async (competency, index) => {
     const file = files[index];
-    if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
-    await uploadCourseFileElective(competency, index, file);
+    const reflection = reflections[index];
+    if (!file) return;
+    await uploadCourseFileElective(competency, index, file, reflection);
   };
   const handleSaveMandatory = async (competency, index) => {
     const file = files[index];
-    if (!file) return console.log("ยังไม่ได้เลือกไฟล์");
+    if (!file) return;
     await uploadCourseFileMandatory(competency, index, file);
   };
 
@@ -99,6 +101,8 @@ const MyLearning = () => {
                       className="border p-1 h-30"
                       type="text"
                       placeholder="คำอธิบาย"
+                      value={reflections[index]}
+                      onChange={(e) => handleReflectionChange(index, e)}
                     />
                     <button
                       className="border p-2 cursor-pointer"
