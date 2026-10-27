@@ -13,7 +13,7 @@ const Home = () => {
     );
   }
 
-  function Body(props) {
+  function MainBanner(props) {
     return (
       <div className="m-1">
         <div className="flex justify-between">{props.children}</div>
@@ -21,10 +21,26 @@ const Home = () => {
     );
   }
 
-  function Description(props) {
+  function IntroSection(props) {
     return (
       <div>
         <div>{props.children}</div>
+      </div>
+    );
+  }
+
+  function Headline() {
+    return (
+      <div>
+        <div></div>
+      </div>
+    );
+  }
+
+  function SubHeadline() {
+    return (
+      <div>
+        <div></div>
       </div>
     );
   }
@@ -40,10 +56,13 @@ const Home = () => {
   return (
     <AboutGapPlus>
       <Header />
-      <Body>
-        <Description></Description>
+      <MainBanner>
+        <IntroSection>
+          <Headline />
+          <SubHeadline />
+        </IntroSection>
         <ImageDescription></ImageDescription>
-      </Body>
+      </MainBanner>
     </AboutGapPlus>
     // <div>
     //   <Header />
