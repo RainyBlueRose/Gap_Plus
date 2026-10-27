@@ -24,8 +24,8 @@ const Header = () => {
 
   function NavItems(props) {
     return (
-      <nav className="">
-        <ul className="flex items-center gap-5 ">{props.children}</ul>
+      <nav className="h-full">
+        <ul className="flex items-center gap-5 h-full">{props.children}</ul>
       </nav>
     );
   }
@@ -38,12 +38,20 @@ const Header = () => {
     );
   }
 
+  function NavLinkItem({ to, children }) {
+    return (
+      <nav className="relative flex items-center h-full px-5 cursor-pointer after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FF0000] after:rounded-full after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-100">
+        <Link to={to}>{children}</Link>
+      </nav>
+    );
+  }
+
   function AboutUser(props) {
     const [open, setOpen] = useState(false);
     return (
       <nav className="relative">
         <button
-          className="border w-45 h-15 rounded-xl bg-white"
+          className="border w-45 h-12 rounded-xl bg-white"
           onClick={() => {
             setOpen(!open);
           }}
@@ -56,18 +64,13 @@ const Header = () => {
     );
   }
 
-  function NavLinkItem({ to, children }) {
-    return (
-      <nav>
-        <Link to={to}>{children}</Link>
-      </nav>
-    );
-  }
-
   function SignOut() {
     return (
       <nav className="flex items-center hover:bg-gray-100 h-10 p-2 rounded">
-        <button className="hover:bg-black" onClick={signOut}> Sign Out</button>
+        <button className="hover:bg-black" onClick={signOut}>
+          {" "}
+          Sign Out
+        </button>
       </nav>
     );
   }
