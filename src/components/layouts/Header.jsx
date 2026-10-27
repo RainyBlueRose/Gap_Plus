@@ -11,6 +11,7 @@ import { useState } from "react";
 const Header = () => {
   const { signOut } = useAuth();
   const { user } = useUserData();
+  const [open, setOpen] = useState(false);
 
   function NavBar(props) {
     return (
@@ -25,7 +26,7 @@ const Header = () => {
   function NavItems(props) {
     return (
       <nav className="h-full">
-        <ul className="flex items-center gap-5 h-full">{props.children}</ul>
+        <ul className="flex items-center gap-7 h-full">{props.children}</ul>
       </nav>
     );
   }
@@ -40,20 +41,32 @@ const Header = () => {
 
   function NavLinkItem({ to, children }) {
     return (
-      <nav className="relative flex items-center h-full px-5 cursor-pointer after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FF0000] after:rounded-full after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-100">
-        <Link to={to}>{children}</Link>
+      <nav className="group relative flex items-center h-full cursor-pointer after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FF0000] after:rounded-full after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-100">
+        <Link
+          to={to}
+          className="px-3 py-1.5 rounded-lg transition-colors duration-200 group-hover:bg-gray-100"
+        >
+          {children}
+        </Link>
       </nav>
     );
   }
 
   function AboutUser(props) {
-    const [open, setOpen] = useState(false);
     return (
-      <nav className="relative">
+      <nav
+        className="relative"
+        onMouseEnter={() => {
+          setOpen(true);
+        }}
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
+      >
         <button
-          className="border w-45 h-12 rounded-xl bg-white"
+          className="px-5 py-1 rounded-sm bg-gray-100 hover:bg-gray-200 transition duration-200"
           onClick={() => {
-            setOpen(!open);
+            setOpen(true);
           }}
         >
           {user.name}
@@ -77,7 +90,12 @@ const Header = () => {
 
   function UserDropdown() {
     return (
-      <nav className="absolute rounded-xl shadow-xl bg-white p-3 mt-2 w-80 right-0">
+      <nav
+        className="absolute rounded-xl shadow-xl bg-white p-3 pt-2 w-80 right-0"
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
+      >
         <SignOut />
       </nav>
     );
@@ -95,22 +113,6 @@ const Header = () => {
       </NavItems>
     </NavBar>
   );
-  // return (
-  //   <div className="flex justify-between mx-auto pl-60 pr-20 h-15 items-center">
-  //     <icon></icon>
-  //     <div className="flex gap-5 items-center">
-  //       <Link to={ROUTES.HOME}>About GAP Plus</Link>
-  //       <div>My Performance</div>
-  //       <Link to={ROUTES.MYLEARNING}>My Learning</Link>
-  //       <button
-  //         className="border w-40 h-10 rounded-xl cursor-pointer"
-  //         onClick={() => {}}
-  //       >
-  //         {user.name}
-  //       </button>
-  //     </div>
-  //   </div>
-  // );
 };
 
 export default Header;
