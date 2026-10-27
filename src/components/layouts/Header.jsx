@@ -6,6 +6,7 @@ import { useAuth } from "../functions/hooks/useAuth";
 import { ROUTES } from "../router/Router";
 
 import { useUserData } from "../../store/userSlice";
+import { useState } from "react";
 
 const Header = () => {
   const { signOut } = useAuth();
@@ -13,7 +14,7 @@ const Header = () => {
 
   function NavBar(props) {
     return (
-      <nav className="h-15 pl-60 pr-20 bg-gray-200">
+      <nav className="h-20 pl-60 pr-20">
         <ul className="flex justify-between items-center h-full">
           {props.children}
         </ul>
@@ -37,10 +38,20 @@ const Header = () => {
     );
   }
 
-  function AboutUser() {
+  function AboutUser(props) {
+    const [open, setOpen] = useState(false);
     return (
-      <nav>
-        <button className="border w-35 h-10 rounded-xl">{user.name}</button>
+      <nav className="relative">
+        <button
+          className="border w-45 h-15 rounded-xl bg-white"
+          onClick={() => {
+            setOpen(!open);
+          }}
+        >
+          {user.name}
+        </button>
+
+        {open && props.children}
       </nav>
     );
   }
@@ -53,13 +64,31 @@ const Header = () => {
     );
   }
 
+  function SignOut() {
+    return (
+      <nav className="flex items-center hover:bg-gray-100 h-10 p-2 rounded">
+        <button className="hover:bg-black" onClick={signOut}> Sign Out</button>
+      </nav>
+    );
+  }
+
+  function UserDropdown() {
+    return (
+      <nav className="absolute rounded-xl shadow-xl bg-white p-3 mt-2 w-80 right-0">
+        <SignOut />
+      </nav>
+    );
+  }
+
   return (
     <NavBar>
       <NavIcon />
       <NavItems>
         <NavLinkItem to={ROUTES.HOME} children="About Gap Plus" />
         <NavLinkItem to={ROUTES.MYLEARNING} children="My Learning" />
-        <AboutUser />
+        <AboutUser>
+          <UserDropdown />
+        </AboutUser>
       </NavItems>
     </NavBar>
   );
