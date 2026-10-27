@@ -64,7 +64,7 @@ const Header = () => {
         }}
       >
         <button
-          className="px-5 py-1 rounded-sm bg-gray-100 hover:bg-gray-200 transition duration-200"
+          className={`px-5 py-1 rounded-sm bg-gray-100 transition duration-200 ${open ? `bg-red-600` : ``}`}
           onClick={() => {
             setOpen(true);
           }}
