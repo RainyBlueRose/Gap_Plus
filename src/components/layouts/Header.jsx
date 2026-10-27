@@ -5,27 +5,21 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../functions/hooks/useAuth";
 import { ROUTES } from "../router/Router";
 
+import { useUserData } from "../../store/userSlice";
+
 const Header = () => {
   const { signOut } = useAuth();
+  const { user } = useUserData();
   return (
     <div className="flex justify-between">
-      <div></div>
+      <div>GAP +</div>
       <div className="flex gap-10">
-        <Link to={ROUTES.HOME}>info ข้อมูล</Link>
-        <div>My Performance ผลงานของฉัน</div>
-        <Link to={ROUTES.MYLEARNING}>My Learning การเรียนรู้ของฉัน</Link>
+        <Link to={ROUTES.HOME}>About GAP Plus</Link>
+        <div>My Performance</div>
+        <Link to={ROUTES.MYLEARNING}>My Learning</Link>
       </div>
       <div className="flex">
-        <div>(ชื่อ นามสกุล)</div>
-        <div>AllStar</div>
-        <button
-          onClick={() => {
-            signOut();
-          }}
-        >
-          {" "}
-          Sing Out{" "}
-        </button>
+        <div>{user.name}</div>
       </div>
     </div>
   );
