@@ -90,12 +90,7 @@ const Header = () => {
 
   function UserDropdown() {
     return (
-      <nav
-        className="absolute rounded-xl shadow-xl bg-white p-3 pt-2 w-80 right-0"
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
-      >
+      <nav className="absolute rounded-xl shadow-xl bg-white p-3 pt-2 w-80 right-0">
         <SignOut />
       </nav>
     );
