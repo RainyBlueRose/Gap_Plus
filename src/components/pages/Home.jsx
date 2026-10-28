@@ -86,14 +86,18 @@ const Home = () => {
   function ProblemSection(props) {
     return (
       <div>
-        <div className="border h-100 m-1 p-20">{props.children}</div>
+        <div className="flex flex-col justify-center gap-3 border m-1 p-20">
+          {props.children}
+        </div>
       </div>
     );
   }
 
   function ProblemHeadline(props) {
     return (
-      <div className="flex justify-center items-center gap-3 h-20 ">{props.children}</div>
+      <div className="border flex justify-center items-center gap-3 h-20 ">
+        {props.children}
+      </div>
     );
   }
 
@@ -109,12 +113,30 @@ const Home = () => {
     return (
       <div className=" font-thk2d-regular text-xl text-gray-600">
         Training Management Center: TMC
-        พร้อมดูแลทุกท่านในการจัดทำแผนพัฒนาศักยภาพรายบุคคล ประจำปี 2026 <br/>
+        พร้อมดูแลทุกท่านในการจัดทำแผนพัฒนาศักยภาพรายบุคคล ประจำปี 2026 <br />
         หากท่านพบปัญหาหรือมีข้อสงสัยในกรณีดังต่อไปนี้
         สามารถติดต่อทีมงานของเราได้ทันที
       </div>
     );
   }
+
+  function ProblemSubject(props) {
+    return (
+      <div className="border h-50 p-10 grid grid-cols-3  gap-6">
+        {props.children}
+      </div>
+    );
+  }
+
+  function ProblemLogin() {
+    return <div className="border h-full w-full bg-gray-100"></div>;
+  }
+
+  function ProblemLoginHeadline() {
+    return <div></div>;
+  }
+
+  function ProblemLoginHeadlineNumber () {}
 
   return (
     <AboutGapPlus>
@@ -127,13 +149,16 @@ const Home = () => {
           </IntroText>
           <IntroButton />
         </IntroSection>
-        <ImageDescription></ImageDescription>
+        <ImageDescription />
       </MainBanner>
       <ProblemSection>
         <ProblemHeadline>
           <ProblemHeadlineText />
           <ProblemSubHeadlineText />
         </ProblemHeadline>
+        <ProblemSubject>
+          <ProblemLogin></ProblemLogin>
+        </ProblemSubject>
       </ProblemSection>
     </AboutGapPlus>
     // <div>
