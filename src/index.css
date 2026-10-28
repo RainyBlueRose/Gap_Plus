@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: Supreme-normal;
+    font-family: Supreme-regular;
     src: url(./assets/fonts/Supreme-Regular.woff2);
     font-weight: 400;
     font-style: normal;
@@ -9,5 +9,17 @@
 }
 
 .font-supreme-regular {
-    font-family: "Supreme-normal", sans-serif;
+    font-family: "Supreme-regular", sans-serif;
+}
+
+@font-face {
+    font-family: ThK2D-regular;
+    src: url(./assets/fonts/TH\ K2D\ July8.woff2);
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+.font-thk2d-regular {
+    font-family:"ThK2D-regular",sans-serif;
 }

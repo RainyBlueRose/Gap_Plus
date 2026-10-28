@@ -16,14 +16,14 @@ const Home = () => {
   function MainBanner(props) {
     return (
       <div className="m-1">
-        <div className="flex justify-between">{props.children}</div>
+        <div className="flex justify-between  ">{props.children}</div>
       </div>
     );
   }
 
   function IntroSection(props) {
     return (
-      <div>
+      <div className="border flex-1">
         <div>{props.children}</div>
       </div>
     );
@@ -31,16 +31,20 @@ const Home = () => {
 
   function Headline() {
     return (
-      <div>
-        <div></div>
+      <div className="border ">
+        <div>GAP Plus</div>
       </div>
     );
   }
 
   function SubHeadline() {
     return (
-      <div>
-        <div></div>
+      <div className="border">
+        <div>
+          Training Management Center: TMC
+          พร้อมดูแลทุกท่านในการจัดทำแผนพัฒนาศักยภาพรายบุคคล (Individual
+          Development Plan: IDP) ประจำปี 2026
+        </div>
       </div>
     );
   }
