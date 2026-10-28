@@ -17,7 +17,7 @@ const Home = () => {
 
   function MainBanner(props) {
     return (
-      <div className="m-1 h-175 p-10 border border-red-500">
+      <div className="m-1 h-175 p-10">
         <div className="flex justify-center">{props.children}</div>
       </div>
     );
@@ -83,6 +83,39 @@ const Home = () => {
     );
   }
 
+  function ProblemSection(props) {
+    return (
+      <div>
+        <div className="border h-100 m-1 p-20">{props.children}</div>
+      </div>
+    );
+  }
+
+  function ProblemHeadline(props) {
+    return (
+      <div className="flex justify-center items-center gap-3 h-20 ">{props.children}</div>
+    );
+  }
+
+  function ProblemHeadlineText() {
+    return (
+      <div className="text-5xl font-supreme-regular font-semibold">
+        We're here to help
+      </div>
+    );
+  }
+
+  function ProblemSubHeadlineText() {
+    return (
+      <div className=" font-thk2d-regular text-xl text-gray-600">
+        Training Management Center: TMC
+        พร้อมดูแลทุกท่านในการจัดทำแผนพัฒนาศักยภาพรายบุคคล ประจำปี 2026 <br/>
+        หากท่านพบปัญหาหรือมีข้อสงสัยในกรณีดังต่อไปนี้
+        สามารถติดต่อทีมงานของเราได้ทันที
+      </div>
+    );
+  }
+
   return (
     <AboutGapPlus>
       <Header />
@@ -96,6 +129,12 @@ const Home = () => {
         </IntroSection>
         <ImageDescription></ImageDescription>
       </MainBanner>
+      <ProblemSection>
+        <ProblemHeadline>
+          <ProblemHeadlineText />
+          <ProblemSubHeadlineText />
+        </ProblemHeadline>
+      </ProblemSection>
     </AboutGapPlus>
     // <div>
     //   <Header />
