@@ -79,12 +79,12 @@ const Header = () => {
 
   function SignOut() {
     return (
-      <nav className="flex items-center hover:bg-gray-100 h-10 p-2 rounded">
-        <button className="hover:bg-black" onClick={signOut}>
-          {" "}
-          Sign Out
-        </button>
-      </nav>
+      <button
+        className="hover:bg-gray-100 h-10 p-2 rounded w-full text-left"
+        onClick={signOut}
+      >
+        Sign Out
+      </button>
     );
   }
 
