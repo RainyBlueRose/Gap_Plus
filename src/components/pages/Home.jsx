@@ -1,10 +1,12 @@
-import React from "react";
-
 import Header from "../layouts/Header";
 
 import ImageHowToUseGapPlus from "../../assets/How to use StarMeter.png";
 
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../router/Router";
+
 const Home = () => {
+  const navigate = useNavigate();
   function AboutGapPlus(props) {
     return (
       <div>
@@ -15,23 +17,23 @@ const Home = () => {
 
   function MainBanner(props) {
     return (
-      <div className="m-1">
-        <div className="flex justify-between  ">{props.children}</div>
+      <div className="m-1 h-175 p-10 border border-red-500">
+        <div className="flex justify-center">{props.children}</div>
       </div>
     );
   }
 
   function IntroSection(props) {
     return (
-      <div className="border flex-1">
-        <div>{props.children}</div>
+      <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-10">{props.children}</div>
       </div>
     );
   }
 
   function Headline() {
     return (
-      <div className="border ">
+      <div className="flex justify-center font-supreme-regular font-bold text-9xl">
         <div>GAP Plus</div>
       </div>
     );
@@ -39,11 +41,10 @@ const Home = () => {
 
   function SubHeadline() {
     return (
-      <div className="border">
+      <div className="font-thk2d-regular text-2xl font-semibold">
         <div>
-          Training Management Center: TMC
-          พร้อมดูแลทุกท่านในการจัดทำแผนพัฒนาศักยภาพรายบุคคล (Individual
-          Development Plan: IDP) ประจำปี 2026
+          เลือกสมรรถนะที่ตรงกับตำแหน่งงาน ลงทะเบียนพัฒนาทักษะ
+          และติดตามคะแนนของคุณได้ในที่เดียว
         </div>
       </div>
     );
@@ -57,13 +58,41 @@ const Home = () => {
     );
   }
 
+  function goToMyLearning() {
+    navigate(ROUTES.MYLEARNING);
+  }
+
+  function IntroButton() {
+    return (
+      <div className="flex justify-center">
+        <button
+          onClick={goToMyLearning}
+          className="w-90 h-20 rounded-xl text-white bg-black font-supreme-regular text-xl"
+        >
+          My Learning
+        </button>
+      </div>
+    );
+  }
+
+  function IntroText(props) {
+    return (
+      <div className="">
+        <div>{props.children}</div>
+      </div>
+    );
+  }
+
   return (
     <AboutGapPlus>
       <Header />
       <MainBanner>
         <IntroSection>
-          <Headline />
-          <SubHeadline />
+          <IntroText>
+            <Headline />
+            <SubHeadline />
+          </IntroText>
+          <IntroButton />
         </IntroSection>
         <ImageDescription></ImageDescription>
       </MainBanner>
