@@ -189,10 +189,29 @@ const Home = () => {
 
   function ContactUsSuggestion() {
     return (
-      <div className="border flex w-100 text-white font-thk2d-regular text-2xl">
+      <div className="flex flex-col gap-4">
+        <ContactUsSuggestionHeadline />
+        <ContactUsSuggestionSubHeadline />
+      </div>
+    );
+  }
+
+  function ContactUsSuggestionHeadline() {
+    return (
+      <div className="font-thk2d-regular text-3xl font-bold text-white">
+        ข้อแนะนำสำหรับการติดต่อ
+      </div>
+    );
+  }
+
+  function ContactUsSuggestionSubHeadline() {
+    return (
+      <div className="text-white font-thk2d-regular text-2xl">
         ข้อแนะนำสำหรับการติดต่อ: เพื่อความรวดเร็วในการประสานงานและแก้ไขปัญหา
-        กรุณาระบุข้อมูลต่อไปนี้ในอีเมลของท่าน <br/>ชื่อ-นามสกุล<br/> รหัสพนักงาน
-        (Employee ID)<br/> รายละเอียดของปัญหาหรือข้อสงสัยโดยสังเขป
+        กรุณาระบุข้อมูลต่อไปนี้ในอีเมลของท่าน <br />
+        ชื่อ-นามสกุล
+        <br /> รหัสพนักงาน (Employee ID)
+        <br /> รายละเอียดของปัญหาหรือข้อสงสัยโดยสังเขป
       </div>
     );
   }
