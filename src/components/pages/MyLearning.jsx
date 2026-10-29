@@ -281,65 +281,95 @@ const MyLearning = () => {
     );
   };
 
+  function MyLearning(props) {
+    return (
+      <div>
+        <div>{props.children}</div>
+      </div>
+    );
+  }
   // ---------- page ----------
 
+  function LoadingScreen({ loadingStatus }) {
+    if (loadingStatus !== "loading") return;
+    return <div>กำลังโหลด</div>;
+  }
+
+  function ClassesSection(props) {
+    return <div>{props.children}</div>;
+  }
+
+  function ClassesMandatory() {
+    return (
+      <div>
+        <div>Mandatory</div>
+        {competencies.mandatory.map((m) => {
+          const itemStatus = checkSelectedCourse(m);
+          if (itemStatus && itemStatus !== "Complete") return null;
+
+          return (
+            <div key={m.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => setSelectedMandatory(m)}
+              >
+                <div>
+                  {m.competencyName}
+                  {itemStatus && ` (${itemStatus})`}
+                </div>
+                <div>{m.description}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  function ClassesSelective() {
+    return (
+      <div>
+        <div>Selective</div>
+        {competencies.electives.map((e) => {
+          const itemStatus = checkSelectedCourse(e);
+          if (
+            itemStatus &&
+            itemStatus !== "In Progress" &&
+            itemStatus !== "Complete"
+          ) {
+            return null;
+          }
+
+          return (
+            <div key={e.id}>
+              <div
+                className="border p-5 hover:cursor-pointer"
+                onClick={() => setSelectedSelective(e)}
+              >
+                <div>
+                  {e.competencyName}
+                  {itemStatus && ` (${itemStatus})`}
+                </div>
+                <div>{e.description}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   return (
-    <div>
+    <MyLearning>
       <Header />
-
-      {status === "loading" && <p>กำลังโหลด...</p>}
-
-      <div>Mandatory</div>
-      {competencies.mandatory.map((m) => {
-        const itemStatus = checkSelectedCourse(m);
-        if (itemStatus && itemStatus !== "Complete") return null;
-
-        return (
-          <div key={m.id}>
-            <div
-              className="border p-5 hover:cursor-pointer"
-              onClick={() => setSelectedMandatory(m)}
-            >
-              <div>
-                {m.competencyName}
-                {itemStatus && ` (${itemStatus})`}
-              </div>
-              <div>{m.description}</div>
-            </div>
-          </div>
-        );
-      })}
-
-      <div>Elective</div>
-      {competencies.electives.map((e) => {
-        const itemStatus = checkSelectedCourse(e);
-        if (
-          itemStatus &&
-          itemStatus !== "In Progress" &&
-          itemStatus !== "Complete"
-        ) {
-          return null;
-        }
-
-        return (
-          <div key={e.id}>
-            <div
-              className="border p-5 hover:cursor-pointer"
-              onClick={() => setSelectedSelective(e)}
-            >
-              <div>
-                {e.competencyName}
-                {itemStatus && ` (${itemStatus})`}
-              </div>
-              <div>{e.description}</div>
-            </div>
-          </div>
-        );
-      })}
+      <LoadingScreen loadingStatus={status} />
+      <ClassesSection>
+        <ClassesMandatory />
+        <ClassesSelective />
+      </ClassesSection>
 
       {renderCourseElective()}
       {renderCourseMandatory()}
-    </div>
+    </MyLearning>
   );
 };
 
