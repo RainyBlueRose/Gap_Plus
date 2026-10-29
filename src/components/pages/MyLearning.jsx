@@ -38,6 +38,15 @@ const FileInput = ({ file, onChange, record }) => {
   );
 };
 
+function Page(props) {
+    return (
+      // <div className="bg-[#EDF0FF]">
+      <div>
+        <div>{props.children}</div>
+      </div>
+    );
+  }
+
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
   const { uploadCourseFileElective, uploadCourseFileMandatory } =
@@ -214,8 +223,6 @@ const MyLearning = () => {
           onClick={(event) => event.stopPropagation()}
         >
           <div>
-            {courseStatus === "Complete" && <div>(complete)</div>}
-
             {selectedMandatory.courses.map((course, index) => {
               const saved = record?.certificates?.[index];
               return (
@@ -281,16 +288,7 @@ const MyLearning = () => {
     );
   };
 
-  // ---------- page ----------
-
-  function MyLearning(props) {
-    return (
-      // <div className="bg-[#EDF0FF]">
-      <div>
-        <div>{props.children}</div>
-      </div>
-    );
-  }
+  // ---------- page ---------- 
 
   function LoadingScreen({ loadingStatus }) {
     if (loadingStatus !== "loading") return;
@@ -448,20 +446,20 @@ const MyLearning = () => {
         height="100%"
         className={className}
       >
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           {" "}
           <path
             d="M17 17L7 7M7 7V16M7 7H16"
             stroke="#000000"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           ></path>{" "}
         </g>
       </svg>
@@ -570,7 +568,7 @@ const MyLearning = () => {
   }
 
   return (
-    <MyLearning>
+    <Page>
       <Header />
       <LoadingScreen loadingStatus={status} />
       <IntroSection>
@@ -583,7 +581,7 @@ const MyLearning = () => {
 
       {renderCourseElective()}
       {renderCourseMandatory()}
-    </MyLearning>
+    </Page>
   );
 };
 
