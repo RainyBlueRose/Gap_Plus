@@ -330,6 +330,15 @@ const MyLearning = () => {
     );
   }
 
+  function ClassesMandatoryHeadline() {
+    return (
+      <div className="flex flex-col p-5 gap-1">
+        <ClassesMandatoryHeadlineText />
+        <ClassesMandatorySubHeadlineText />
+      </div>
+    );
+  }
+
   function ClassesMandatoryContainer() {
     return (
       //ปรับจำนวน Grid ตรงนี้
@@ -348,7 +357,7 @@ const MyLearning = () => {
                   competencyName={m.competencyName}
                   status={itemStatus}
                 />
-                <ClassesMandatoryDescriptionAndDetail
+                <ClassesDescriptionAndDetail
                   description={m.description}
                 />
               </div>
@@ -369,15 +378,6 @@ const MyLearning = () => {
           {competencyName}
         </div>
         <ClassMandatoryStatus status={status} />
-      </div>
-    );
-  }
-
-  function ClassesMandatoryHeadline() {
-    return (
-      <div className="flex flex-col p-5 gap-1">
-        <ClassesMandatoryHeadlineText />
-        <ClassesMandatorySubHeadlineText />
       </div>
     );
   }
@@ -413,7 +413,7 @@ const MyLearning = () => {
     );
   }
 
-  function ClassesMandatoryDescriptionAndDetail({ description }) {
+  function ClassesDescriptionAndDetail({ description }) {
     return (
       <div className="flex">
         <ClassesMandatoryContainerDescription description={description} />
@@ -479,6 +479,76 @@ const MyLearning = () => {
     );
   }
 
+  function ClassesSelectiveContainer() {
+    return (
+      <div className="grid grid-cols-2 gap-4">
+        {competencies.electives.map((e) => {
+          const itemStatus = checkSelectedCourse(e);
+          if (
+            itemStatus &&
+            itemStatus !== "In Progress" &&
+            itemStatus !== "Complete"
+          ) {
+            return null;
+          }
+
+          return (
+            <div key={e.id}>
+              <div
+                className="rounded-lg border border-gray-100 border-l-5 border-l-gray-500 p-5 hover:cursor-pointer h-full"
+                onClick={() => setSelectedSelective(e)}
+              >
+                <ClassesSelectiveContainerStatusAndHeadline
+                  competencyName={e.competencyName}
+                  status={itemStatus}
+                />
+                <ClassesDescriptionAndDetail
+                  description={e.description}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  function ClassesSelectiveContainerStatusAndHeadline({
+    competencyName,
+    status,
+  }) {
+    return (
+      <div className="flex justify-between">
+        <div className="font-notosanthai-semibold text-lg">
+          {competencyName}
+        </div>
+        <ClassSelectiveStatus status={status} />
+      </div>
+    );
+  }
+
+  function ClassSelectiveStatus({ status }) {
+    return (
+      <div>
+        {status === undefined && (
+          <div className="font-supreme-400 px-3 bg-[#ECF1FF] shadow-sm rounded-sm whitespace-nowrap">
+            Not Selected
+          </div>
+        )}
+        {status === "In Progress" && (
+          <div className="font-supreme-400 px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
+            Selected
+          </div>
+        )}
+        {status === "Complete" && (
+          <div className="font-supreme-400 px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
+            Complete
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function ClassesSelectiveHeadline() {
     return (
       <div className="flex flex-col p-5 gap-1">
@@ -499,38 +569,6 @@ const MyLearning = () => {
       <div className="text-gray-600 font-notosanthai-400">
         ท่านสามารถเลือกวิชาที่ต้องการเรียนได้ที่แสดงอยู่โดยต้องเลือกอย่างน้อย 1
         วิชาเรียนและสามารถเลือกเรียนได้มากกว่า 1 วิชา
-      </div>
-    );
-  }
-
-  function ClassesSelectiveContainer() {
-    return (
-      <div className="grid grid-cols-2 gap-4">
-        {competencies.electives.map((e) => {
-          const itemStatus = checkSelectedCourse(e);
-          if (
-            itemStatus &&
-            itemStatus !== "In Progress" &&
-            itemStatus !== "Complete"
-          ) {
-            return null;
-          }
-
-          return (
-            <div key={e.id}>
-              <div
-                className="rounded-lg border border-gray-100 border-l-5 border-l-gray-500 p-5 hover:cursor-pointer h-full"
-                onClick={() => setSelectedSelective(e)}
-              >
-                <div>
-                  {e.competencyName}
-                  {itemStatus && ` (${itemStatus})`}
-                </div>
-                <div>{e.description}</div>
-              </div>
-            </div>
-          );
-        })}
       </div>
     );
   }
