@@ -23,3 +23,27 @@
 .font-notosanthai-400 {
     font-family: font-notosanthai-400, font-supreme-400;
 }
+
+@font-face {
+    font-family: font-notosanthai-bold;
+    src: url(./assets/fonts/NotoSanThai/NotoSansThai-Bold.ttf);
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+.font-notosanthai-bold {
+    font-family: font-notosanthai-bold,font-supreme-400;
+}
+
+@font-face {
+    font-family: font-notosanthai-semibold;
+    src: url(./assets/fonts/NotoSanThai/NotoSansThai-SemiBold.ttf);
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+.font-notosanthai-semibold {
+    font-family: font-notosanthai-semibold,font-supreme-400;
+}

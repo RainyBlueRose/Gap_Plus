@@ -285,6 +285,7 @@ const MyLearning = () => {
 
   function MyLearning(props) {
     return (
+      // <div className="bg-[#EDF0FF]">
       <div>
         <div>{props.children}</div>
       </div>
@@ -317,14 +318,57 @@ const MyLearning = () => {
   }
 
   function ClassesSection(props) {
-    return <div>{props.children}</div>;
+    return <div className="p-10">{props.children}</div>;
   }
 
   function ClassesMandatory() {
     return (
-      <div className="border p-10 flex flex-col gap-5">
+      <div className="p-10 flex flex-col gap-5 bg-white rounded-lg">
         <ClassesMandatoryHeadline />
         <ClassesMandatoryContainer />
+      </div>
+    );
+  }
+
+  function ClassesMandatoryContainer() {
+    return (
+      //ปรับจำนวน Grid ตรงนี้
+      <div className="grid grid-cols-2 gap-4">
+        {competencies.mandatory.map((m) => {
+          const itemStatus = checkSelectedCourse(m);
+          if (itemStatus && itemStatus !== "Complete") return null;
+
+          return (
+            <div key={m.id}>
+              <div
+                className={`rounded-lg border border-gray-100 border-l-5 ${itemStatus === "Complete" ? `border-l-green-500` : `border-l-[#B3C6F9]`} p-5 hover:cursor-pointer h-full flex flex-col gap-4 justify-between`}
+                onClick={() => setSelectedMandatory(m)}
+              >
+                <ClassesMandatoryContainerStatusAndHeadline
+                  competencyName={m.competencyName}
+                  status={itemStatus}
+                />
+                <ClassesMandatoryDescriptionAndDetail
+                  description={m.description}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  function ClassesMandatoryContainerStatusAndHeadline({
+    competencyName,
+    status,
+  }) {
+    return (
+      <div className="flex justify-between">
+        <div className="font-notosanthai-semibold text-lg">
+          {competencyName}
+        </div>
+        <ClassMandatoryStatus status={status} />
       </div>
     );
   }
@@ -346,39 +390,89 @@ const MyLearning = () => {
 
   function ClassesMandatorySubHeadlineText() {
     return (
-      <div className="text-gray-600 font-notosanthai-400">รายวิชาบังคับตามตำแหน่งงานของท่าน</div>
+      <div className="text-gray-600 font-notosanthai-400">
+        รายวิชาบังคับตามตำแหน่งงานของท่าน
+      </div>
     );
   }
 
-  function ClassesMandatoryContainer() {
+  function ClassMandatoryStatus({ status }) {
     return (
-      <div className="grid grid-cols-2 gap-4">
-        {competencies.mandatory.map((m) => {
-          const itemStatus = checkSelectedCourse(m);
-          if (itemStatus && itemStatus !== "Complete") return null;
-
-          return (
-            <div key={m.id}>
-              <div
-                className="rounded-lg border border-gray-100 border-l-5 border-l-red-500 p-5 hover:cursor-pointer h-full"
-                onClick={() => setSelectedMandatory(m)}
-              >
-                <div className="">
-                  {m.competencyName}
-                  {itemStatus && ` (${itemStatus})`}
-                </div>
-                <div>{m.description}</div>
-              </div>
-            </div>
-          );
-        })}
+      <div>
+        {status === "Complete" && (
+          <div className="font-supreme-400 px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
+            Complete
+          </div>
+        )}
+        {status === undefined && (
+          <div className="font-supreme-400 px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
+            Incomplete
+          </div>
+        )}
       </div>
+    );
+  }
+
+  function ClassesMandatoryDescriptionAndDetail({ description }) {
+    return (
+      <div className="flex">
+        <ClassesMandatoryContainerDescription description={description} />
+        <Detail />
+      </div>
+    );
+  }
+
+  function ClassesMandatoryContainerDescription({ description }) {
+    return <div className="font-notosanthai-400">{description}</div>;
+  }
+
+  function Detail() {
+    return (
+      <div className="flex items-center justify-end whitespace-nowrap">
+        <DetailText />
+        <ArrowRightDown className="h-8 w-8 " />
+      </div>
+    );
+  }
+
+  function DetailText() {
+    return <div className="font-notosanthai-400">รายละเอียด</div>;
+  }
+
+  function ArrowRightDown({ className }) {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        transform="rotate(180)"
+        width="100%"
+        height="100%"
+        className={className}
+      >
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g
+          id="SVGRepo_tracerCarrier"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></g>
+        <g id="SVGRepo_iconCarrier">
+          {" "}
+          <path
+            d="M17 17L7 7M7 7V16M7 7H16"
+            stroke="#000000"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>{" "}
+        </g>
+      </svg>
     );
   }
 
   function ClassesSelective() {
     return (
-      <div className="border p-10 flex flex-col gap-5">
+      <div className="p-10 flex flex-col gap-5">
         <ClassesSelectiveHeadline />
         <ClassesSelectiveContainer />
       </div>
