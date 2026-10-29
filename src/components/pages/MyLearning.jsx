@@ -323,7 +323,7 @@ const MyLearning = () => {
 
   function ClassesMandatory() {
     return (
-      <div className="p-10 flex flex-col gap-5 bg-white rounded-lg">
+      <div className="px-10 flex flex-col gap-5 bg-white rounded-lg">
         <ClassesMandatoryHeadline />
         <ClassesMandatoryContainer />
       </div>
@@ -426,7 +426,7 @@ const MyLearning = () => {
 
   function Detail() {
     return (
-      <div className="flex items-center justify-end whitespace-nowrap">
+      <div className="flex items-center justify-end whitespace-nowrap items-end">
         <DetailText />
         <ArrowRightDown className="h-8 w-8 " />
       </div>
