@@ -281,6 +281,8 @@ const MyLearning = () => {
     );
   };
 
+  // ---------- page ----------
+
   function MyLearning(props) {
     return (
       <div>
@@ -288,7 +290,6 @@ const MyLearning = () => {
       </div>
     );
   }
-  // ---------- page ----------
 
   function LoadingScreen({ loadingStatus }) {
     if (loadingStatus !== "loading") return;
@@ -301,8 +302,20 @@ const MyLearning = () => {
 
   function ClassesMandatory() {
     return (
+      <div className="border">
+        <ClassesMandatoryHeadline />
+        <ClassesMandatoryContainer />
+      </div>
+    );
+  }
+
+  function ClassesMandatoryHeadline() {
+    return <div>Mandatory</div>;
+  }
+
+  function ClassesMandatoryContainer() {
+    return (
       <div>
-        <div>Mandatory</div>
         {competencies.mandatory.map((m) => {
           const itemStatus = checkSelectedCourse(m);
           if (itemStatus && itemStatus !== "Complete") return null;
@@ -329,7 +342,19 @@ const MyLearning = () => {
   function ClassesSelective() {
     return (
       <div>
-        <div>Selective</div>
+        <ClassesSelectiveHeadline />
+        <ClassesSelectiveContainer />
+      </div>
+    );
+  }
+
+  function ClassesSelectiveHeadline() {
+    return <div>Selective</div>;
+  }
+
+  function ClassesSelectiveContainer() {
+    return (
+      <div>
         {competencies.electives.map((e) => {
           const itemStatus = checkSelectedCourse(e);
           if (
@@ -358,6 +383,7 @@ const MyLearning = () => {
       </div>
     );
   }
+
   return (
     <MyLearning>
       <Header />
