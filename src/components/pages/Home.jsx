@@ -33,7 +33,7 @@ const Home = () => {
 
   function Headline() {
     return (
-      <div className="flex justify-center font-supreme-regular font-bold text-9xl">
+      <div className="flex justify-center font-supreme-400 font-bold text-9xl">
         <div>GAP Plus</div>
       </div>
     );
@@ -41,7 +41,7 @@ const Home = () => {
 
   function SubHeadline() {
     return (
-      <div className="font-thk2d-regular text-2xl font-semibold">
+      <div className="font-notosanthai-400 ">
         <div>
           เลือกสมรรถนะที่ตรงกับตำแหน่งงาน ลงทะเบียนพัฒนาทักษะ
           และติดตามคะแนนของคุณได้ในที่เดียว
@@ -67,7 +67,7 @@ const Home = () => {
       <div className="flex justify-center">
         <button
           onClick={goToMyLearning}
-          className="w-90 h-20 rounded-xl text-white bg-black font-supreme-regular text-xl"
+          className="w-90 h-20 rounded-xl text-white bg-black font-supreme-400 text-xl"
         >
           My Learning
         </button>
@@ -103,7 +103,7 @@ const Home = () => {
 
   function ProblemHeadlineText() {
     return (
-      <div className="text-5xl font-supreme-regular font-semibold">
+      <div className="text-5xl font-supreme-400 font-semibold">
         We're here to help
       </div>
     );
@@ -111,7 +111,7 @@ const Home = () => {
 
   function ProblemSubHeadlineText() {
     return (
-      <div className=" font-thk2d-regular text-xl text-gray-600">
+      <div className=" font-notosanthai-400 text-gray-600">
         Training Management Center: TMC
         พร้อมดูแลทุกท่านในการจัดทำแผนพัฒนาศักยภาพรายบุคคล ประจำปี 2026 <br />
         หากท่านพบปัญหาหรือมีข้อสงสัยในกรณีดังต่อไปนี้
@@ -148,20 +148,20 @@ const Home = () => {
 
   function ProblemContainerNumber({ headlineNumber }) {
     return (
-      <div className="text-5xl font-supreme-regular">{headlineNumber}</div>
+      <div className="text-5xl font-supreme-400">{headlineNumber}</div>
     );
   }
 
   function ProblemContainerHeadlineText({ headlineText }) {
     return (
-      <div className="font-thk2d-regular text-4xl font-bold">
+      <div className="font-notosanthai-400 text-2xl">
         {headlineText}
       </div>
     );
   }
 
   function ProblemContainerMainText({ mainText }) {
-    return <div className="font-thk2d-regular text-2xl">{mainText}</div>;
+    return <div className="font-notosanthai-400 text-lg">{mainText}</div>;
   }
 
   function ProblemContainerSeperateLine() {
@@ -198,7 +198,7 @@ const Home = () => {
 
   function ContactUsSuggestionHeadline() {
     return (
-      <div className="font-thk2d-regular text-3xl font-bold text-white">
+      <div className="font-notosanthai-400 text-lg font-bold text-white">
         ข้อแนะนำสำหรับการติดต่อ
       </div>
     );
@@ -206,7 +206,7 @@ const Home = () => {
 
   function ContactUsSuggestionSubHeadline() {
     return (
-      <div className="text-white font-thk2d-regular text-2xl">
+      <div className="text-white font-notosanthai-400">
         ข้อแนะนำสำหรับการติดต่อ: เพื่อความรวดเร็วในการประสานงานและแก้ไขปัญหา
         กรุณาระบุข้อมูลต่อไปนี้ในอีเมลของท่าน <br />
         ชื่อ-นามสกุล
@@ -218,7 +218,7 @@ const Home = () => {
 
   function ContactUsHeadlineText() {
     return (
-      <div className="font-supreme-regular text-3xl font-bold text-white">
+      <div className="font-supreme-400 text-xl text-white">
         CONTACT US!
       </div>
     );
@@ -226,7 +226,7 @@ const Home = () => {
 
   function ContactUsSubHeadline() {
     return (
-      <div className="flex justify-center font-thk2d-regular text-2xl text-white">
+      <div className="flex justify-center font-notosanthai-400 text-white">
         หากท่านพบปัญหาหรือมีข้อสงสัยทั่วไปเกี่ยวกับการเรียนรู้และการประเมินผลงานบนแพลตฟอร์ม
         <br />
         สามารถส่งอีเมลถึงศูนย์บริหารการจัดการการฝึกอบรม (TMC) ได้ที่

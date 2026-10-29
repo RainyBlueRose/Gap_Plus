@@ -346,7 +346,7 @@ const MyLearning = () => {
 
   function ClassesMandatorySubHeadlineText() {
     return (
-      <div className="text-gray-600">รายวิชาบังคับตามตำแหน่งงานของท่าน</div>
+      <div className="text-gray-600 font-notosanthai-400">รายวิชาบังคับตามตำแหน่งงานของท่าน</div>
     );
   }
 
@@ -360,10 +360,10 @@ const MyLearning = () => {
           return (
             <div key={m.id}>
               <div
-                className="rounded border border-gray-100 border-l-5 border-l-red-500 p-5 hover:cursor-pointer"
+                className="rounded-lg border border-gray-100 border-l-5 border-l-red-500 p-5 hover:cursor-pointer h-full"
                 onClick={() => setSelectedMandatory(m)}
               >
-                <div>
+                <div className="">
                   {m.competencyName}
                   {itemStatus && ` (${itemStatus})`}
                 </div>
@@ -402,7 +402,7 @@ const MyLearning = () => {
 
   function ClassesSelectiveSubHeadline() {
     return (
-      <div className="text-gray-600">
+      <div className="text-gray-600 font-notosanthai-400">
         ท่านสามารถเลือกวิชาที่ต้องการเรียนได้ที่แสดงอยู่โดยต้องเลือกอย่างน้อย 1
         วิชาเรียนและสามารถเลือกเรียนได้มากกว่า 1 วิชา
       </div>
@@ -425,7 +425,7 @@ const MyLearning = () => {
           return (
             <div key={e.id}>
               <div
-                className="rounded border border-gray-100 border-l-5 border-l-gray-500 p-5 hover:cursor-pointer"
+                className="rounded-lg border border-gray-100 border-l-5 border-l-gray-500 p-5 hover:cursor-pointer h-full"
                 onClick={() => setSelectedSelective(e)}
               >
                 <div>

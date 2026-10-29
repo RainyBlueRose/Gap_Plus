@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: Supreme-regular;
+    font-family: font-supreme-400;
     src: url(./assets/fonts/Supreme-Regular.woff2);
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-.font-supreme-regular {
-    font-family: "Supreme-regular", sans-serif;
+.font-supreme-400 {
+    font-family: "font-supreme-400", sans-serif;
 }
 
 @font-face {
-    font-family: ThK2D-regular;
-    src: url(./assets/fonts/TH\ K2D\ July8.woff2);
+    font-family: font-notosanthai-400;
+    src: url(./assets/fonts/NotoSanThai/NotoSansThai-Regular.ttf);
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-.font-thk2d-regular {
-    font-family:"ThK2D-regular",sans-serif;
+.font-notosanthai-400 {
+    font-family: font-notosanthai-400, font-supreme-400;
 }
