@@ -296,13 +296,33 @@ const MyLearning = () => {
     return <div>กำลังโหลด</div>;
   }
 
+  function IntroSection(props) {
+    return <div>{props.children}</div>;
+  }
+
+  function IntroHeadline() {
+    return (
+      <div>
+        <IntroHeadlineText />
+        <IntroSubHeadlineText />
+      </div>
+    );
+  }
+  function IntroHeadlineText() {
+    return <div></div>;
+  }
+
+  function IntroSubHeadlineText() {
+    return <div></div>;
+  }
+
   function ClassesSection(props) {
     return <div>{props.children}</div>;
   }
 
   function ClassesMandatory() {
     return (
-      <div className="border">
+      <div className="border p-10 flex flex-col gap-5">
         <ClassesMandatoryHeadline />
         <ClassesMandatoryContainer />
       </div>
@@ -310,12 +330,29 @@ const MyLearning = () => {
   }
 
   function ClassesMandatoryHeadline() {
-    return <div>Mandatory</div>;
+    return (
+      <div className="flex flex-col p-5 gap-1">
+        <ClassesMandatoryHeadlineText />
+        <ClassesMandatorySubHeadlineText />
+      </div>
+    );
+  }
+
+  function ClassesMandatoryHeadlineText() {
+    return (
+      <div className="font-supreme-regular text-3xl font-bold">Mandatory</div>
+    );
+  }
+
+  function ClassesMandatorySubHeadlineText() {
+    return (
+      <div className="text-gray-600">รายวิชาบังคับตามตำแหน่งงานของท่าน</div>
+    );
   }
 
   function ClassesMandatoryContainer() {
     return (
-      <div>
+      <div className="grid grid-cols-2 gap-4">
         {competencies.mandatory.map((m) => {
           const itemStatus = checkSelectedCourse(m);
           if (itemStatus && itemStatus !== "Complete") return null;
@@ -323,7 +360,7 @@ const MyLearning = () => {
           return (
             <div key={m.id}>
               <div
-                className="border p-5 hover:cursor-pointer"
+                className="rounded border border-gray-100 border-l-5 border-l-red-500 p-5 hover:cursor-pointer"
                 onClick={() => setSelectedMandatory(m)}
               >
                 <div>
@@ -341,7 +378,7 @@ const MyLearning = () => {
 
   function ClassesSelective() {
     return (
-      <div>
+      <div className="border p-10 flex flex-col gap-5">
         <ClassesSelectiveHeadline />
         <ClassesSelectiveContainer />
       </div>
@@ -349,12 +386,32 @@ const MyLearning = () => {
   }
 
   function ClassesSelectiveHeadline() {
-    return <div>Selective</div>;
+    return (
+      <div className="flex flex-col p-5 gap-1">
+        <ClassesSelectiveHeadlineText />
+        <ClassesSelectiveSubHeadline />
+      </div>
+    );
+  }
+
+  function ClassesSelectiveHeadlineText() {
+    return (
+      <div className="font-supreme-regular text-3xl font-bold">Selective</div>
+    );
+  }
+
+  function ClassesSelectiveSubHeadline() {
+    return (
+      <div className="text-gray-600">
+        ท่านสามารถเลือกวิชาที่ต้องการเรียนได้ที่แสดงอยู่โดยต้องเลือกอย่างน้อย 1
+        วิชาเรียนและสามารถเลือกเรียนได้มากกว่า 1 วิชา
+      </div>
+    );
   }
 
   function ClassesSelectiveContainer() {
     return (
-      <div>
+      <div className="grid grid-cols-2 gap-4">
         {competencies.electives.map((e) => {
           const itemStatus = checkSelectedCourse(e);
           if (
@@ -368,7 +425,7 @@ const MyLearning = () => {
           return (
             <div key={e.id}>
               <div
-                className="border p-5 hover:cursor-pointer"
+                className="rounded border border-gray-100 border-l-5 border-l-gray-500 p-5 hover:cursor-pointer"
                 onClick={() => setSelectedSelective(e)}
               >
                 <div>
@@ -388,6 +445,9 @@ const MyLearning = () => {
     <MyLearning>
       <Header />
       <LoadingScreen loadingStatus={status} />
+      <IntroSection>
+        <IntroHeadline />
+      </IntroSection>
       <ClassesSection>
         <ClassesMandatory />
         <ClassesSelective />
