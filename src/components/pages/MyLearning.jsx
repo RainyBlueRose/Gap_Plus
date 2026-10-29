@@ -357,9 +357,7 @@ const MyLearning = () => {
                   competencyName={m.competencyName}
                   status={itemStatus}
                 />
-                <ClassesDescriptionAndDetail
-                  description={m.description}
-                />
+                <ClassesDescriptionAndDetail description={m.description} />
               </div>
             </div>
           );
@@ -495,16 +493,14 @@ const MyLearning = () => {
           return (
             <div key={e.id}>
               <div
-                className="rounded-lg border border-gray-100 border-l-5 border-l-gray-500 p-5 hover:cursor-pointer h-full"
+                className={`rounded-lg border border-gray-100 border-l-5 ${itemStatus === "Complete" ? `border-l-green-500` : itemStatus === "In Progress" ? `border-l-[#B3C6F9]` : `border-l-gray-500`} p-5 hover:cursor-pointer h-full flex flex-col gap-4 justify-between`}
                 onClick={() => setSelectedSelective(e)}
               >
                 <ClassesSelectiveContainerStatusAndHeadline
                   competencyName={e.competencyName}
                   status={itemStatus}
                 />
-                <ClassesDescriptionAndDetail
-                  description={e.description}
-                />
+                <ClassesDescriptionAndDetail description={e.description} />
               </div>
             </div>
           );
