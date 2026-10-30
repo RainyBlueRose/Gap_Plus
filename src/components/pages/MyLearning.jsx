@@ -72,11 +72,21 @@ function SavedSelectiveButton({ onClick, courseStatus }) {
   );
 }
 
-function RenderCourseContainer({ course, index }) {
+function RenderCourseContainer({
+  course,
+  index,
+  idpRecord,
+  file,
+  onFileChange,
+}) {
   return (
     <div className="border">
       <RenderCourseContainerHeadline course={course} />
-      <RenderCourseContainerFileInput />
+      <RenderCourseContainerFileInput2
+        idpRecord={idpRecord}
+        file={file}
+        onFileChange={onFileChange}
+      />
     </div>
   );
 }
@@ -89,6 +99,34 @@ function RenderCourseContainerHeadline({ course }) {
     </div>
   );
 }
+
+const RenderCourseContainerFileInput2 = ({ file, idpRecord, onFileChange }) => {
+  const imgName = idpRecord?.name;
+  const imgUrl = idpRecord?.url;
+  return (
+    <div>
+      <label>
+        {file ? file.name : "เลือกไฟล์"}
+        <input
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => onFileChange(e.target.files[0])}
+        />
+      </label>
+      {imgUrl && (
+        <a
+          href={imgUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-2 text-blue-600 underline inline-block"
+        >
+          {imgName || "ดูรูปภาพ"}
+        </a>
+      )}
+    </div>
+  );
+};
 
 const RenderCourseContainerFileInput = ({ file, onChange, idpRecord }) => {
   const imgName = idpRecord?.name;
@@ -257,7 +295,15 @@ const MyLearning = () => {
                       บันทึก
                     </button>
                   </div>
-                  <RenderCourseContainer course={course} index={index} />
+                  <RenderCourseContainer
+                    course={course}
+                    index={index}
+                    file={files[index]}
+                    onFileChange={(file) => {
+                      handleFileChange(index, file);
+                    }}
+                    idpRecord={idpRecord?.certificates?.[index]}
+                  />
                 </div>
               );
             })}
