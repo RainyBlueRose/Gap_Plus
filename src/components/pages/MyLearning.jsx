@@ -47,6 +47,59 @@ function Page(props) {
   );
 }
 
+function RenderCourseElectiveHeadline({
+  competencyName,
+  courseStatus,
+  description,
+}) {
+  return (
+    <div className="flex justify-between">
+      <RenderCourseElectiveHeadlineText
+        competencyName={competencyName}
+        description={description}
+      />
+      <SavedSelectiveButton courseStatus={courseStatus} />
+    </div>
+  );
+}
+
+function RenderCourseElectiveHeadlineText({ competencyName, description }) {
+  return (
+    <div>
+      <RenderCourseElectiveHeadlineName competencyName={competencyName} />
+      <RenderCourseElectiveHeadlineDescription description={description} />
+    </div>
+  );
+}
+
+function RenderCourseElectiveHeadlineName({ competencyName }) {
+  return (
+    <div className="font-notosanthai-semibold text-xl">{competencyName}</div>
+  );
+}
+
+function RenderCourseElectiveHeadlineDescription({ description }) {
+  return (
+    <div className="font-notosanthai-400 text-gray-400 text-sm">
+      {description}
+    </div>
+  );
+}
+
+function SavedSelectiveButton({ onClick, courseStatus }) {
+  return (
+    <div className="flex flex-col justify-center font-notosanthai-400 whitespace-nowrap">
+      {courseStatus === "In Progress" && (
+        <div className="font-supreme-400 px-10 py-2 bg-[#B3C6F9] shadow-sm rounded-sm">
+          In Progress
+        </div>
+      )}
+      {courseStatus === "Complete" && <div>Complete</div>}
+      {courseStatus === undefined && <div>Select course</div>}
+    </div>
+  );
+}
+
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
   const { uploadCourseFileElective, uploadCourseFileMandatory } =
@@ -111,58 +164,6 @@ const MyLearning = () => {
   
   
   */
-  function RenderCourseElectiveHeadline({
-    competencyName,
-    courseStatus,
-    description,
-  }) {
-    return (
-      <div className="flex justify-between">
-        <RenderCourseElectiveHeadlineText
-          competencyName={competencyName}
-          description={description}
-        />
-        <SavedSelectiveButton courseStatus={courseStatus} />
-      </div>
-    );
-  }
-
-  function RenderCourseElectiveHeadlineText({ competencyName, description }) {
-    return (
-      <div>
-        <RenderCourseElectiveHeadlineName competencyName={competencyName} />
-        <RenderCourseElectiveHeadlineDescription description={description} />
-      </div>
-    );
-  }
-
-  function RenderCourseElectiveHeadlineName({ competencyName }) {
-    return (
-      <div className="font-notosanthai-semibold text-xl">{competencyName}</div>
-    );
-  }
-
-  function RenderCourseElectiveHeadlineDescription({ description }) {
-    return (
-      <div className="font-notosanthai-400 text-gray-400 text-sm">
-        {description}
-      </div>
-    );
-  }
-
-  function SavedSelectiveButton({ onClick, courseStatus }) {
-    return (
-      <div className="flex flex-col justify-center font-notosanthai-400 whitespace-nowrap">
-        {courseStatus === "In Progress" && (
-          <div className="font-supreme-400 px-10 py-2 bg-[#B3C6F9] shadow-sm rounded-sm">
-            In Progress
-          </div>
-        )}
-        {courseStatus === "Complete" && <div>Complete</div>}
-        {courseStatus === undefined && <div>Select course</div>}
-      </div>
-    );
-  }
 
   // <button
   //   className="border p-5"
