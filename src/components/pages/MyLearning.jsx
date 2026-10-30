@@ -100,11 +100,28 @@ function SavedSelectiveButton({ onClick, courseStatus }) {
   );
 }
 
+function RenderCourseContainer({ course, index }) {
+  return (
+    <div className="border">
+      <RenderCourseContainerHeadline course={course} />
+    </div>
+  );
+}
+
+function RenderCourseContainerHeadline({ course }) {
+  return (
+    <div className="border flex justify-between">
+      <a href={course.link}>{course.name}</a>
+      <div>{course.institute}</div>
+    </div>
+  );
+}
+
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
   const { uploadCourseFileElective, uploadCourseFileMandatory } =
     useUploadCourseFile();
-  const { setElectiveIDPRecords, checkSelectedCourse, getIDPRecord } =
+  const { setElectiveIDPRecords, checkSelectedCourseStatus, fetchIDPRecordFromCache } =
     useIDPRecords();
 
   useTrainingMatrix();
@@ -176,7 +193,7 @@ const MyLearning = () => {
     if (!selectedSelective) return null;
     console.log("selectedSelective", selectedSelective);
 
-    const courseStatus = checkSelectedCourse(selectedSelective);
+    const courseStatus = checkSelectedCourseStatus(selectedSelective);
     // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
     if (
       courseStatus &&
@@ -187,7 +204,7 @@ const MyLearning = () => {
     }
 
     const selfLearningIndex = selectedSelective.courses.length + 1;
-    const record = getIDPRecord(selectedSelective);
+    const record = fetchIDPRecordFromCache(selectedSelective);
     const savedSelfLearning = record?.certificates?.[selfLearningIndex];
 
     return (
@@ -213,7 +230,7 @@ const MyLearning = () => {
               return (
                 <div className="border" key={index}>
                   <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
+                    <a href={course.link}>{course.name ?? course.link}</a>
                   </div>
                   <div className="flex flex-col gap-3">
                     <FileInput
@@ -236,6 +253,7 @@ const MyLearning = () => {
                       บันทึก
                     </button>
                   </div>
+                  <RenderCourseContainer course={course} index={index} />
                 </div>
               );
             })}
@@ -290,12 +308,12 @@ const MyLearning = () => {
   const renderCourseMandatory = () => {
     if (!selectedMandatory) return null;
 
-    const courseStatus = checkSelectedCourse(selectedMandatory);
+    const courseStatus = checkSelectedCourseStatus(selectedMandatory);
     // รองรับ 2 กรณี: ยังไม่เลือก / Complete
     if (courseStatus && courseStatus !== "Complete") return null;
 
     const selfLearningIndex = selectedMandatory.courses.length + 1;
-    const record = getIDPRecord(selectedMandatory);
+    const record = fetchIDPRecordFromCache(selectedMandatory);
     const savedSelfLearning = record?.certificates?.[selfLearningIndex];
 
     return (
@@ -427,7 +445,7 @@ const MyLearning = () => {
       //ปรับจำนวน Grid ตรงนี้
       <div className="grid grid-cols-2 gap-4">
         {competencies.mandatory.map((m) => {
-          const itemStatus = checkSelectedCourse(m);
+          const itemStatus = checkSelectedCourseStatus(m);
           if (itemStatus && itemStatus !== "Complete") return null;
 
           return (
@@ -564,7 +582,7 @@ const MyLearning = () => {
     return (
       <div className="grid grid-cols-2 gap-4">
         {competencies.electives.map((e) => {
-          const itemStatus = checkSelectedCourse(e);
+          const itemStatus = checkSelectedCourseStatus(e);
           if (
             itemStatus &&
             itemStatus !== "In Progress" &&
