@@ -39,13 +39,13 @@ const FileInput = ({ file, onChange, record }) => {
 };
 
 function Page(props) {
-    return (
-      // <div className="bg-[#EDF0FF]">
-      <div>
-        <div>{props.children}</div>
-      </div>
-    );
-  }
+  return (
+    // <div className="bg-[#EDF0FF]">
+    <div>
+      <div>{props.children}</div>
+    </div>
+  );
+}
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
@@ -100,9 +100,80 @@ const MyLearning = () => {
   };
 
   // ---------- modals ----------
+  /*
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  */
+  function RenderCourseElectiveHeadline({
+    competencyName,
+    courseStatus,
+    description,
+  }) {
+    return (
+      <div className="flex justify-between">
+        <RenderCourseElectiveHeadlineText
+          competencyName={competencyName}
+          description={description}
+        />
+        <SavedSelectiveButton courseStatus={courseStatus} />
+      </div>
+    );
+  }
 
+  function RenderCourseElectiveHeadlineText({ competencyName, description }) {
+    return (
+      <div>
+        <RenderCourseElectiveHeadlineName competencyName={competencyName} />
+        <RenderCourseElectiveHeadlineDescription description={description} />
+      </div>
+    );
+  }
+
+  function RenderCourseElectiveHeadlineName({ competencyName }) {
+    return (
+      <div className="font-notosanthai-semibold text-xl">{competencyName}</div>
+    );
+  }
+
+  function RenderCourseElectiveHeadlineDescription({ description }) {
+    return (
+      <div className="font-notosanthai-400 text-gray-400 text-sm">
+        {description}
+      </div>
+    );
+  }
+
+  function SavedSelectiveButton({ onClick, courseStatus }) {
+    return (
+      <div className="flex flex-col justify-center font-notosanthai-400 whitespace-nowrap">
+        {courseStatus === "In Progress" && (
+          <div className="font-supreme-400 px-10 py-2 bg-[#B3C6F9] shadow-sm rounded-sm">
+            In Progress
+          </div>
+        )}
+        {courseStatus === "Complete" && <div>Complete</div>}
+        {courseStatus === undefined && <div>Select course</div>}
+      </div>
+    );
+  }
+
+  // <button
+  //   className="border p-5"
+  //   disabled={!!courseStatus}
+  //   onClick={() => setElectiveIDPRecords(selectedSelective)}
+  // >
+  //   Select class
+  // </button>
   const renderCourseElective = () => {
     if (!selectedSelective) return null;
+    console.log("selectedSelective", selectedSelective);
 
     const courseStatus = checkSelectedCourse(selectedSelective);
     // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
@@ -119,23 +190,22 @@ const MyLearning = () => {
     const savedSelfLearning = record?.certificates?.[selfLearningIndex];
 
     return (
+      //กดด้านนอกกรอบจะปิด
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
         onClick={closeElective}
       >
         <div
-          className="bg-white p-5 rounded w-3/4 h-3/4 overflow-y-auto"
+          className="bg-white p-5 rounded w-2/4 h-3/4 overflow-y-auto"
           onClick={(event) => event.stopPropagation()}
         >
           <div className="flex flex-col gap-3">
             {/* ถ้ามีสถานะแล้ว (In Progress / Complete) จะกดเลือกซ้ำไม่ได้ */}
-            <button
-              className="border p-5"
-              disabled={!!courseStatus}
-              onClick={() => setElectiveIDPRecords(selectedSelective)}
-            >
-              Select class
-            </button>
+            <RenderCourseElectiveHeadline
+              competencyName={selectedSelective.competencyName}
+              description={selectedSelective.description}
+              courseStatus={courseStatus}
+            />
 
             {selectedSelective.courses.map((course, index) => {
               const saved = record?.certificates?.[index];
@@ -201,6 +271,20 @@ const MyLearning = () => {
       </div>
     );
   };
+  /*
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  */
 
   const renderCourseMandatory = () => {
     if (!selectedMandatory) return null;
@@ -288,7 +372,7 @@ const MyLearning = () => {
     );
   };
 
-  // ---------- page ---------- 
+  // ---------- page ----------
 
   function LoadingScreen({ loadingStatus }) {
     if (loadingStatus !== "loading") return;
