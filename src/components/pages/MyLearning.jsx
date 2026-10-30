@@ -10,34 +10,6 @@ import { useIDPRecords } from "../functions/hooks/useIDPRecords";
 import { useUploadCourseFile } from "../functions/hooks/useUploadCourseFile";
 import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 
-const FileInput = ({ file, onChange, record }) => {
-  const imgName = record?.name;
-  const imgUrl = record?.url;
-  return (
-    <div>
-      <label className="border px-3 py-1 cursor-pointer inline-block">
-        {file ? file.name : "เลือกไฟล์"}
-        <input
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={(e) => onChange(e.target.files[0])}
-        />
-      </label>
-      {imgUrl && (
-        <a
-          href={imgUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-2 text-blue-600 underline inline-block"
-        >
-          {imgName || "ดูรูปภาพ"}
-        </a>
-      )}
-    </div>
-  );
-};
-
 function Page(props) {
   return (
     // <div className="bg-[#EDF0FF]">
@@ -104,6 +76,7 @@ function RenderCourseContainer({ course, index }) {
   return (
     <div className="border">
       <RenderCourseContainerHeadline course={course} />
+      <RenderCourseContainerFileInput />
     </div>
   );
 }
@@ -117,12 +90,43 @@ function RenderCourseContainerHeadline({ course }) {
   );
 }
 
+const RenderCourseContainerFileInput = ({ file, onChange, idpRecord }) => {
+  const imgName = idpRecord?.name;
+  const imgUrl = idpRecord?.url;
+  return (
+    <div>
+      <label className="border px-3 py-1 cursor-pointer inline-block">
+        {file ? file.name : "เลือกไฟล์"}
+        <input
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => onChange(e.target.files[0])}
+        />
+      </label>
+      {imgUrl && (
+        <a
+          href={imgUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-2 text-blue-600 underline inline-block"
+        >
+          {imgName || "ดูรูปภาพ"}
+        </a>
+      )}
+    </div>
+  );
+};
+
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
   const { uploadCourseFileElective, uploadCourseFileMandatory } =
     useUploadCourseFile();
-  const { setElectiveIDPRecords, checkSelectedCourseStatus, fetchIDPRecordFromCache } =
-    useIDPRecords();
+  const {
+    setElectiveIDPRecords,
+    checkSelectedCourseStatus,
+    fetchIDPRecordFromCache,
+  } = useIDPRecords();
 
   useTrainingMatrix();
   useCompetencies();
@@ -204,8 +208,8 @@ const MyLearning = () => {
     }
 
     const selfLearningIndex = selectedSelective.courses.length + 1;
-    const record = fetchIDPRecordFromCache(selectedSelective);
-    const savedSelfLearning = record?.certificates?.[selfLearningIndex];
+    const idpRecord = fetchIDPRecordFromCache(selectedSelective);
+    const savedSelfLearning = idpRecord?.certificates?.[selfLearningIndex];
 
     return (
       //กดด้านนอกกรอบจะปิด
@@ -226,17 +230,17 @@ const MyLearning = () => {
             />
 
             {selectedSelective.courses.map((course, index) => {
-              const saved = record?.certificates?.[index];
+              const saved = idpRecord?.certificates?.[index];
               return (
                 <div className="border" key={index}>
                   <div>
                     <a href={course.link}>{course.name ?? course.link}</a>
                   </div>
                   <div className="flex flex-col gap-3">
-                    <FileInput
+                    <RenderCourseContainerFileInput
                       file={files[index]}
                       onChange={(file) => handleFileChange(index, file)}
-                      record={saved}
+                      idpRecord={saved}
                     />
                     <textarea
                       className="border p-1 h-30"
@@ -261,7 +265,7 @@ const MyLearning = () => {
             <div className="border">
               <div>เรียนรู้ด้วยตนเอง</div>
               <div className="flex flex-col gap-3">
-                <FileInput
+                <RenderCourseContainerFileInput
                   file={files[selfLearningIndex]}
                   onChange={(file) => handleFileChange(selfLearningIndex, file)}
                 />
@@ -313,8 +317,8 @@ const MyLearning = () => {
     if (courseStatus && courseStatus !== "Complete") return null;
 
     const selfLearningIndex = selectedMandatory.courses.length + 1;
-    const record = fetchIDPRecordFromCache(selectedMandatory);
-    const savedSelfLearning = record?.certificates?.[selfLearningIndex];
+    const idpRecord = fetchIDPRecordFromCache(selectedMandatory);
+    const savedSelfLearning = idpRecord?.certificates?.[selfLearningIndex];
 
     return (
       <div
@@ -327,17 +331,17 @@ const MyLearning = () => {
         >
           <div>
             {selectedMandatory.courses.map((course, index) => {
-              const saved = record?.certificates?.[index];
+              const saved = idpRecord?.certificates?.[index];
               return (
                 <div key={index}>
                   <div>
                     <a href={course.link}>{course.institute ?? course.link}</a>
                   </div>
                   <div className="flex flex-col gap-3">
-                    <FileInput
+                    <RenderCourseContainerFileInput
                       file={files[index]}
                       onChange={(file) => handleFileChange(index, file)}
-                      record={saved}
+                      idpRecord={saved}
                     />
                     <textarea
                       className="border p-1 h-30"
@@ -361,7 +365,7 @@ const MyLearning = () => {
             <div>
               <div className="flex flex-col gap-3">
                 <div>เรียนรู้ด้วยตนเอง</div>
-                <FileInput
+                <RenderCourseContainerFileInput
                   file={files[selfLearningIndex]}
                   onChange={(file) => handleFileChange(selfLearningIndex, file)}
                 />
