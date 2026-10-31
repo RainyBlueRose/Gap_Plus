@@ -80,6 +80,7 @@ function RenderCourseContainer({
   onFileChange,
   onTextChange,
   reflection,
+  onSaveClick,
 }) {
   return (
     <div className="border">
@@ -94,6 +95,7 @@ function RenderCourseContainer({
         certificate={certificate}
         onTextChange={onTextChange}
       />
+      <RenderCourseContainerSaveButton onSaveClick={onSaveClick} />
     </div>
   );
 }
@@ -150,6 +152,20 @@ function RenderCourseContainerTextInput({
           onTextChange(e);
         }}
       ></textarea>
+    </div>
+  );
+}
+
+function RenderCourseContainerSaveButton({ onSaveClick }) {
+  return (
+    <div>
+      <button
+        onClick={() => {
+          onSaveClick();
+        }}
+      >
+        บันทึก
+      </button>
     </div>
   );
 }
@@ -259,7 +275,6 @@ const MyLearning = () => {
   // </button>
   const renderCourseElective = () => {
     if (!selectedSelective) return null;
-    console.log("selectedSelective", selectedSelective);
 
     const courseStatus = checkSelectedCourseStatus(selectedSelective);
     // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
@@ -294,77 +309,26 @@ const MyLearning = () => {
             />
 
             {selectedSelective.courses.map((course, index) => {
-              const saved = idpRecord?.certificates?.[index];
               return (
-                <div className="border" key={index}>
-                  <div>
-                    <a href={course.link}>{course.name ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <RenderCourseContainerFileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                      idpRecord={saved}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      placeholder="คำอธิบาย"
-                      value={reflections[index] ?? saved?.reflection ?? ""}
-                      onChange={(e) => handleReflectionChange(index, e)}
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() =>
-                        handleSaveElective(selectedSelective, index)
-                      }
-                    >
-                      บันทึก
-                    </button>
-                  </div>
-                  <RenderCourseContainer
-                    course={course}
-                    index={index}
-                    file={files[index]}
-                    onFileChange={(file) => {
-                      handleFileChange(index, file);
-                    }}
-                    certificate={idpRecord?.certificates?.[index]}
-                    reflection={reflections[index]}
-                    onTextChange={(e) => {
-                      handleReflectionChange(index, e);
-                    }}
-                  />
-                </div>
+                <RenderCourseContainer
+                  key={index}
+                  course={course}
+                  index={index}
+                  file={files[index]}
+                  onFileChange={(file) => {
+                    handleFileChange(index, file);
+                  }}
+                  certificate={idpRecord?.certificates?.[index]}
+                  reflection={reflections[index]}
+                  onTextChange={(e) => {
+                    handleReflectionChange(index, e);
+                  }}
+                  onSaveClick={() => {
+                    handleSaveElective(selectedSelective, index);
+                  }}
+                />
               );
             })}
-
-            <div className="border">
-              <div>เรียนรู้ด้วยตนเอง</div>
-              <div className="flex flex-col gap-3">
-                <RenderCourseContainerFileInput
-                  file={files[selfLearningIndex]}
-                  onChange={(file) => handleFileChange(selfLearningIndex, file)}
-                />
-                <textarea
-                  className="border p-1 h-30"
-                  placeholder="คำอธิบาย"
-                  value={
-                    reflections[selfLearningIndex] ??
-                    savedSelfLearning?.reflection ??
-                    ""
-                  }
-                  onChange={(e) => handleReflectionChange(selfLearningIndex, e)}
-                />
-                <button
-                  className="border p-2 cursor-pointer"
-                  onClick={() =>
-                    handleSaveElective(selectedSelective, selfLearningIndex)
-                  }
-                >
-                  บันทึก
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
