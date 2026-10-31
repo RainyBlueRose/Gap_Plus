@@ -75,7 +75,7 @@ function SavedSelectiveButton({ onClick, courseStatus }) {
 function RenderCourseContainer({
   course,
   index,
-  idpRecord,
+  certificate,
   file,
   onFileChange,
 }) {
@@ -83,7 +83,7 @@ function RenderCourseContainer({
     <div className="border">
       <RenderCourseContainerHeadline course={course} />
       <RenderCourseContainerFileInput2
-        idpRecord={idpRecord}
+        certificate={certificate}
         file={file}
         onFileChange={onFileChange}
       />
@@ -100,9 +100,9 @@ function RenderCourseContainerHeadline({ course }) {
   );
 }
 
-const RenderCourseContainerFileInput2 = ({ file, idpRecord, onFileChange }) => {
-  const imgName = idpRecord?.name;
-  const imgUrl = idpRecord?.url;
+function RenderCourseContainerFileInput2({ file, certificate, onFileChange }) {
+  const imgName = certificate?.name;
+  const imgUrl = certificate?.url;
   return (
     <div>
       <label>
@@ -126,7 +126,15 @@ const RenderCourseContainerFileInput2 = ({ file, idpRecord, onFileChange }) => {
       )}
     </div>
   );
-};
+}
+
+function RenderCourseContainerTextInput() {
+  return (
+    <div>
+      <textarea></textarea>
+    </div>
+  );
+}
 
 const RenderCourseContainerFileInput = ({ file, onChange, idpRecord }) => {
   const imgName = idpRecord?.name;
@@ -302,7 +310,7 @@ const MyLearning = () => {
                     onFileChange={(file) => {
                       handleFileChange(index, file);
                     }}
-                    idpRecord={idpRecord?.certificates?.[index]}
+                    certificate={idpRecord?.certificates?.[index]}
                   />
                 </div>
               );
