@@ -78,6 +78,8 @@ function RenderCourseContainer({
   certificate,
   file,
   onFileChange,
+  onTextChange,
+  reflection,
 }) {
   return (
     <div className="border">
@@ -86,6 +88,11 @@ function RenderCourseContainer({
         certificate={certificate}
         file={file}
         onFileChange={onFileChange}
+      />
+      <RenderCourseContainerTextInput
+        reflection={reflection}
+        certificate={certificate}
+        onTextChange={onTextChange}
       />
     </div>
   );
@@ -128,10 +135,21 @@ function RenderCourseContainerFileInput2({ file, certificate, onFileChange }) {
   );
 }
 
-function RenderCourseContainerTextInput() {
+function RenderCourseContainerTextInput({
+  reflection,
+  certificate,
+  onTextChange,
+}) {
   return (
     <div>
-      <textarea></textarea>
+      <textarea
+        className="border w-full"
+        placeholder="คำอธิบาย"
+        value={reflection ?? certificate?.reflection ?? ""}
+        onChange={(e) => {
+          onTextChange(e);
+        }}
+      ></textarea>
     </div>
   );
 }
@@ -311,6 +329,10 @@ const MyLearning = () => {
                       handleFileChange(index, file);
                     }}
                     certificate={idpRecord?.certificates?.[index]}
+                    reflection={reflections[index]}
+                    onTextChange={(e) => {
+                      handleReflectionChange(index, e);
+                    }}
                   />
                 </div>
               );
