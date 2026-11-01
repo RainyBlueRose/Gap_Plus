@@ -52,7 +52,7 @@ function RenderCourseElectiveHeadlineName({ competencyName }) {
 
 function RenderCourseElectiveHeadlineDescription({ description }) {
   return (
-    <div className="font-notosanthai-400 text-gray-400 text-sm">
+    <div className="font-notosanthai-regular text-gray-400 text-sm">
       {description}
     </div>
   );
@@ -60,9 +60,9 @@ function RenderCourseElectiveHeadlineDescription({ description }) {
 
 function SavedSelectiveButton({ onClick, courseStatus }) {
   return (
-    <div className="flex flex-col justify-center font-notosanthai-400 whitespace-nowrap">
+    <div className="flex flex-col justify-center font-notosanthai-regular whitespace-nowrap">
       {courseStatus === "In Progress" && (
-        <div className="font-supreme-400 px-10 py-2 bg-[#B3C6F9] shadow-sm rounded-sm">
+        <div className="font-supreme-regular px-10 py-2 bg-[#B3C6F9] shadow-sm rounded-sm">
           In Progress
         </div>
       )}
@@ -74,7 +74,6 @@ function SavedSelectiveButton({ onClick, courseStatus }) {
 
 function RenderCourseContainer({
   course,
-  index,
   certificate,
   file,
   onFileChange,
@@ -102,7 +101,7 @@ function RenderCourseContainer({
 
 function RenderCourseContainerHeadline({ course }) {
   return (
-    <div className="border flex justify-between">
+    <div className="border border-red-500 flex justify-between font-notosanthai-regular">
       <a href={course.link}>{course.name}</a>
       <div>{course.institute}</div>
     </div>
@@ -313,7 +312,6 @@ const MyLearning = () => {
                 <RenderCourseContainer
                   key={index}
                   course={course}
-                  index={index}
                   file={files[index]}
                   onFileChange={(file) => {
                     handleFileChange(index, file);
@@ -533,7 +531,7 @@ const MyLearning = () => {
 
   function ClassesMandatorySubHeadlineText() {
     return (
-      <div className="text-gray-600 font-notosanthai-400">
+      <div className="text-gray-600 font-notosanthai-regular">
         รายวิชาบังคับตามตำแหน่งงานของท่าน
       </div>
     );
@@ -543,12 +541,12 @@ const MyLearning = () => {
     return (
       <div>
         {status === "Complete" && (
-          <div className="font-supreme-400 px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
+          <div className="font-supreme-regular px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
             Complete
           </div>
         )}
         {status === undefined && (
-          <div className="font-supreme-400 px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
+          <div className="font-supreme-regular px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
             Incomplete
           </div>
         )}
@@ -566,7 +564,7 @@ const MyLearning = () => {
   }
 
   function ClassesMandatoryContainerDescription({ description }) {
-    return <div className="font-notosanthai-400">{description}</div>;
+    return <div className="font-notosanthai-regular">{description}</div>;
   }
 
   function Detail() {
@@ -579,7 +577,7 @@ const MyLearning = () => {
   }
 
   function DetailText() {
-    return <div className="font-notosanthai-400">รายละเอียด</div>;
+    return <div className="font-notosanthai-regular">รายละเอียด</div>;
   }
 
   function ArrowRightDown({ className }) {
@@ -672,17 +670,17 @@ const MyLearning = () => {
     return (
       <div>
         {status === undefined && (
-          <div className="font-supreme-400 px-3 bg-[#ECF1FF] shadow-sm rounded-sm whitespace-nowrap">
+          <div className="font-supreme-regular px-3 bg-[#ECF1FF] shadow-sm rounded-sm whitespace-nowrap">
             Not Selected
           </div>
         )}
         {status === "In Progress" && (
-          <div className="font-supreme-400 px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
+          <div className="font-supreme-regular px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
             Selected
           </div>
         )}
         {status === "Complete" && (
-          <div className="font-supreme-400 px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
+          <div className="font-supreme-regular px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
             Complete
           </div>
         )}
@@ -707,7 +705,7 @@ const MyLearning = () => {
 
   function ClassesSelectiveSubHeadline() {
     return (
-      <div className="text-gray-600 font-notosanthai-400">
+      <div className="text-gray-600 font-notosanthai-regular">
         ท่านสามารถเลือกวิชาที่ต้องการเรียนได้ที่แสดงอยู่โดยต้องเลือกอย่างน้อย 1
         วิชาเรียนและสามารถเลือกเรียนได้มากกว่า 1 วิชา
       </div>

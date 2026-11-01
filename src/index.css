@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: font-supreme-400;
+    font-family: font-supreme-regular;
     src: url(./assets/fonts/Supreme-Regular.woff2);
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-.font-supreme-400 {
-    font-family: "font-supreme-400", sans-serif;
+.font-supreme-regular {
+    font-family: "font-supreme-regular", sans-serif;
 }
 
 @font-face {
-    font-family: font-notosanthai-400;
+    font-family: font-notosanthai-regular;
     src: url(./assets/fonts/NotoSanThai/NotoSansThai-Regular.ttf);
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-.font-notosanthai-400 {
-    font-family: font-notosanthai-400, font-supreme-400;
+.font-notosanthai-regular {
+    font-family: font-notosanthai-regular, font-supreme-regular;
 }
 
 @font-face {
@@ -33,7 +33,7 @@
 }
 
 .font-notosanthai-bold {
-    font-family: font-notosanthai-bold,font-supreme-400;
+    font-family: font-notosanthai-bold,font-supreme-regular;
 }
 
 @font-face {
@@ -45,5 +45,5 @@
 }
 
 .font-notosanthai-semibold {
-    font-family: font-notosanthai-semibold,font-supreme-400;
+    font-family: font-notosanthai-semibold,font-supreme-regular;
 }
