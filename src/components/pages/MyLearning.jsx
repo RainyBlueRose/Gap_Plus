@@ -82,39 +82,46 @@ function RenderCourseContainer({
   onSaveClick,
 }) {
   return (
-    <div className="border">
-      <RenderCourseContainerHeadline course={course} />
-      <RenderCourseContainerFileInput2
-        certificate={certificate}
-        file={file}
-        onFileChange={onFileChange}
-      />
-      <RenderCourseContainerTextInput
-        reflection={reflection}
-        certificate={certificate}
-        onTextChange={onTextChange}
-      />
-      <RenderCourseContainerSaveButton onSaveClick={onSaveClick} />
+    <div className="rounded-lg shadow-xl border-lg">
+      <div className="bg-[#FAFAFA] p-5 border-b-gray-100 rounded-t-lg">
+        <RenderCourseContainerHeadline course={course} />
+      </div>
+      <div className="p-5">
+        <RenderCourseContainerFileInput
+          certificate={certificate}
+          file={file}
+          onFileChange={onFileChange}
+        />
+        <RenderCourseContainerTextInput
+          reflection={reflection}
+          certificate={certificate}
+          onTextChange={onTextChange}
+        />
+        <RenderCourseContainerSaveButton onSaveClick={onSaveClick} />
+      </div>
     </div>
   );
 }
 
 function RenderCourseContainerHeadline({ course }) {
   return (
-    <div className="border border-red-500 flex justify-between font-notosanthai-regular">
-      <a href={course.link}>{course.name}</a>
+    <div className="flex justify-between font-notosanthai-semibold">
+      <a className="text-xl" href={course.link}>
+        {course.name}
+      </a>
       <div>{course.institute}</div>
     </div>
   );
 }
 
-function RenderCourseContainerFileInput2({ file, certificate, onFileChange }) {
+function RenderCourseContainerFileInput({ file, certificate, onFileChange }) {
   const imgName = certificate?.name;
   const imgUrl = certificate?.url;
   return (
-    <div>
+    <div className="flex flex-col">
+      <label className="font-notosanthai-regular text-gray-700">หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร (เลือกไฟล์)</label>
       <label>
-        {file ? file.name : "เลือกไฟล์"}
+        {file ? file.name : <div className="border">เลือกไฟล์</div>}
         <input
           type="file"
           accept="image/*"
@@ -168,34 +175,6 @@ function RenderCourseContainerSaveButton({ onSaveClick }) {
     </div>
   );
 }
-
-const RenderCourseContainerFileInput = ({ file, onChange, idpRecord }) => {
-  const imgName = idpRecord?.name;
-  const imgUrl = idpRecord?.url;
-  return (
-    <div>
-      <label className="border px-3 py-1 cursor-pointer inline-block">
-        {file ? file.name : "เลือกไฟล์"}
-        <input
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={(e) => onChange(e.target.files[0])}
-        />
-      </label>
-      {imgUrl && (
-        <a
-          href={imgUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-2 text-blue-600 underline inline-block"
-        >
-          {imgName || "ดูรูปภาพ"}
-        </a>
-      )}
-    </div>
-  );
-};
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
@@ -274,6 +253,7 @@ const MyLearning = () => {
   // </button>
   const renderCourseElective = () => {
     if (!selectedSelective) return null;
+    console.log("selectedSelective", selectedSelective);
 
     const courseStatus = checkSelectedCourseStatus(selectedSelective);
     // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
