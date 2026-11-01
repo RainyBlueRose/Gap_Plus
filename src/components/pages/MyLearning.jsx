@@ -118,27 +118,31 @@ function RenderCourseContainerFileInput({ file, certificate, onFileChange }) {
   const imgName = certificate?.name;
   const imgUrl = certificate?.url;
   return (
-    <div className="flex flex-col">
-      <label className="font-notosanthai-regular text-gray-700">หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร (เลือกไฟล์)</label>
-      <label>
-        {file ? file.name : <div className="border">เลือกไฟล์</div>}
-        <input
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={(e) => onFileChange(e.target.files[0])}
-        />
+    <div className="flex flex-col gap-4">
+      <label className="font-notosanthai-regular text-gray-700">
+        หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร (เลือกไฟล์)
       </label>
-      {imgUrl && (
-        <a
-          href={imgUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-2 text-blue-600 underline inline-block"
-        >
-          {imgName || "ดูรูปภาพ"}
-        </a>
-      )}
+      <div className="rounded-xl p-5 bg-[#fafafa]">
+        <label className="inline-block px-3 py-2 rounded-sm bg-white border-gray-500 border-2 rounded-[24px] font-notosanthai-regular px-10 hover:cursor-pointer">
+          {file ? file.name : "เลือกไฟล์"}
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e) => onFileChange(e.target.files[0])}
+          />
+        </label>
+        {imgUrl && (
+          <a
+            href={imgUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 text-blue-600 underline inline-block"
+          >
+            {imgName || "ดูรูปภาพ"}
+          </a>
+        )}
+      </div>
     </div>
   );
 }
