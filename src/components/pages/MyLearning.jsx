@@ -123,9 +123,13 @@ function RenderCourseContainer({
 function RenderCourseContainerHeadline({ course }) {
   return (
     <div className="flex justify-between font-notosanthai-semibold">
-      <a className="text-xl" href={course.link}>
-        {course.name}
-      </a>
+      {course.link ? (
+        <a className="text-xl" href={course.link}>
+          {course.name === "" ? <div>{course.link}</div>: <div>{course.name}</div>}
+        </a>
+      ) : (
+        <div className="text-xl">{course.name}</div>
+      )}
       <div>{course.institute}</div>
     </div>
   );
@@ -335,6 +339,17 @@ const MyLearning = () => {
                 />
               );
             })}
+            <RenderCourseContainer
+              course={{ name: "เรียนรู้ด้วยตนเอง" }}
+              file={files[selfLearningIndex]}
+              onFileChange={(file) => handleFileChange(selfLearningIndex, file)}
+              certificate={savedSelfLearning}
+              reflection={reflections[selfLearningIndex]}
+              onTextChange={(e) => handleReflectionChange(selfLearningIndex, e)}
+              onSaveClick={() =>
+                handleSaveElective(selectedSelective, selfLearningIndex)
+              }
+            />
           </div>
         </div>
       </div>
