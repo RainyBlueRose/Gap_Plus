@@ -258,6 +258,7 @@ const MyLearning = () => {
   const closeMandatory = () => {
     setSelectedMandatory(null);
     setFiles({});
+    setReflection({});
   };
 
   // ---------- modals ----------
@@ -387,69 +388,53 @@ const MyLearning = () => {
         onClick={closeMandatory}
       >
         <div
-          className="bg-white p-5 rounded w-3/4 h-3/4 overflow-y-auto"
+          className="bg-white p-5 rounded w-2/4 h-3/4 overflow-y-auto"
           onClick={(event) => event.stopPropagation()}
         >
-          <div>
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-between gap-3">
+              <RenderCourseElectiveHeadlineText
+                competencyName={selectedMandatory.competencyName}
+                description={selectedMandatory.description}
+              />
+              <ClassMandatoryStatus status={courseStatus} />
+            </div>
             {selectedMandatory.courses.map((course, index) => {
               const saved = idpRecord?.certificates?.[index];
               return (
-                <div key={index}>
-                  <div>
-                    <a href={course.link}>{course.institute ?? course.link}</a>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <RenderCourseContainerFileInput
-                      file={files[index]}
-                      onChange={(file) => handleFileChange(index, file)}
-                      idpRecord={saved}
-                    />
-                    <textarea
-                      className="border p-1 h-30"
-                      placeholder="คำอธิบาย"
-                      value={reflections[index] ?? saved?.reflection ?? ""}
-                      onChange={(e) => handleReflectionChange(index, e)}
-                    />
-                    <button
-                      className="border p-2 cursor-pointer"
-                      onClick={() =>
-                        handleSaveMandatory(selectedMandatory, index)
-                      }
-                    >
-                      บันทึก
-                    </button>
-                  </div>
-                </div>
+                <RenderCourseContainer
+                  key={index}
+                  course={{
+                    ...course,
+                    name: course.name || course.institute || course.link,
+                  }}
+                  file={files[index]}
+                  onFileChange={(file) => handleFileChange(index, file)}
+                  certificate={saved}
+                  reflection={reflections[index]}
+                  onTextChange={(e) => handleReflectionChange(index, e)}
+                  onSaveClick={() =>
+                    handleSaveMandatory(selectedMandatory, index)
+                  }
+                />
               );
             })}
 
-            <div>
-              <div className="flex flex-col gap-3">
-                <div>เรียนรู้ด้วยตนเอง</div>
-                <RenderCourseContainerFileInput
-                  file={files[selfLearningIndex]}
-                  onChange={(file) => handleFileChange(selfLearningIndex, file)}
-                />
-                <textarea
-                  className="border p-1 h-30"
-                  placeholder="คำอธิบาย"
-                  value={
-                    reflections[selfLearningIndex] ??
-                    savedSelfLearning?.reflection ??
-                    ""
-                  }
-                  onChange={(e) => handleReflectionChange(selfLearningIndex, e)}
-                />
-                <button
-                  className="border p-2 cursor-pointer"
-                  onClick={() =>
-                    handleSaveMandatory(selectedMandatory, selfLearningIndex)
-                  }
-                >
-                  บันทึก
-                </button>
-              </div>
-            </div>
+            <RenderCourseContainer
+              course={{ name: "เรียนรู้ด้วยตนเอง" }}
+              file={files[selfLearningIndex]}
+              onFileChange={(file) =>
+                handleFileChange(selfLearningIndex, file)
+              }
+              certificate={savedSelfLearning}
+              reflection={reflections[selfLearningIndex]}
+              onTextChange={(e) =>
+                handleReflectionChange(selfLearningIndex, e)
+              }
+              onSaveClick={() =>
+                handleSaveMandatory(selectedMandatory, selfLearningIndex)
+              }
+            />
           </div>
         </div>
       </div>
