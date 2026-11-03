@@ -331,11 +331,50 @@ const AdminTrainingMatrices = () => {
                   )}
                 </td>
                 <td className="min-w-56 px-4 py-3 text-slate-600">
-                  {item.mandatory.map((m, index) => (
-                    <div className="mb-1 last:mb-0" key={index}>
-                      <span className="mr-2 text-slate-400">{index + 1}.</span>{m}
+                  {editId === item.id ? (
+                    <div>
+                      {form.mandatory.map((m, i) => (
+                        <div
+                          className="mb-2 flex items-center gap-2 last:mb-0"
+                          key={i}
+                        >
+                          <input
+                            className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                            type="text"
+                            value={m}
+                            onChange={(ev) =>
+                              handleArrayChange(
+                                "mandatory",
+                                i,
+                                ev.target.value,
+                              )
+                            }
+                          />
+                          <button
+                            className="rounded border border-rose-200 px-2 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-50"
+                            onClick={() => handleArrayRemove("mandatory", i)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        className="rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
+                        onClick={() => handleAddArray("mandatory")}
+                      >
+                        Add
+                      </button>
                     </div>
-                  ))}
+                  ) : (
+                    item.mandatory.map((m, index) => (
+                      <div className="mb-1 last:mb-0" key={index}>
+                        <span className="mr-2 text-slate-400">
+                          {index + 1}.
+                        </span>
+                        {m}
+                      </div>
+                    ))
+                  )}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3">
                   {editId === item.id ? (
