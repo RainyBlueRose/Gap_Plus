@@ -20,17 +20,21 @@ function Page(props) {
 }
 
 function RenderCourseElectiveHeadline({
+  onSelectCourseClick,
   competencyName,
   courseStatus,
   description,
 }) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between gap-3">
       <RenderCourseElectiveHeadlineText
         competencyName={competencyName}
         description={description}
       />
-      <SavedSelectiveButton courseStatus={courseStatus} />
+      <SavedSelectiveButton
+        onSelectCourseClick={onSelectCourseClick}
+        courseStatus={courseStatus}
+      />
     </div>
   );
 }
@@ -58,7 +62,7 @@ function RenderCourseElectiveHeadlineDescription({ description }) {
   );
 }
 
-function SavedSelectiveButton({ onClick, courseStatus }) {
+function SavedSelectiveButton({ onSelectCourseClick, courseStatus }) {
   return (
     <div className="flex flex-col justify-center font-notosanthai-regular whitespace-nowrap">
       {courseStatus === "In Progress" && (
@@ -66,8 +70,21 @@ function SavedSelectiveButton({ onClick, courseStatus }) {
           In Progress
         </div>
       )}
-      {courseStatus === "Complete" && <div>Complete</div>}
-      {courseStatus === undefined && <div>Select course</div>}
+      {courseStatus === "Complete" && (
+        <div className="font-supreme-regular px-10 py-2 bg-[#85F8C4] shadow-sm rounded-sm">
+          Complete
+        </div>
+      )}
+      {courseStatus === undefined && (
+        <button
+          className="font-supreme-regular px-10 py-2 border border-[#2e4dff] text-[#2e4dff] bg-[#e0e5ff] shadow-sm rounded-sm"
+          onClick={() => {
+            onSelectCourseClick();
+          }}
+        >
+          เลือกหลักสูตร
+        </button>
+      )}
     </div>
   );
 }
@@ -154,7 +171,9 @@ function RenderCourseContainerTextInput({
 }) {
   return (
     <div className="py-5">
-      <h1 className="font-notosanthai-regular py-3 text-lg">คำอธิบายและการนำไปประยุกต์ใช้ในการปฏิบัติงาน</h1>
+      <h1 className="font-notosanthai-regular py-3 text-lg">
+        คำอธิบายและการนำไปประยุกต์ใช้ในการปฏิบัติงาน
+      </h1>
       <textarea
         className="border border-gray-200 border-2 rounded-lg w-full h-30 p-3 font-notosanthai-regular focus:border-gray-500 outline-none"
         placeholder="รายละเอียดความรู้ที่ได้รับ หรือสรุปผลสัมฤทธิ์ของหลักสูตร..."
@@ -170,7 +189,8 @@ function RenderCourseContainerTextInput({
 function RenderCourseContainerSaveButton({ onSaveClick }) {
   return (
     <div className="flex justify-end">
-      <button className="inline-block px-3 py-2 rounded-xl bg-[#007AFF] rounded-[24px] font-notosanthai-regular text-white px-10 hover:cursor-pointer active:bg-[#006adb] transition duration-150"
+      <button
+        className="inline-block px-3 py-2 rounded-xl bg-[#007AFF] rounded-[24px] font-notosanthai-regular text-white px-10 hover:cursor-pointer active:bg-[#006adb] transition duration-150"
         onClick={() => {
           onSaveClick();
         }}
@@ -287,6 +307,9 @@ const MyLearning = () => {
           <div className="flex flex-col gap-3">
             {/* ถ้ามีสถานะแล้ว (In Progress / Complete) จะกดเลือกซ้ำไม่ได้ */}
             <RenderCourseElectiveHeadline
+              onSelectCourseClick={() =>
+                setElectiveIDPRecords(selectedSelective)
+              }
               competencyName={selectedSelective.competencyName}
               description={selectedSelective.description}
               courseStatus={courseStatus}
