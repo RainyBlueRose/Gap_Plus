@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { AdminNavbar } from "../layouts/AdminNavbar";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 const AdminOCRResult = () => {
   const [ocrResults, setOCRResults] = useState([]);
+  const [editKey, setEditKey] = useState(null);
+  const [form, setForm] = useState({ ocrResult: "" });
+  const [saveError, setSaveError] = useState("");
 
   const rows = ocrResults.flatMap(
     ({ id, empId, empName, compKey, status, certificates }) =>
       Object.entries(certificates ?? {}).map(([certKey, cert]) => ({
         key: `${id}-${certKey}`,
+        id,
+        certKey,
         empId,
         empName,
         compKey,
@@ -28,6 +33,51 @@ const AdminOCRResult = () => {
       ...doc.data(),
     }));
     setOCRResults(data);
+  }
+
+  function handleEdit(item) {
+    setEditKey(item.key);
+    setForm({ ocrResult: item.ocrResult ?? "" });
+    setSaveError("");
+  }
+
+  async function handleSave(item) {
+    const ocrResult = form.ocrResult.trim();
+    setSaveError("");
+
+    try {
+      await updateDoc(doc(db, "idp_records", item.id), {
+        [`certificates.${item.certKey}.ocrResult`]: ocrResult,
+      });
+
+      setOCRResults((currentResults) =>
+        currentResults.map((record) =>
+          record.id === item.id
+            ? {
+                ...record,
+                certificates: {
+                  ...record.certificates,
+                  [item.certKey]: {
+                    ...record.certificates?.[item.certKey],
+                    ocrResult,
+                  },
+                },
+              }
+            : record,
+        ),
+      );
+      setEditKey(null);
+      setForm({ ocrResult: "" });
+    } catch (error) {
+      console.error("Failed to update OCR result", error);
+      setSaveError("บันทึกผล OCR ไม่สำเร็จ กรุณาลองอีกครั้ง");
+    }
+  }
+
+  function handleCancel() {
+    setEditKey(null);
+    setForm({ ocrResult: "" });
+    setSaveError("");
   }
 
   return (
@@ -92,7 +142,18 @@ const AdminOCRResult = () => {
                     {item.status ?? "-"}
                   </td>
                   <td className="px-4 py-3 text-slate-800">
-                    {item.ocrResult ?? "-"}
+                    {editKey === item.key ? (
+                      <input
+                        className="w-full min-w-32 rounded border border-slate-300 px-2 py-1.5 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                        type="text"
+                        value={form.ocrResult}
+                        onChange={(event) =>
+                          setForm({ ocrResult: event.target.value })
+                        }
+                      />
+                    ) : (
+                      item.ocrResult ?? "-"
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {item.url ? (
@@ -108,12 +169,41 @@ const AdminOCRResult = () => {
                       "-"
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">-</td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {editKey === item.key ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700"
+                          onClick={() => handleSave(item)}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="rounded border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                          onClick={handleCancel}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="rounded border border-sky-200 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-50"
+                        onClick={() => handleEdit(item)}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        {saveError && (
+          <p className="mt-3 text-sm text-rose-700" role="alert">
+            {saveError}
+          </p>
+        )}
       </div>
     </div>
   );
