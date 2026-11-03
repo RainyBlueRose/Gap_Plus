@@ -4,6 +4,7 @@ import { db } from "../config/firebase";
 import {
   collection,
   query,
+  where,
   getDocs,
   updateDoc,
   doc,
@@ -14,18 +15,71 @@ const AdminEmployees = () => {
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({});
   const [employees, setEmployees] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState({
+    empId: "",
+    name: "",
+    email: "",
+    department: "",
+    jobCode: "",
+    level: "",
+    managerId: "",
+    managerName: "",
+    pointBalance: "",
+    position: "",
+  });
+  const [searchError, setSearchError] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
+  const searchFields = [
+    { key: "empId", label: "ID" },
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "department", label: "Department" },
+    { key: "jobCode", label: "Job Code" },
+    { key: "level", label: "Level" },
+    { key: "managerId", label: "Manager ID" },
+    { key: "managerName", label: "Manager Name" },
+    { key: "pointBalance", label: "Point Balance", type: "number" },
+    { key: "position", label: "Position" },
+  ];
+
   async function loadEmployees() {
-    const q = query(collection(db, "employees"));
-    const snap = await getDocs(q);
-    const newData = snap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    console.log(newData);
-    setEmployees(newData);
+    setIsSearching(true);
+    setSearchError("");
+
+    try {
+      const filters = searchFields
+        .filter(({ key }) => search[key].trim() !== "")
+        .map(({ key, type }) =>
+          where(
+            key,
+            "==",
+            type === "number" ? Number(search[key]) : search[key].trim(),
+          ),
+        );
+      const employeesQuery = query(collection(db, "employees"), ...filters);
+      const snap = await getDocs(employeesQuery);
+      const fetchedEmployees = snap.docs.map((employeeDoc) => ({
+        id: employeeDoc.id,
+        ...employeeDoc.data(),
+      }));
+
+      setEmployees((currentEmployees) => {
+        const mergedEmployees = new Map(
+          currentEmployees.map((employee) => [employee.id, employee]),
+        );
+        fetchedEmployees.forEach((employee) => {
+          mergedEmployees.set(employee.id, employee);
+        });
+        return Array.from(mergedEmployees.values());
+      });
+    } catch (error) {
+      console.error("Failed to search employees", error);
+      setSearchError("ค้นหาข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
+    } finally {
+      setIsSearching(false);
+    }
   }
 
   function handleAddData() {
@@ -105,14 +159,39 @@ const AdminEmployees = () => {
       <AdminNavbar />
 
       <div className="min-w-0 flex-1 p-6">
-        <button
-          className="mb-4 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-          onClick={() => {
-            loadEmployees();
-          }}
-        >
-          ค้นหาข้อมูล
-        </button>
+        <div className="mb-4 flex flex-wrap items-end gap-3">
+          {searchFields.map(({ key, label, type = "text" }) => (
+            <label
+              className="flex min-w-36 flex-col gap-1 text-xs font-medium text-slate-600"
+              key={key}
+            >
+              {label}
+              <input
+                className="rounded border border-slate-300 px-2 py-1.5 text-sm font-normal outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                type={type}
+                value={search[key]}
+                onChange={(event) =>
+                  setSearch((currentSearch) => ({
+                    ...currentSearch,
+                    [key]: event.target.value,
+                  }))
+                }
+              />
+            </label>
+          ))}
+          <button
+            className="rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSearching}
+            onClick={loadEmployees}
+          >
+            {isSearching ? "กำลังค้นหา..." : "ค้นหาข้อมูล"}
+          </button>
+        </div>
+        {searchError && (
+          <p className="mb-3 text-sm text-rose-700" role="alert">
+            {searchError}
+          </p>
+        )}
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
