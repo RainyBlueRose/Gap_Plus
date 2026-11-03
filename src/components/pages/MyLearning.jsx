@@ -153,10 +153,11 @@ function RenderCourseContainerTextInput({
   onTextChange,
 }) {
   return (
-    <div>
+    <div className="py-5">
+      <h1 className="font-notosanthai-regular py-3 text-lg">คำอธิบายและการนำไปประยุกต์ใช้ในการปฏิบัติงาน</h1>
       <textarea
-        className="border w-full"
-        placeholder="คำอธิบาย"
+        className="border border-gray-200 border-2 rounded-lg w-full h-30 p-3 font-notosanthai-regular focus:border-gray-500 outline-none"
+        placeholder="รายละเอียดความรู้ที่ได้รับ หรือสรุปผลสัมฤทธิ์ของหลักสูตร..."
         value={reflection ?? certificate?.reflection ?? ""}
         onChange={(e) => {
           onTextChange(e);
@@ -168,8 +169,8 @@ function RenderCourseContainerTextInput({
 
 function RenderCourseContainerSaveButton({ onSaveClick }) {
   return (
-    <div>
-      <button
+    <div className="flex justify-end">
+      <button className="inline-block px-3 py-2 rounded-xl bg-[#007AFF] rounded-[24px] font-notosanthai-regular text-white px-10 hover:cursor-pointer active:bg-[#006adb] transition duration-150"
         onClick={() => {
           onSaveClick();
         }}
