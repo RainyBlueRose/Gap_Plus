@@ -8,6 +8,14 @@ const AdminOCRResult = () => {
   const [editKey, setEditKey] = useState(null);
   const [form, setForm] = useState({ ocrResult: "" });
   const [saveError, setSaveError] = useState("");
+  const [search, setSearch] = useState({
+    empId: "",
+    empName: "",
+    compKey: "",
+    status: "",
+    ocrResult: "",
+    name: "",
+  });
 
   const rows = ocrResults.flatMap(
     ({ id, empId, empName, compKey, status, certificates }) =>
@@ -21,6 +29,27 @@ const AdminOCRResult = () => {
         status,
         ...cert,
       })),
+  );
+
+  const searchFields = [
+    { key: "empId", label: "ID" },
+    { key: "empName", label: "Name" },
+    { key: "compKey", label: "Competency Key" },
+    { key: "status", label: "Status" },
+    { key: "ocrResult", label: "OCR Result" },
+    { key: "name", label: "Image" },
+  ];
+
+  const filteredRows = rows.filter((item) =>
+    searchFields.every(({ key }) => {
+      const query = search[key].trim().toLocaleLowerCase();
+      return (
+        !query ||
+        String(item[key] ?? "")
+          .toLocaleLowerCase()
+          .includes(query)
+      );
+    }),
   );
 
   console.log("ocrResults", ocrResults);
@@ -84,14 +113,43 @@ const AdminOCRResult = () => {
     <div className="flex min-h-screen">
       <AdminNavbar />
       <div className="min-w-0 flex-1 p-6">
-        <div>
+        <div className="mb-4 flex flex-wrap items-end gap-3">
           <button
-            className="mb-4 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+            className="rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
             onClick={() => {
               loadOCRResult();
             }}
           >
             ค้นหาข้อมูล
+          </button>
+          {searchFields.map(({ key, label }) => (
+            <label
+              className="flex min-w-36 flex-col gap-1 text-xs font-medium text-slate-600"
+              key={key}
+            >
+              {label}
+              <input
+                className="rounded border border-slate-300 px-2 py-1.5 text-sm font-normal outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                type="search"
+                value={search[key]}
+                onChange={(event) =>
+                  setSearch((currentSearch) => ({
+                    ...currentSearch,
+                    [key]: event.target.value,
+                  }))
+                }
+              />
+            </label>
+          ))}
+          <button
+            className="rounded border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100"
+            onClick={() =>
+              setSearch(
+                Object.fromEntries(searchFields.map(({ key }) => [key, ""])),
+              )
+            }
+          >
+            ล้างตัวกรอง
           </button>
         </div>
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -123,7 +181,7 @@ const AdminOCRResult = () => {
               </tr>
             </thead>
             <tbody>
-              {rows.map((item, index) => (
+              {filteredRows.map((item, index) => (
                 <tr
                   key={item.key}
                   className="border-b border-slate-100 transition-colors last:border-0 hover:bg-sky-50/50"
@@ -196,6 +254,16 @@ const AdminOCRResult = () => {
                   </td>
                 </tr>
               ))}
+              {filteredRows.length === 0 && (
+                <tr>
+                  <td
+                    className="px-4 py-6 text-center text-slate-500"
+                    colSpan={8}
+                  >
+                    ไม่พบข้อมูลที่ตรงกับเงื่อนไขค้นหา
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
