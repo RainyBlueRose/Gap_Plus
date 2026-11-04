@@ -1,7 +1,7 @@
-import React from "react";
 import Header from "../layouts/Header";
-
+import useEvaluate from "../functions/hooks/useEvaluate";
 const Evaluate = () => {
+  useEvaluate();
   return (
     <div>
       <Header />
