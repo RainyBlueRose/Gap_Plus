@@ -1,12 +1,41 @@
 import Header from "../layouts/Header";
 import useEvaluate from "../functions/hooks/useEvaluate";
-const Evaluate = () => {
-  useEvaluate();
+import { useEvaluateData } from "../../store/evaluateSlice";
+import { useState } from "react";
+
+function Page(props) {
+  return <div>{props.children}</div>;
+}
+
+function MainSection(props) {
+  return <div className="grid grid-cols-3 gap-3 p-3">{props.children}</div>;
+}
+
+function EmployeeList() {
+  const { evaluates } = useEvaluateData();
   return (
     <div>
-      <Header />
-      <div>Evaluate</div>
+      {evaluates.map((evaluate, index) => (
+        <div key={index}>
+          <div className="border">{evaluate.empId}</div>
+        </div>
+      ))} 
     </div>
+  );
+}
+
+const Evaluate = () => {
+  useEvaluate();
+  const { evaluates } = useEvaluateData();
+  const [selectEmployee, setSelectEmployee] = useState();
+
+  return (
+    <Page>
+      <Header />
+      <MainSection>
+        <EmployeeList />
+      </MainSection>
+    </Page>
   );
 };
 
