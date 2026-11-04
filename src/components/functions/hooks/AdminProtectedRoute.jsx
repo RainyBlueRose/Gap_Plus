@@ -16,7 +16,6 @@ export const AdminProtectedRoute = () => {
   if (user.level !== "admin") {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
-  console.log("AdminProtectedRoute User info", user);
   return <Outlet />;
 };
 
