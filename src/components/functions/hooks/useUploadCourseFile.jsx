@@ -103,6 +103,7 @@ export const useUploadCourseFile = () => {
       empName: user.name,
       timestamp: new Date().toISOString(),
       type: "mandatory",
+      managerId: user.managerId,
     });
 
   return { uploadCourseFileElective, uploadCourseFileMandatory, savingIndex };

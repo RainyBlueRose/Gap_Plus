@@ -54,6 +54,7 @@ export const useIDPRecords = () => {
           status: "In Progress",
           timestamp: date.toISOString(),
           type: "selective",
+          managerId: user.managerId,
         },
       ]),
     );
@@ -63,7 +64,8 @@ export const useIDPRecords = () => {
   const fetchIDPRecordFromCache = (competency) =>
     idpRecords.find((r) => r.compKey === competency.id); // ปรับ key ให้ตรงกับของจริง
 
-  const checkSelectedCourseStatus = (competency) => fetchIDPRecordFromCache(competency)?.status;
+  const checkSelectedCourseStatus = (competency) =>
+    fetchIDPRecordFromCache(competency)?.status;
 
   return {
     setElectiveIDPRecords,

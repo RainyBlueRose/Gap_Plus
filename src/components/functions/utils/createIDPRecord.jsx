@@ -18,6 +18,7 @@ export const createElectiveIDPRecord = async (user, comp) => {
       status: "In Progress",
       timestamp: date.toISOString(),
       type: "selective",
+      managerId: user.managerId,
     },
     { merge: true },
   );
