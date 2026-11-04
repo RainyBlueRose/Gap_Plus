@@ -20,4 +20,5 @@ export const evaluateSlice = createSlice({
 
 export const selectEvaluate = (state) => state.evaluate;
 export const useEvaluateData = () => useSelector(selectEvaluate);
+export const { setEvaluate } = evaluateSlice.actions;
 export default evaluateSlice.reducer;
