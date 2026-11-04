@@ -7,26 +7,23 @@ import { db } from "../../config/firebase";
 import { setEvaluate } from "../../../store/evaluateSlice";
 import { useDispatch } from "react-redux";
 
+async function fetchEvaluate(managerId) {
+  const q = query(
+    collection(db, "idp_records"),
+    where("managerId", "==", managerId),
+  );
+  const snapdocs = await getDocs(q);
+  return snapdocs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
 const useEvaluate = () => {
   const { user } = useUserData();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    async function load() {
-      if (!user?.empId) return;
-      const q = query(
-        collection(db, "idp_records"),
-        where("managerId", "==", user.empId),
-      );
-      const snapdocs = await getDocs(q);
-      const evaluate = snapdocs.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      dispatch(setEvaluate(evaluate));
-    }
+    if (!user?.empId) return;
 
-    load();
+    fetchEvaluate(user.empId).then((list) => dispatch(setEvaluate(list)));
   }, [user?.empId, dispatch]);
 };
 
