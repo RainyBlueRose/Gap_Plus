@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
+import Header from "../layouts/Header";
 
 const Evaluate = () => {
   return (
-    <div>Evaluate</div>
-  )
-}
+    <div>
+      <Header />
+      <div>Evaluate</div>
+    </div>
+  );
+};
 
-export default Evaluate
+export default Evaluate;
