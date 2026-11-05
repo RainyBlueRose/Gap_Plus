@@ -4,6 +4,7 @@ import trainingMatrixSlice from "./trainingMatrixSlice";
 import competenciesSlice from "./competenciesSlice";
 import idpRecordsSlice from "./IDPRecordsSlice";
 import evaluateEmployeesSlice from "./evaluateEmployeeSlice";
+import evaluateTrainingMatrixSlice from "./evaluateTrainingMatrixSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     competencies: competenciesSlice,
     idpRecords: idpRecordsSlice,
     evaluateEmployees: evaluateEmployeesSlice,
+    evaluateTrainingMatrix: evaluateTrainingMatrixSlice,
   },
 });
