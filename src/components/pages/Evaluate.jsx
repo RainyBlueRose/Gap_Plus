@@ -19,25 +19,33 @@ function EmployeeList() {
   const { evaluateEmployees } = useEvaluateEmployeesData();
   const findTrainingMatrixByJobCide = useFindTrainingMatrixByJobCode();
 
+  const [mandatorys, setMandatory] = useState();
+  const [electives, setElectives] = useState();
+
   function getIDPRecords(jobCode) {
     const trainingMatrix = findTrainingMatrixByJobCide(jobCode);
     const { mandatory, electives } = trainingMatrix;
+    setMandatory(mandatory);
+    setElectives(electives);
   }
 
   return (
     <div>
-      {evaluateEmployees.map((e, index) => (
-        <div
-          key={index}
-          className="border"
-          onClick={() => {
-            getIDPRecords(e.jobCode);
-          }}
-        >
-          <div>{e.empId}</div>
-          <div>{e.name}</div>
-        </div>
-      ))}
+      <div className="col-span-1">
+        {evaluateEmployees.map((e, index) => (
+          <div
+            key={index}
+            className="border"
+            onClick={() => {
+              getIDPRecords(e.jobCode);
+            }}
+          >
+            <div>{e.empId}</div>
+            <div>{e.name}</div>
+          </div>
+        ))}
+      </div>
+      <div className="col-span-2"></div>
     </div>
   );
 }
