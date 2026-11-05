@@ -1,10 +1,11 @@
 import Header from "../layouts/Header";
 
 import useEvaluateEmployees from "../functions/hooks/useEvaluateEmployees";
-import useEvaluateTrainingMatrix from "../functions/hooks/useEvaluateTrainingMatrix";
+import useEvaluateTrainingMatrix, {
+  useFindTrainingMatrixByJobCode,
+} from "../functions/hooks/useEvaluateTrainingMatrix";
 
 import { useEvaluateEmployeesData } from "../../store/evaluateEmployeeSlice";
-import { useEvaluateTrainingMatrixData } from "../../store/evaluateTrainingMatrixSlice";
 
 function Page(props) {
   return <div>{props.children}</div>;
@@ -16,10 +17,17 @@ function MainSection(props) {
 
 function EmployeeList() {
   const { evaluateEmployees } = useEvaluateEmployeesData();
+  const findTrainingMatrixByJobCide = useFindTrainingMatrixByJobCode();
   return (
     <div className="">
       {evaluateEmployees.map((e, index) => (
-        <div key={index} className="border">
+        <div
+          key={index}
+          className="border"
+          onClick={() => {
+            showIDPRecords(e.jobCode);
+          }}
+        >
           <div>{e.empId}</div>
           <div>{e.name}</div>
         </div>
@@ -30,11 +38,7 @@ function EmployeeList() {
 
 function showIDPRecords(jobCode) {
   const trainingMatrix = fetchEvaluateTrainingMatrixByJobCode(jobCode);
-}
-
-function fetchEvaluateTrainingMatrixByJobCode(jobCode) {
-  const { evaluateTrainingMatrix } = { useEvaluateTrainingMatrixData };
-  return evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
+  console.log("trainingMatrix", trainingMatrix);
 }
 
 const Evaluate = () => {
