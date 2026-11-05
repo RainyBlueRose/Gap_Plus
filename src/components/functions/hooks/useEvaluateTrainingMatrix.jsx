@@ -6,20 +6,35 @@ import { useEffect } from "react";
 
 import { getDocs, collection, query, where } from "firebase/firestore";
 
-async function fetchEvaluateTrainingMatrix(jobCode) {}
+async function fetchEvaluateTrainingMatrix(jobCode) {
+  const q = query(
+    collection(db, "training_matrices"),
+    where("jobCode", "in", jobCode),
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
 
 const useEvaluateTrainingMatrix = () => {
-  const { evaluateEmployees } = useEvaluateEmployeesData();
+  const { evaluateEmployees, loading } = useEvaluateEmployeesData();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!evaluateEmployees) return;
+    if (loading !== "succeeded") return;
     let cancelled = false;
 
+    const load = async () => {
+      const jobCodeList = evaluateEmployees.map((e) => e.jobCode);
+      const trainingMatrix = await fetchEvaluateTrainingMatrix(jobCodeList);
+
+      if (!cancelled) {
+        dispatch(setEvaluateTrainingMatrix(trainingMatrix));
+      }
+    };
     return () => {
       cancelled = true;
     };
-  }, [evaluate?.jobCode, dispatch]);
+  }, [loading, dispatch]);
 };
 
 export default useEvaluateTrainingMatrix;

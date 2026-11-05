@@ -1,6 +1,7 @@
 import Header from "../layouts/Header";
 import useEvaluateEmployees from "../functions/hooks/useEvaluateEmployees";
 import { useState } from "react";
+import useEvaluateTrainingMatrix from "../functions/hooks/useEvaluateTrainingMatrix";
 
 function Page(props) {
   return <div>{props.children}</div>;
@@ -16,6 +17,7 @@ function EmployeeList() {
 
 const Evaluate = () => {
   useEvaluateEmployees();
+  useEvaluateTrainingMatrix();
   return (
     <Page>
       <Header />
