@@ -1,4 +1,5 @@
 import Header from "../layouts/Header";
+import useEvaluateEmployees from "../functions/hooks/useEvaluateEmployees";
 import { useState } from "react";
 
 function Page(props) {
@@ -14,6 +15,7 @@ function EmployeeList() {
 }
 
 const Evaluate = () => {
+  useEvaluateEmployees();
   return (
     <Page>
       <Header />
