@@ -1,5 +1,4 @@
 import Header from "../layouts/Header";
-import useEvaluate from "../functions/hooks/useEvaluate";
 import { useEvaluateData } from "../../store/evaluateSlice";
 import { useState } from "react";
 
@@ -12,23 +11,10 @@ function MainSection(props) {
 }
 
 function EmployeeList() {
-  const { evaluates } = useEvaluateData();
-  return (
-    <div>
-      {evaluates.map((evaluate, index) => (
-        <div key={index}>
-          <div className="border">{evaluate.empId}</div>
-        </div>
-      ))} 
-    </div>
-  );
+  return <div></div>;
 }
 
 const Evaluate = () => {
-  useEvaluate();
-  const { evaluates } = useEvaluateData();
-  const [selectEmployee, setSelectEmployee] = useState();
-
   return (
     <Page>
       <Header />
