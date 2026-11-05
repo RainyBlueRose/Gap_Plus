@@ -20,7 +20,7 @@ async function fetchEvaluateEmployeesData(managerId) {
 const useEvaluateEmployees = () => {
   const dispatch = useDispatch();
   const { user } = useUserData();
-  (useEffect(() => {
+  useEffect(() => {
     if (!user?.empId) return;
 
     let cancelled = false;
@@ -39,8 +39,7 @@ const useEvaluateEmployees = () => {
     return () => {
       cancelled = true;
     };
-  }),
-    [user.empId, dispatch]);
+  }, [user.empId, dispatch]);
 };
 
 export default useEvaluateEmployees;
