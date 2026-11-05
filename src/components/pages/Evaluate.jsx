@@ -42,10 +42,6 @@ function EmployeeList() {
   );
 }
 
-function IDPRecordsDetail() {
-  return <div></div>;
-}
-
 const Evaluate = () => {
   useEvaluateEmployees();
   useEvaluateTrainingMatrix();
@@ -54,7 +50,6 @@ const Evaluate = () => {
       <Header />
       <MainSection>
         <EmployeeList />
-        <IDPRecordsDetail />
       </MainSection>
     </Page>
   );
