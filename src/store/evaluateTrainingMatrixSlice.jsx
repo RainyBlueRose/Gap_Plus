@@ -21,8 +21,7 @@ export const evaluateTrainingMatrixSlice = createSlice({
 export default evaluateTrainingMatrixSlice.reducer;
 export const selectEvaluateTrainingMatrix = (state) =>
   state.evaluateTrainingMatrix;
-export const useEvaluateTrainingMatrixData = useSelector(
-  selectEvaluateTrainingMatrix,
-);
+export const useEvaluateTrainingMatrixData = () =>
+  useSelector(selectEvaluateTrainingMatrix);
 export const { setEvaluateTrainingMatrix } =
   evaluateTrainingMatrixSlice.actions;
