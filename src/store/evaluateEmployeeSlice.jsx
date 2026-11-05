@@ -13,6 +13,7 @@ export const evaluateEmployeeSlice = createSlice({
   reducers: {
     setEvaluateEmployee: (state, action) => {
       state.evaluateEmployees = action.payload;
+      state.loading = "succeeded";
     },
   },
 });

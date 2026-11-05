@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 
 import { getDocs, collection, query, where } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 async function fetchEvaluateTrainingMatrix(jobCode) {
   const q = query(
@@ -24,13 +25,16 @@ const useEvaluateTrainingMatrix = () => {
     let cancelled = false;
 
     const load = async () => {
-      const jobCodeList = evaluateEmployees.map((e) => e.jobCode);
+      const jobCodeList = [
+        ...new Set(evaluateEmployees.map((e) => e.jobCode).filter(Boolean)),
+      ];
       const trainingMatrix = await fetchEvaluateTrainingMatrix(jobCodeList);
 
       if (!cancelled) {
         dispatch(setEvaluateTrainingMatrix(trainingMatrix));
       }
     };
+    load();
     return () => {
       cancelled = true;
     };
