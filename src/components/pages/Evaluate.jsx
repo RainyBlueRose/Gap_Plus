@@ -18,6 +18,12 @@ function MainSection(props) {
 function EmployeeList() {
   const { evaluateEmployees } = useEvaluateEmployeesData();
   const findTrainingMatrixByJobCide = useFindTrainingMatrixByJobCode();
+
+  function showIDPRecords(jobCode) {
+    const trainingMatrix = findTrainingMatrixByJobCide(jobCode);
+    console.log("trainingMatrix", trainingMatrix);
+  }
+
   return (
     <div className="">
       {evaluateEmployees.map((e, index) => (
@@ -34,11 +40,6 @@ function EmployeeList() {
       ))}
     </div>
   );
-}
-
-function showIDPRecords(jobCode) {
-  const trainingMatrix = fetchEvaluateTrainingMatrixByJobCode(jobCode);
-  console.log("trainingMatrix", trainingMatrix);
 }
 
 const Evaluate = () => {
