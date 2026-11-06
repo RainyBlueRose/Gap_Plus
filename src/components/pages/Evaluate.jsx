@@ -32,9 +32,12 @@ function EmployeeList() {
     const { mandatory, electives } = trainingMatrix;
     console.log("mandatory", mandatory);
     console.log("electives", electives);
-    const mandatoryCompetenciesID =
+    const mandatorysCompetenciesID =
       await fetchCompetenciesIDByCourses(mandatory);
-    console.log("mandatoryCompetenciesID", mandatoryCompetenciesID);
+    const electivesCompetenciesID =
+      await fetchCompetenciesIDByCourses(electives);
+    console.log("mandatoryCompetenciesID", mandatorysCompetenciesID);
+    console.log("electivesCompetenciesID", electivesCompetenciesID);
   }
 
   function findTrainingMatrixByJobCode(jobCode) {
@@ -48,6 +51,15 @@ function EmployeeList() {
     );
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => d.id);
+  }
+
+  async function fetchIDPRecordsByCompetencieIDs(competencieIDs) {
+    const q = query(
+      collection(db, "idp_records"),
+      where("compKey", "in", competencieIDs),
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
   return (
