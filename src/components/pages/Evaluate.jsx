@@ -28,7 +28,8 @@ function EmployeeList() {
   const [mandatoryIDPRecords, setMandatoryIDPRecords] = useState();
   const [electiveIDPRecords, setElectiveIDPRecords] = useState();
 
-  async function getIDPRecords(jobCode) {
+  async function getIDPRecords(employee) {
+    const { empId, jobCode } = employee;
     const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
     const { mandatory, electives } = trainingMatrix;
     const mandatoryCompetenciesIDs =
@@ -36,9 +37,11 @@ function EmployeeList() {
     const electiveCompetenciesIDs =
       await fetchCompetencieIDsByCourses(electives);
     const mandatoryIDPRecords = await fetchIDPRecordsByCompetencieIDs(
+      empId,
       mandatoryCompetenciesIDs,
     );
     const electiveIDPRecords = await fetchIDPRecordsByCompetencieIDs(
+      empId,
       electiveCompetenciesIDs,
     );
     setMandatoryCompetenciesIDs(mandatoryCompetenciesIDs);
@@ -77,9 +80,10 @@ function EmployeeList() {
     return snapshot.docs.map((d) => d.id);
   }
 
-  async function fetchIDPRecordsByCompetencieIDs(competencieIDs) {
+  async function fetchIDPRecordsByCompetencieIDs(empId, competencieIDs) {
     const q = query(
       collection(db, "idp_records"),
+      where("empId", "==", empId),
       where("compKey", "in", competencieIDs),
     );
     const snapshot = await getDocs(q);
@@ -94,7 +98,7 @@ function EmployeeList() {
             key={index}
             className="border"
             onClick={() => {
-              getIDPRecords(e.jobCode);
+              getIDPRecords(e);
             }}
           >
             <div>{e.empId}</div>
