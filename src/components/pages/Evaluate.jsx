@@ -57,7 +57,15 @@ function EmployeeList() {
       mandatoryIDPRecords,
     );
     console.log("mandatory", mandatory);
-    return <></>;
+    return (
+      <>
+        {mandatory.map((m, index) => (
+          <div key={index}>
+            {m.record ? <div>{m.record.empName}</div> : <div>ไม่ได้ส่ง</div>}
+          </div>
+        ))}
+      </>
+    );
   }
 
   function checkCompleteIDPRecordsByCompetencieIDs(competencieIDs, IDPRecords) {
