@@ -45,8 +45,3 @@ const useEvaluateTrainingMatrix = () => {
 };
 
 export default useEvaluateTrainingMatrix;
-
-export const useFindTrainingMatrixByJobCode = () => {
-  const { evaluateTrainingMatrix } = useEvaluateTrainingMatrixData();
-  return (jobCode) => evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
-};

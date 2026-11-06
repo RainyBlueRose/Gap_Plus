@@ -3,11 +3,10 @@ import { useState } from "react";
 import Header from "../layouts/Header";
 
 import useEvaluateEmployees from "../functions/hooks/useEvaluateEmployees";
-import useEvaluateTrainingMatrix, {
-  useFindTrainingMatrixByJobCode,
-} from "../functions/hooks/useEvaluateTrainingMatrix";
+import useEvaluateTrainingMatrix from "../functions/hooks/useEvaluateTrainingMatrix";
 
 import { useEvaluateEmployeesData } from "../../store/evaluateEmployeeSlice";
+import { useEvaluateTrainingMatrixData } from "../../store/evaluateTrainingMatrixSlice";
 
 function Page(props) {
   return <div>{props.children}</div>;
@@ -19,16 +18,21 @@ function MainSection(props) {
 
 function EmployeeList() {
   const { evaluateEmployees } = useEvaluateEmployeesData();
-  const findTrainingMatrixByJobCide = useFindTrainingMatrixByJobCode();
+  const { evaluateTrainingMatrix } = useEvaluateTrainingMatrixData();
 
   const [mandatorys, setMandatory] = useState();
   const [electives, setElectives] = useState();
+  const [selectEmployee, setSelectEmployee] = useState();
 
   function getIDPRecords(jobCode) {
-    const trainingMatrix = findTrainingMatrixByJobCide(jobCode);
+    const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
     const { mandatory, electives } = trainingMatrix;
-    setMandatory(mandatory);
-    setElectives(electives);
+    console.log("mandatory", mandatory);
+    console.log("electives", electives);
+  }
+
+  function findTrainingMatrixByJobCode(jobCode) {
+    return evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
   }
 
   return (
