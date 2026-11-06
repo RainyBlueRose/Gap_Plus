@@ -23,19 +23,27 @@ function EmployeeList() {
   const { evaluateEmployees } = useEvaluateEmployeesData();
   const { evaluateTrainingMatrix } = useEvaluateTrainingMatrixData();
 
-  const [mandatoryCompetenciesIDs, setMandatoryCompetenciesIDs] = useState();
-  const [electiveCompetenciesIDs, setElectiveCompetenciesIDs] = useState();
+  const [mandatoryCompetencies, setMandatoryCompetencies] = useState();
+  const [electiveCompetencies, setElectiveCompetencies] = useState();
   const [mandatoryIDPRecords, setMandatoryIDPRecords] = useState();
   const [electiveIDPRecords, setElectiveIDPRecords] = useState();
 
   async function getIDPRecords(employee) {
     const { empId, jobCode } = employee;
+
+    // หา training matrix จาก jobCode ของพนักงานที่เลือก
     const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
     const { mandatory, electives } = trainingMatrix;
-    const mandatoryCompetenciesIDs =
-      await fetchCompetencieIDsByCourses(mandatory);
-    const electiveCompetenciesIDs =
-      await fetchCompetencieIDsByCourses(electives);
+
+    // ดึงวิชาต่างๆจากรายการใน training matrix และแยกออกเป็นสองส่วนคือ mandatory และ elective
+    const mandatoryCompetencies = await fetchCompetencieIDsByCourses(mandatory);
+    const electiveCompetencies = await fetchCompetencieIDsByCourses(electives);
+
+    // แยกเอาแค่ไอดีของ course ต่างๆออกมาเพื่อเอาไปใช้หา idp record ของพนักงานต่อได้โดยง่าย
+    const mandatoryCompetenciesIDs = mandatoryCompetencies.map((m) => m.id);
+    const electiveCompetenciesIDs = electiveCompetencies.map((e) => e.id);
+
+    // หา IDP record ของพนักงาน โดยใช้ empId และ competencie ID เพื่อจะได้ดคงได้ถูกคนและถูกวิชาทั้ง mandatory และ elective
     const mandatoryIDPRecords = await fetchIDPRecordsByCompetencieIDs(
       empId,
       mandatoryCompetenciesIDs,
@@ -44,8 +52,10 @@ function EmployeeList() {
       empId,
       electiveCompetenciesIDs,
     );
-    setMandatoryCompetenciesIDs(mandatoryCompetenciesIDs);
-    setElectiveCompetenciesIDs(electiveCompetenciesIDs);
+
+    // เก็บข้อมูล competencie, IDP records ของพนักงานลง State
+    setMandatoryCompetencies(mandatoryCompetencies);
+    setElectiveCompetencies(electiveCompetencies);
     setMandatoryIDPRecords(mandatoryIDPRecords);
     setElectiveIDPRecords(electiveIDPRecords);
   }
@@ -53,7 +63,7 @@ function EmployeeList() {
   function MandatoryCourseList() {
     if (!mandatoryIDPRecords) return;
     const mandatory = checkCompleteIDPRecordsByCompetencieIDs(
-      mandatoryCompetenciesIDs,
+      mandatoryCompetencies,
       mandatoryIDPRecords,
     );
     console.log("mandatory", mandatory);
@@ -68,10 +78,10 @@ function EmployeeList() {
     );
   }
 
-  function checkCompleteIDPRecordsByCompetencieIDs(competencieIDs, IDPRecords) {
-    return competencieIDs.map((compKey) => ({
-      compKey,
-      record: IDPRecords.find((record) => record.compKey === compKey) ?? null,
+  function checkCompleteIDPRecordsByCompetencieIDs(competencie, IDPRecords) {
+    return competencie.map((c) => ({
+      comp: c,
+      record: IDPRecords.find((record) => record.compKey === c.id) ?? null,
     }));
   }
 
@@ -85,7 +95,7 @@ function EmployeeList() {
       where("competencyName", "in", courses),
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => d.id);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
   async function fetchIDPRecordsByCompetencieIDs(empId, competencieIDs) {
