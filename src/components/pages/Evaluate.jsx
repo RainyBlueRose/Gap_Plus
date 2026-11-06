@@ -30,21 +30,25 @@ function EmployeeList() {
   async function getIDPRecords(jobCode) {
     const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
     const { mandatory, electives } = trainingMatrix;
-    console.log("mandatory", mandatory);
-    console.log("electives", electives);
-    const mandatorysCompetenciesID =
-      await fetchCompetenciesIDByCourses(mandatory);
-    const electivesCompetenciesID =
-      await fetchCompetenciesIDByCourses(electives);
-    console.log("mandatoryCompetenciesID", mandatorysCompetenciesID);
-    console.log("electivesCompetenciesID", electivesCompetenciesID);
+    const mandatoryCompetenciesIDs =
+      await fetchCompetencieIDsByCourses(mandatory);
+    const electiveCompetenciesIDs =
+      await fetchCompetencieIDsByCourses(electives);
+    const mandatoryIDPRecords = await fetchIDPRecordsByCompetencieIDs(
+      mandatoryCompetenciesIDs,
+    );
+    const electiveIDPRecords = await fetchIDPRecordsByCompetencieIDs(
+      electiveCompetenciesIDs,
+    );
+    console.log("mandatoryIDPRecords", mandatoryIDPRecords);
+    console.log("electiveIDPRecords", electiveIDPRecords);
   }
 
   function findTrainingMatrixByJobCode(jobCode) {
     return evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
   }
 
-  async function fetchCompetenciesIDByCourses(courses) {
+  async function fetchCompetencieIDsByCourses(courses) {
     const q = query(
       collection(db, "competencies"),
       where("competencyName", "in", courses),
