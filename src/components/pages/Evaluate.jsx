@@ -47,14 +47,22 @@ function EmployeeList() {
     setElectiveIDPRecords(electiveIDPRecords);
   }
 
-  function mandatoryCourseList() {
+  function MandatoryCourseList() {
+    if (!mandatoryIDPRecords) return;
+    const mandatory = checkCompleteIDPRecordsByCompetencieIDs(
+      mandatoryCompetenciesIDs,
+      mandatoryIDPRecords,
+    );
+    console.log("mandatory", mandatory);
     return <></>;
   }
 
-  function checkCompleteIDPRecordsByCompetencieIDs(
-    competencieIDs,
-    IDPRecords,
-  ) {}
+  function checkCompleteIDPRecordsByCompetencieIDs(competencieIDs, IDPRecords) {
+    return competencieIDs.map((compKey) => ({
+      compKey,
+      record: IDPRecords.find((record) => record.compKey === compKey) ?? null,
+    }));
+  }
 
   function findTrainingMatrixByJobCode(jobCode) {
     return evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
@@ -94,7 +102,9 @@ function EmployeeList() {
           </div>
         ))}
       </div>
-      <div className="col-span-2"></div>
+      <div className="col-span-2">
+        <MandatoryCourseList />
+      </div>
     </>
   );
 }
