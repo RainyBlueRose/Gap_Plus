@@ -8,6 +8,9 @@ import useEvaluateTrainingMatrix from "../functions/hooks/useEvaluateTrainingMat
 import { useEvaluateEmployeesData } from "../../store/evaluateEmployeeSlice";
 import { useEvaluateTrainingMatrixData } from "../../store/evaluateTrainingMatrixSlice";
 
+import { query, collection, where, getDocs } from "firebase/firestore";
+import { db } from "../config/firebase";
+
 function Page(props) {
   return <div>{props.children}</div>;
 }
@@ -24,15 +27,27 @@ function EmployeeList() {
   const [electives, setElectives] = useState();
   const [selectEmployee, setSelectEmployee] = useState();
 
-  function getIDPRecords(jobCode) {
+  async function getIDPRecords(jobCode) {
     const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
     const { mandatory, electives } = trainingMatrix;
     console.log("mandatory", mandatory);
     console.log("electives", electives);
+    const mandatoryCompetenciesID =
+      await fetchCompetenciesIDByCourses(mandatory);
+    console.log("mandatoryCompetenciesID", mandatoryCompetenciesID);
   }
 
   function findTrainingMatrixByJobCode(jobCode) {
     return evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
+  }
+
+  async function fetchCompetenciesIDByCourses(courses) {
+    const q = query(
+      collection(db, "competencies"),
+      where("competencyName", "in", courses),
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => d.id);
   }
 
   return (
