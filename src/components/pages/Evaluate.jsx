@@ -23,9 +23,10 @@ function EmployeeList() {
   const { evaluateEmployees } = useEvaluateEmployeesData();
   const { evaluateTrainingMatrix } = useEvaluateTrainingMatrixData();
 
-  const [mandatorys, setMandatory] = useState();
-  const [electives, setElectives] = useState();
-  const [selectEmployee, setSelectEmployee] = useState();
+  const [mandatoryCompetenciesIDs, setMandatoryCompetenciesIDs] = useState();
+  const [electiveCompetenciesIDs, setElectiveCompetenciesIDs] = useState();
+  const [mandatoryIDPRecords, setMandatoryIDPRecords] = useState();
+  const [electiveIDPRecords, setElectiveIDPRecords] = useState();
 
   async function getIDPRecords(jobCode) {
     const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
@@ -40,9 +41,20 @@ function EmployeeList() {
     const electiveIDPRecords = await fetchIDPRecordsByCompetencieIDs(
       electiveCompetenciesIDs,
     );
-    console.log("mandatoryIDPRecords", mandatoryIDPRecords);
-    console.log("electiveIDPRecords", electiveIDPRecords);
+    setMandatoryCompetenciesIDs(mandatoryCompetenciesIDs);
+    setElectiveCompetenciesIDs(electiveCompetenciesIDs);
+    setMandatoryIDPRecords(mandatoryIDPRecords);
+    setElectiveIDPRecords(electiveIDPRecords);
   }
+
+  function mandatoryCourseList() {
+    return <></>;
+  }
+
+  function checkCompleteIDPRecordsByCompetencieIDs(
+    competencieIDs,
+    IDPRecords,
+  ) {}
 
   function findTrainingMatrixByJobCode(jobCode) {
     return evaluateTrainingMatrix.find((e) => e.jobCode === jobCode);
@@ -67,7 +79,7 @@ function EmployeeList() {
   }
 
   return (
-    <div>
+    <>
       <div className="col-span-1">
         {evaluateEmployees.map((e, index) => (
           <div
@@ -83,7 +95,7 @@ function EmployeeList() {
         ))}
       </div>
       <div className="col-span-2"></div>
-    </div>
+    </>
   );
 }
 
