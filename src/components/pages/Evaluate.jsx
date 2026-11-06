@@ -28,6 +28,8 @@ function EmployeeList() {
   const [mandatoryIDPRecords, setMandatoryIDPRecords] = useState();
   const [electiveIDPRecords, setElectiveIDPRecords] = useState();
 
+  const [openIndex, setOpenIndex] = useState();
+
   async function getIDPRecords(employee) {
     const { empId, jobCode } = employee;
 
@@ -35,6 +37,8 @@ function EmployeeList() {
     const trainingMatrix = findTrainingMatrixByJobCode(jobCode);
     const { mandatory, electives } = trainingMatrix;
 
+    // console.log("mandatory",mandatory)
+    // console.log("electives",electives)
     // ดึงวิชาต่างๆจากรายการใน training matrix และแยกออกเป็นสองส่วนคือ mandatory และ elective
     const mandatoryCompetencies = await fetchCompetencieIDsByCourses(mandatory);
     const electiveCompetencies = await fetchCompetencieIDsByCourses(electives);
@@ -68,13 +72,21 @@ function EmployeeList() {
     );
     console.log("mandatory", mandatory);
     return (
-      <>
+      <div className="flex flex-col gap-3">
         {mandatory.map((m, index) => (
           <div key={index}>
-            {m.record ? <div>{m.record.empName}</div> : <div>ไม่ได้ส่ง</div>}
+            {m.record ? (
+              <div className="border h-auto" onClick={() => setOpenIndex(index)}>
+                <div>{m.comp.competencyName}</div>
+                <div>{m.comp.description}</div>
+                {index === openIndex && <div>hello openIndex</div>}
+              </div>
+            ) : (
+              <div>ไม่ได้ส่ง</div>
+            )}
           </div>
         ))}
-      </>
+      </div>
     );
   }
 
@@ -90,6 +102,7 @@ function EmployeeList() {
   }
 
   async function fetchCompetencieIDsByCourses(courses) {
+    // console.log("fetchCompetencieIDsByCourses")
     const q = query(
       collection(db, "competencies"),
       where("competencyName", "in", courses),
@@ -99,6 +112,7 @@ function EmployeeList() {
   }
 
   async function fetchIDPRecordsByCompetencieIDs(empId, competencieIDs) {
+    // console.log("fetchCompetencieIDsByCourses")
     const q = query(
       collection(db, "idp_records"),
       where("empId", "==", empId),
