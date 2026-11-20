@@ -47,7 +47,7 @@ function EmployeeList() {
     const mandatoryCompetenciesIDs = mandatoryCompetencies.map((m) => m.id);
     const electiveCompetenciesIDs = electiveCompetencies.map((e) => e.id);
 
-    // หา IDP record ของพนักงาน โดยใช้ empId และ competencie ID เพื่อจะได้ดคงได้ถูกคนและถูกวิชาทั้ง mandatory และ elective
+    // หา IDP record ของพนักงาน โดยใช้ empId และ competencie ID เพื่อจะได้ดึงได้ถูกคนและถูกวิชาทั้ง mandatory และ elective
     const mandatoryIDPRecords = await fetchIDPRecordsByCompetencieIDs(
       empId,
       mandatoryCompetenciesIDs,
@@ -79,6 +79,7 @@ function EmployeeList() {
               <div className="border h-auto" onClick={() => setOpenIndex(index)}>
                 <div>{m.comp.competencyName}</div>
                 <div>{m.comp.description}</div>
+                {/* ส่วนแสดงหลังจากกดด้านขวา */}
                 {index === openIndex && <div>hello openIndex</div>}
               </div>
             ) : (

@@ -15,7 +15,7 @@ const Header = () => {
 
   function NavBar(props) {
     return (
-      <nav className="h-20 pl-60 pr-20 font-supreme-regular bg-white">
+      <nav className="h-20 pl-60 pr-20 font-supreme-regular bg-white border-b border-gray-300">
         <ul className="flex justify-between items-center h-full">
           {props.children}
         </ul>
