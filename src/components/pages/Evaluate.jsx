@@ -82,25 +82,38 @@ function EmployeeList() {
         {mandatory.map((m, index) => (
           <div key={index}>
             {m.record ? (
-              <div
-                className="border h-auto"
-                onClick={() => setOpenIndex(index)}
-              >
-                <div>{m.comp.competencyName}</div>
-                <div>{m.comp.description}</div>
+              <div className="border h-auto">
+                <div
+                  onClick={() => {
+                    if (openIndex === index) {
+                      setOpenIndex();
+                    } else {
+                      setOpenIndex(index);
+                    }
+                  }}
+                >
+                  <div>{m.comp.competencyName}</div>
+                  <div>{m.comp.description}</div>
+                </div>
                 {/* ส่วนแสดงหลังจากกดด้านขวา */}
                 {index === openIndex && (
                   <>
                     {Object.values(m.record.certificates).map((c, index) => (
                       <div key={index}>
-                        <div
-                          onClick={() => {
-                            setOpenCerIndex(index);
-                          }}
-                        >
-                          <div>{c.compName}</div>
-                          <div>{c.name}</div>
-                          <div>{c.reflection}</div>
+                        <div>
+                          <div
+                            onClick={() => {
+                              if (openCerIndex === index) {
+                                setOpenCerIndex();
+                              } else {
+                                setOpenCerIndex(index);
+                              }
+                            }}
+                          >
+                            <div>{c.compName}</div>
+                            <div>{c.name}</div>
+                            <div>{c.reflection}</div>
+                          </div>
                           {openCerIndex === index && (
                             <div>
                               {c.score_id ? (
