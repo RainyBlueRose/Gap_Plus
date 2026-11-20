@@ -29,6 +29,7 @@ function EmployeeList() {
   const [electiveIDPRecords, setElectiveIDPRecords] = useState();
 
   const [openIndex, setOpenIndex] = useState();
+  const [openCerIndex, setOpenCerIndex] = useState();
 
   async function getIDPRecords(employee) {
     const { empId, jobCode } = employee;
@@ -91,7 +92,28 @@ function EmployeeList() {
                 {index === openIndex && (
                   <>
                     {Object.values(m.record.certificates).map((c, index) => (
-                      <div key={index}>{c.name}</div>
+                      <div key={index}>
+                        <div
+                          onClick={() => {
+                            setOpenCerIndex(index);
+                          }}
+                        >
+                          <div>{c.compName}</div>
+                          <div>{c.name}</div>
+                          <div>{c.reflection}</div>
+                          {openCerIndex === index && (
+                            <div>
+                              {c.score_id ? (
+                                <>Have</>
+                              ) : (
+                                <div>
+                                  <textarea placeholder="คำอธิบาย"></textarea>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     ))}
                   </>
                 )}
