@@ -62,6 +62,11 @@ function EmployeeList() {
     setElectiveCompetencies(electiveCompetencies);
     setMandatoryIDPRecords(mandatoryIDPRecords);
     setElectiveIDPRecords(electiveIDPRecords);
+
+    console.log("mandatoryCompetencies", mandatoryCompetencies);
+    console.log("electiveCompetencies", electiveCompetencies);
+    console.log("mandatoryIDPRecords", mandatoryIDPRecords);
+    console.log("electiveIDPRecords", electiveIDPRecords);
   }
 
   function MandatoryCourseList() {
@@ -76,11 +81,20 @@ function EmployeeList() {
         {mandatory.map((m, index) => (
           <div key={index}>
             {m.record ? (
-              <div className="border h-auto" onClick={() => setOpenIndex(index)}>
+              <div
+                className="border h-auto"
+                onClick={() => setOpenIndex(index)}
+              >
                 <div>{m.comp.competencyName}</div>
                 <div>{m.comp.description}</div>
                 {/* ส่วนแสดงหลังจากกดด้านขวา */}
-                {index === openIndex && <div>hello openIndex</div>}
+                {index === openIndex && (
+                  <>
+                    {Object.values(m.record.certificates).map((c, index) => (
+                      <div key={index}>{c.name}</div>
+                    ))}
+                  </>
+                )}
               </div>
             ) : (
               <div>ไม่ได้ส่ง</div>

@@ -46,6 +46,8 @@ export const useUploadCourseFile = () => {
             [index]: {
               institute:
                 competency.courses[index]?.institute || SELF_LEARNING_LABEL,
+              compLink: competency.courses[index]?.link || null,
+              compName: competency.courses[index]?.name || null,
               name: file.name,
               url,
               reflection: reflection,
