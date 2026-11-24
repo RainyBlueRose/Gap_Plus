@@ -114,7 +114,7 @@ export const AdminNavbar = () => {
       label: "Training Matrix",
       icon: MatrixIcon,
     },
-    { to: ROUTES.ADMINOCRRESULT, label: "OCR Result", icon: DocumentIcon },
+    { to: ROUTES.ADMINOCRRESULT, label: "IDP Records", icon: DocumentIcon },
     { to: ROUTES.ADMINEMPLOYEES, label: "Employees", icon: UsersIcon },
   ];
   return (
