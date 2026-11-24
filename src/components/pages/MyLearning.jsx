@@ -18,6 +18,9 @@ import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 /*   CompetencySection รายการวิชา (ใช้ร่วมกันทั้ง Mandatory / Selective)   */
 /*   CourseModal       หน้าต่างรายละเอียดวิชา (รวมของเดิมที่ซ้ำกัน 2 ชุด)     */
 /*   CourseCard        การ์ดหลักสูตร 1 รายการ: เลือกไฟล์ + คำอธิบาย + บันทึก  */
+/*                                                                    */
+/* กติกาใหม่: เมื่อส่งไฟล์และคำอธิบายแล้ว (มี certificate.url) จะล็อก        */
+/*           ไม่ให้แก้ไขได้อีก ทั้ง Mandatory และ Selective                */
 /* ------------------------------------------------------------------ */
 
 const btnPrimary =
@@ -158,6 +161,7 @@ function CourseCard({
   certificate,
   file,
   reflection,
+  locked, // ส่งแล้ว แก้ไขไม่ได้
   onFileChange,
   onTextChange,
   onSave,
@@ -185,33 +189,45 @@ function CourseCard({
             {displayName}
           </div>
         )}
-        {course.institute && course.institute !== displayName && (
-          <div className="font-notosanthai-regular shrink-0 text-sm text-slate-500">
-            {course.institute}
-          </div>
-        )}
+        <div className="flex shrink-0 items-center gap-2">
+          {course.institute && course.institute !== displayName && (
+            <div className="font-notosanthai-regular text-sm text-slate-500">
+              {course.institute}
+            </div>
+          )}
+          {locked && (
+            <span className="font-notosanthai-regular whitespace-nowrap rounded bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
+              ส่งแล้ว
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 p-4">
         <div>
           <div className="font-notosanthai-regular mb-2 text-sm text-slate-600">
-            หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร (เลือกไฟล์)
+            หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร {!locked && "(เลือกไฟล์)"}
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <label
-              className={`${btnSecondary} cursor-pointer focus-within:ring-2 focus-within:ring-slate-400`}
-            >
-              เลือกไฟล์
-              <input
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(e) => onFileChange(e.target.files[0])}
-              />
-            </label>
-            <span className="font-notosanthai-regular break-all text-sm text-slate-600">
-              {file ? file.name : "ยังไม่ได้เลือกไฟล์ใหม่"}
-            </span>
+            {/* ซ่อนปุ่มเลือกไฟล์เมื่อส่งแล้ว */}
+            {!locked && (
+              <>
+                <label
+                  className={`${btnSecondary} cursor-pointer focus-within:ring-2 focus-within:ring-slate-400`}
+                >
+                  เลือกไฟล์
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(e) => onFileChange(e.target.files[0])}
+                  />
+                </label>
+                <span className="font-notosanthai-regular break-all text-sm text-slate-600">
+                  {file ? file.name : "ยังไม่ได้เลือกไฟล์ใหม่"}
+                </span>
+              </>
+            )}
             {savedUrl && (
               <a
                 href={savedUrl}
@@ -231,27 +247,37 @@ function CourseCard({
           </label>
           <textarea
             rows={4}
-            className="font-notosanthai-regular w-full rounded-md border border-slate-300 bg-white p-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            readOnly={locked}
+            disabled={locked}
+            className="font-notosanthai-regular w-full rounded-md border border-slate-300 bg-white p-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-600"
             placeholder="รายละเอียดความรู้ที่ได้รับ หรือสรุปผลสัมฤทธิ์ของหลักสูตร..."
             value={reflection ?? certificate?.reflection ?? ""}
             onChange={onTextChange}
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3">
-          {message && (
-            <span
-              className={`text-sm ${
-                message.type === "error" ? "text-rose-700" : "text-emerald-700"
-              }`}
-            >
-              {message.text}
+        {/* ซ่อนปุ่มบันทึกเมื่อส่งแล้ว */}
+        {!locked && (
+          <div className="flex items-center justify-end gap-3">
+            <span className="font-notosanthai-regular mr-auto text-xs text-slate-500">
+              เมื่อบันทึกแล้วจะไม่สามารถแก้ไขไฟล์และคำอธิบายได้
             </span>
-          )}
-          <button className={btnPrimary} onClick={onSave} disabled={saving}>
-            {saving ? "กำลังบันทึก..." : "บันทึก"}
-          </button>
-        </div>
+            {message && (
+              <span
+                className={`text-sm ${
+                  message.type === "error"
+                    ? "text-rose-700"
+                    : "text-emerald-700"
+                }`}
+              >
+                {message.text}
+              </span>
+            )}
+            <button className={btnPrimary} onClick={onSave} disabled={saving}>
+              {saving ? "กำลังบันทึก..." : "บันทึก"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -361,6 +387,7 @@ function CourseModal({
   const [reflections, setReflections] = useState({});
   const [savingIndex, setSavingIndex] = useState(null);
   const [messages, setMessages] = useState({});
+  const [submitted, setSubmitted] = useState({}); // index ที่เพิ่งส่งสำเร็จในโมดัลนี้
   const [selecting, setSelecting] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [selectError, setSelectError] = useState("");
@@ -398,7 +425,14 @@ function CourseModal({
     setMessages((prev) => ({ ...prev, [index]: message }));
   }
 
+  // ส่งแล้ว = เพิ่งบันทึกสำเร็จในโมดัลนี้ หรือมี url ที่บันทึกไว้แล้ว
+  function isLocked(index) {
+    return Boolean(submitted[index] || idpRecord?.certificates?.[index]?.url);
+  }
+
   async function handleSave(index) {
+    if (isLocked(index)) return; // กันไว้อีกชั้น
+
     const certificate = idpRecord?.certificates?.[index];
     const file = files[index];
     if (!file) {
@@ -417,6 +451,7 @@ function CourseModal({
         delete next[index];
         return next;
       });
+      setSubmitted((prev) => ({ ...prev, [index]: true })); // ล็อกการ์ดนี้
       setMessage(index, { type: "success", text: "บันทึกแล้ว" });
     } catch (err) {
       console.error(err);
@@ -500,6 +535,7 @@ function CourseModal({
                 certificate={idpRecord?.certificates?.[index]}
                 file={files[index]}
                 reflection={reflections[index]}
+                locked={isLocked(index)}
                 onFileChange={(file) => {
                   if (!file) return;
                   setFiles((prev) => ({ ...prev, [index]: file }));
