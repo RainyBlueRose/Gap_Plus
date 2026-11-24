@@ -75,6 +75,14 @@ function show(value) {
   return value === undefined || value === null || value === "" ? "-" : String(value);
 }
 
+function matchesLoadedEmployee(employee, filters) {
+  return searchFields.every(({ key }) => {
+    const value = filters[key].trim().toLowerCase();
+    if (!value) return true;
+    return String(employee[key] ?? "").toLowerCase().includes(value);
+  });
+}
+
 const AdminEmployees = () => {
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({});
@@ -213,9 +221,13 @@ const AdminEmployees = () => {
     setOpenIds((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
+  const visibleEmployees = employees.filter((employee) =>
+    matchesLoadedEmployee(employee, search),
+  );
+
   function expandAll() {
     const next = {};
-    employees.forEach((item) => {
+    visibleEmployees.forEach((item) => {
       next[item.id] = true;
     });
     setOpenIds(next);
@@ -233,9 +245,11 @@ const AdminEmployees = () => {
         <h1 className="text-xl font-semibold text-slate-900">Employees</h1>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="text-slate-500">
-            {loaded ? `แสดง ${employees.length} รายการ` : "ยังไม่ได้ค้นหา"}
+            {loaded
+              ? `อ่าน ${employees.length} รายการจาก Firestore · แสดง ${visibleEmployees.length} รายการ`
+              : "ยังไม่ได้ค้นหา"}
           </p>
-          {employees.length > 0 && (
+          {visibleEmployees.length > 0 && (
             <div className="flex gap-2">
               <button type="button" className={btnSecondary} onClick={expandAll}>
                 ขยายทั้งหมด
@@ -254,6 +268,11 @@ const AdminEmployees = () => {
             loadEmployees();
           }}
         >
+          <p className="mb-3 text-sm text-slate-500">
+            หลังกดค้นหาแล้ว การพิมพ์ในช่องเหล่านี้กรองเฉพาะรายการที่โหลดมาแล้วทันที
+            ไม่มีการอ่านเพิ่ม พิมพ์เพียงบางส่วนก็แสดงรายการที่มีข้อความนั้น
+            กดค้นหาอีกครั้งเมื่อต้องการดึงข้อมูลจาก Firestore ใหม่
+          </p>
           <div className="flex flex-wrap items-end gap-3">
             {searchFields.map(({ key, label, type = "text" }) => (
               <label key={key} className="flex w-44 flex-col gap-1 text-sm text-slate-600">
@@ -284,7 +303,7 @@ const AdminEmployees = () => {
         )}
 
         <div className="flex flex-col gap-4">
-          {employees.map((item) => {
+          {visibleEmployees.map((item) => {
             const editing = editId === item.id;
             const open = !!openIds[item.id] || editing;
 
@@ -373,7 +392,7 @@ const AdminEmployees = () => {
             );
           })}
 
-          {employees.length === 0 && (
+          {visibleEmployees.length === 0 && (
             <p className="rounded-lg border border-dashed border-slate-300 p-10 text-center text-slate-500">
               {loaded
                 ? "ไม่พบข้อมูลที่ตรงกับเงื่อนไขค้นหา"

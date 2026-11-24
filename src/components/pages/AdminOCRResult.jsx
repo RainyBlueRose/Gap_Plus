@@ -737,12 +737,7 @@ const AdminOCRResult = () => {
           className="mb-4 rounded-lg border border-slate-200 bg-white p-4"
           onSubmit={loadRecords}
         >
-          <p className="mb-3 text-sm text-slate-500">
-            กรอกตัวกรองที่ต้องการแล้วกดค้นหา ถ้าเว้นช่องระดับเอกสารไว้ทั้งหมด
-            ระบบจะอ่านทั้งคอลเลกชัน ถ้ากรอกช่องใดช่องหนึ่ง ระบบอ่านด้วยช่องที่แคบที่สุดเพียงช่องเดียว
-            (ลำดับ: รหัสพนักงาน, รหัสหัวหน้า, ผู้ดำเนินการ, วิชา, ชื่อ, ประเภท, สถานะ)
-            ช่องที่เหลือและตัวกรอง OCR ใช้กรองผลที่อ่านมาแล้ว ไม่มีการอ่านเพิ่ม
-            ค่าต้องตรงทุกตัวอักษร ยกเว้นผลลัพธ์ OCR ที่ค้นหาแบบมีส่วนของคำ
+          <p className="mb-3 text-sm text-slate-500">สถานะ OCR และ ผลลัพธ์ OCR สามารถกรองได้แค่ผลลัพธ์ที่ทำการค้นหาแล้วเท่านั้น
           </p>
           <div className="flex flex-wrap items-end gap-3">
             {DOC_FILTERS.map(({ key, label, placeholder }) => (
