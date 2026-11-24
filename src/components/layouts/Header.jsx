@@ -1,117 +1,236 @@
 //Header ข้างบน เอาไปใช้โดยการไป import ลงทุกหน้าที่อยากให้มี
 
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 
 import { useAuth } from "../functions/hooks/useAuth";
 import { ROUTES } from "../router/Router";
 
 import { useUserData } from "../../store/userSlice";
-import { useState } from "react";
+
+// รายการเมนู: เพิ่ม/ลบ/เรียงลำดับที่นี่ที่เดียว
+const NAV_LINKS = [
+  { to: ROUTES.MYLEARNING, label: "My Learning" },
+  { to: ROUTES.EVALUATE, label: "Evaluate" },
+  { to: ROUTES.MYSCOREHISTORY, label: "My Score" },
+];
+
+/* ------------------------------ nav links ------------------------------ */
+
+// เมนูบนจอใหญ่: มีเส้นใต้สีแดงเมื่ออยู่หน้านั้นหรือชี้เมาส์
+const desktopLinkBase =
+  "relative flex h-full items-center px-3 transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[3px] after:rounded-full after:bg-red-600 after:transition-transform after:duration-100 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400";
+
+function NavLinkItem({ to, children, mobile, onClick }) {
+  const className = ({ isActive }) => {
+    if (mobile) {
+      return `block rounded-md px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+        isActive
+          ? "bg-slate-100 text-slate-900"
+          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      }`;
+    }
+    return `${desktopLinkBase} ${
+      isActive
+        ? "text-slate-900 after:scale-x-100"
+        : "text-slate-600 hover:text-slate-900 after:scale-x-0 hover:after:scale-x-100"
+    }`;
+  };
+
+  return (
+    <NavLink to={to} end={to === ROUTES.HOME} className={className} onClick={onClick}>
+      {children}
+    </NavLink>
+  );
+}
+
+/* ------------------------------ user menu ------------------------------ */
+
+function SignOut({ onClick }) {
+  return (
+    <button
+      className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+      onClick={onClick}
+    >
+      Sign Out
+    </button>
+  );
+}
+
+function UserDropdown({ onSignOut }) {
+  return (
+    <div
+      role="menu"
+      className="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
+    >
+      <SignOut onClick={onSignOut} />
+    </div>
+  );
+}
+
+// เมนูผู้ใช้บนจอใหญ่: คลิกเพื่อเปิด คลิกข้างนอกหรือกด Esc เพื่อปิด
+function AboutUser({ name, onSignOut }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className={`flex items-center gap-2 rounded-md border px-4 py-1.5 text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+          open
+            ? "border-slate-300 bg-slate-100"
+            : "border-slate-200 bg-white hover:bg-slate-50"
+        }`}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="max-w-40 truncate">{name}</span>
+        <svg
+          className={`h-4 w-4 text-slate-400 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
+          <path d="M5 8l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {open && (
+        <UserDropdown
+          onSignOut={() => {
+            setOpen(false);
+            onSignOut();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------ layout ------------------------------ */
+
+function NavBar(props) {
+  return (
+    <header className="font-supreme-regular border-b border-slate-200 bg-white">
+      {props.children}
+    </header>
+  );
+}
+
+function NavIcon() {
+  return (
+    <Link
+      to={ROUTES.HOME}
+      className="text-xl font-bold text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+    >
+      GAP Plus
+    </Link>
+  );
+}
+
+function MenuButton({ open, onClick }) {
+  return (
+    <button
+      className="rounded-md border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 md:hidden"
+      aria-label="เมนู"
+      aria-expanded={open}
+      onClick={onClick}
+    >
+      <svg
+        className="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
+        {open ? (
+          <path d="M5 5l10 10M15 5L5 15" strokeLinecap="round" />
+        ) : (
+          <path d="M3 6h14M3 10h14M3 14h14" strokeLinecap="round" />
+        )}
+      </svg>
+    </button>
+  );
+}
 
 const Header = () => {
   const { signOut } = useAuth();
   const { user } = useUserData();
-  const [open, setOpen] = useState(false);
-
-  function NavBar(props) {
-    return (
-      <nav className="h-20 pl-60 pr-20 font-supreme-regular bg-white border-b border-gray-300">
-        <ul className="flex justify-between items-center h-full">
-          {props.children}
-        </ul>
-      </nav>
-    );
-  }
-
-  function NavItems(props) {
-    return (
-      <nav className="h-full">
-        <ul className="flex items-center gap-7 h-full">{props.children}</ul>
-      </nav>
-    );
-  }
-
-  function NavIcon() {
-    return (
-      <nav className="">
-        <ul>GAP Plus</ul>
-      </nav>
-    );
-  }
-
-  function NavLinkItem({ to, children }) {
-    return (
-      <nav className="group relative flex items-center h-full cursor-pointer after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-[#FF0000] after:rounded-full after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-100">
-        <Link
-          to={to}
-          className="px-3 py-1.5 rounded-lg transition-colors duration-200 group-hover:bg-gray-100"
-        >
-          {children}
-        </Link>
-      </nav>
-    );
-  }
-
-  function AboutUser(props) {
-    return (
-      <nav
-        className="relative"
-        onMouseEnter={() => {
-          setOpen(true);
-        }}
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
-      >
-        <button
-          className={`px-5 py-1 rounded-sm bg-gray-100 transition duration-200 ${open ? `bg-red-600` : ``}`}
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          {user.name}
-        </button>
-
-        {open && props.children}
-      </nav>
-    );
-  }
-
-  function SignOut() {
-    return (
-      <button
-        className="hover:bg-gray-100 h-10 p-2 rounded w-full text-left"
-        onClick={signOut}
-      >
-        Sign Out
-      </button>
-    );
-  }
-
-  function UserDropdown() {
-    return (
-      <nav className="absolute rounded-xl shadow-xl bg-white p-3 pt-2 w-80 right-0">
-        <SignOut />
-      </nav>
-    );
-  }
-
-  function Evaluate() {
-    return <button>Evaluate</button>;
-  }
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <NavBar>
-      <NavIcon />
-      <NavItems>
-        <NavLinkItem to={ROUTES.HOME} children="About Gap Plus" />
-        <NavLinkItem to={ROUTES.MYLEARNING} children="My Learning" />
-        <NavLinkItem to={ROUTES.EVALUATE} children={"Evaluate"} />
-        <NavLinkItem to={ROUTES.MYSCOREHISTORY} children="My Score" />
-        <AboutUser>
-          <UserDropdown />
-        </AboutUser>
-      </NavItems>
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <NavIcon />
+
+        {/* จอใหญ่ */}
+        <nav aria-label="เมนูหลัก" className="hidden h-full items-center gap-2 md:flex">
+          <ul className="flex h-full items-center gap-2">
+            {NAV_LINKS.map(({ to, label }) => (
+              <li key={to} className="h-full">
+                <NavLinkItem to={to}>{label}</NavLinkItem>
+              </li>
+            ))}
+          </ul>
+          {user && <AboutUser name={user.name} onSignOut={signOut} />}
+        </nav>
+
+        {/* มือถือ */}
+        <MenuButton open={menuOpen} onClick={() => setMenuOpen((v) => !v)} />
+      </div>
+
+      {menuOpen && (
+        <nav
+          aria-label="เมนูหลัก"
+          className="border-t border-slate-200 bg-white px-4 py-3 md:hidden"
+        >
+          <ul className="flex flex-col gap-1">
+            {NAV_LINKS.map(({ to, label }) => (
+              <li key={to}>
+                <NavLinkItem to={to} mobile onClick={() => setMenuOpen(false)}>
+                  {label}
+                </NavLinkItem>
+              </li>
+            ))}
+          </ul>
+          {user && (
+            <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
+              <span className="truncate text-slate-900">{user.name}</span>
+              <button
+                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                onClick={() => {
+                  setMenuOpen(false);
+                  signOut();
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+        </nav>
+      )}
     </NavBar>
   );
 };
