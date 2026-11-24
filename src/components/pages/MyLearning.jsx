@@ -40,6 +40,10 @@ function safeUrl(link) {
   }
 }
 
+function courseDisplayName(course) {
+  return course.name || course.institute || course.link;
+}
+
 // กติกาเดิม: Mandatory แสดงเฉพาะที่ยังไม่เริ่ม/Complete,
 // Selective แสดงเฉพาะที่ยังไม่เลือก/In Progress/Complete
 function isVisible(type, status) {
@@ -160,7 +164,7 @@ function CourseCard({
   saving,
   message,
 }) {
-  const displayName = course.name || course.institute || course.link;
+  const displayName = courseDisplayName(course);
   const courseLink = safeUrl(course.link);
   const savedUrl = safeUrl(certificate?.url);
 
@@ -253,6 +257,96 @@ function CourseCard({
   );
 }
 
+// แสดงแทนส่วนส่งไฟล์ ตอนที่ยังไม่ได้เลือกวิชา Selective
+function SelectPrompt({ courses, onSelect }) {
+  return (
+    <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4">
+      <div>
+        <div className="font-notosanthai-semibold text-slate-900">
+          ต้องเลือกวิชานี้ก่อนจึงจะส่งไฟล์และคำอธิบายได้
+        </div>
+        <p className="font-notosanthai-regular mt-1 text-sm text-slate-500">
+          วิชา Selective ต้องกดเลือกก่อน หลังจากเลือกแล้วจะแสดงส่วนส่งไฟล์
+          และคำอธิบายให้กรอก
+        </p>
+      </div>
+
+      {courses.length > 0 && (
+        <ul className="flex flex-col gap-1 border-t border-slate-100 pt-3 text-sm">
+          <li className="text-slate-500">หลักสูตรในวิชานี้</li>
+          {courses.map((course, i) => {
+            const link = safeUrl(course.link);
+            return (
+              <li key={i} className="font-notosanthai-regular text-slate-700">
+                {link ? (
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-blue-700 underline underline-offset-2 hover:text-blue-900"
+                  >
+                    {courseDisplayName(course)} ↗
+                  </a>
+                ) : (
+                  courseDisplayName(course)
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <div>
+        <button className={btnPrimary} onClick={onSelect}>
+          เลือกหลักสูตร
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmDialog({ competencyName, busy, error, onCancel, onConfirm }) {
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4"
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!busy) onCancel();
+      }}
+    >
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+        className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3
+          id="confirm-title"
+          className="font-notosanthai-semibold text-lg text-slate-900"
+        >
+          ยืนยันการเลือกวิชา
+        </h3>
+        <p className="font-notosanthai-regular mt-2 text-slate-700">
+          ต้องการเลือกวิชา “{competencyName}” ใช่หรือไม่
+        </p>
+        <p className="font-notosanthai-regular mt-1 text-sm text-slate-500">
+          หลังยืนยันแล้ว จะไม่สามารถยกเลิกการเลือกได้ในหน้านี้
+        </p>
+        {error && <p className="mt-2 text-sm text-rose-700">{error}</p>}
+        <div className="mt-4 flex justify-end gap-2">
+          <button className={btnSecondary} onClick={onCancel} disabled={busy}>
+            ยกเลิก
+          </button>
+          <button className={btnPrimary} onClick={onConfirm} disabled={busy}>
+            {busy ? "กำลังเลือก..." : "ยืนยัน"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CourseModal({
   type,
   competency,
@@ -268,11 +362,18 @@ function CourseModal({
   const [savingIndex, setSavingIndex] = useState(null);
   const [messages, setMessages] = useState({});
   const [selecting, setSelecting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [selectError, setSelectError] = useState("");
 
   // ปิดด้วยปุ่ม Esc และล็อกการเลื่อนของหน้าด้านหลัง
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key !== "Escape") return;
+      if (confirming) {
+        if (!selecting) setConfirming(false); // ปิดหน้าต่างยืนยันก่อน
+      } else {
+        onClose();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.body.style.overflow;
@@ -281,7 +382,7 @@ function CourseModal({
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [onClose]);
+  }, [onClose, confirming, selecting]);
 
   const courses = competency.courses ?? [];
   // หมายเหตุ: ใช้ length + 1 ตามโครงสร้างข้อมูลเดิม (ข้าม index = length)
@@ -330,14 +431,20 @@ function CourseModal({
 
   async function handleSelect() {
     setSelecting(true);
+    setSelectError("");
     try {
       await onSelectCourse(competency);
+      setConfirming(false); // สถานะจะเปลี่ยนเป็น Selected แล้วส่วนส่งไฟล์จะแสดงเอง
     } catch (err) {
       console.error(err);
+      setSelectError("เลือกวิชาไม่สำเร็จ กรุณาลองอีกครั้ง");
     } finally {
       setSelecting(false);
     }
   }
+
+  // Selective ที่ยังไม่ได้เลือก: ยังไม่ให้ส่งไฟล์/คำอธิบาย
+  const needsSelection = type === "elective" && !status;
 
   return (
     <div
@@ -365,17 +472,7 @@ function CourseModal({
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {type === "elective" && !status ? (
-              <button
-                className={btnPrimary}
-                onClick={handleSelect}
-                disabled={selecting}
-              >
-                {selecting ? "กำลังเลือก..." : "เลือกหลักสูตร"}
-              </button>
-            ) : (
-              <StatusBadge type={type} status={status} />
-            )}
+            <StatusBadge type={type} status={status} />
             <button
               className={btnSecondary}
               onClick={onClose}
@@ -387,27 +484,50 @@ function CourseModal({
         </div>
 
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto p-4">
-          {cards.map(({ index, course }) => (
-            <CourseCard
-              key={index}
-              course={course}
-              certificate={idpRecord?.certificates?.[index]}
-              file={files[index]}
-              reflection={reflections[index]}
-              onFileChange={(file) => {
-                if (!file) return;
-                setFiles((prev) => ({ ...prev, [index]: file }));
+          {needsSelection ? (
+            <SelectPrompt
+              courses={courses}
+              onSelect={() => {
+                setSelectError("");
+                setConfirming(true);
               }}
-              onTextChange={(e) =>
-                setReflections((prev) => ({ ...prev, [index]: e.target.value }))
-              }
-              onSave={() => handleSave(index)}
-              saving={savingIndex === index}
-              message={messages[index]}
             />
-          ))}
+          ) : (
+            cards.map(({ index, course }) => (
+              <CourseCard
+                key={index}
+                course={course}
+                certificate={idpRecord?.certificates?.[index]}
+                file={files[index]}
+                reflection={reflections[index]}
+                onFileChange={(file) => {
+                  if (!file) return;
+                  setFiles((prev) => ({ ...prev, [index]: file }));
+                }}
+                onTextChange={(e) =>
+                  setReflections((prev) => ({
+                    ...prev,
+                    [index]: e.target.value,
+                  }))
+                }
+                onSave={() => handleSave(index)}
+                saving={savingIndex === index}
+                message={messages[index]}
+              />
+            ))
+          )}
         </div>
       </div>
+
+      {confirming && (
+        <ConfirmDialog
+          competencyName={competency.competencyName}
+          busy={selecting}
+          error={selectError}
+          onCancel={() => setConfirming(false)}
+          onConfirm={handleSelect}
+        />
+      )}
     </div>
   );
 }
