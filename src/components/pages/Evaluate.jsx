@@ -188,12 +188,46 @@ async function createScore(record, certKey, { score, comment }, previousScore) {
 
 /* ------------------------------ UI parts ------------------------------ */
 
+const btnPrimary =
+  "rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
+const btnSecondary =
+  "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
+const inputCls =
+  "w-full rounded-md border border-slate-300 bg-white p-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
+
 function Page(props) {
-  return <div>{props.children}</div>;
+  return <div className="min-h-screen bg-slate-50">{props.children}</div>;
 }
 
 function MainSection(props) {
-  return <div className="grid grid-cols-3 gap-3 p-3">{props.children}</div>;
+  return (
+    <main className="mx-auto grid max-w-6xl grid-cols-1 gap-4 p-4 md:grid-cols-3">
+      <h1 className="text-xl font-semibold text-slate-900 md:col-span-3">
+        ประเมินคะแนนพนักงาน
+      </h1>
+      {props.children}
+    </main>
+  );
+}
+
+function ScoreBadge({ score }) {
+  if (score === undefined) {
+    return (
+      <span className="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+        รอประเมิน
+      </span>
+    );
+  }
+  const positive = score >= 0;
+  return (
+    <span
+      className={`shrink-0 rounded px-2 py-0.5 text-sm font-semibold ${
+        positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+      }`}
+    >
+      {formatScore(score)}
+    </span>
+  );
 }
 
 function ScoreForm({ initial, onSubmit, onCancel }) {
@@ -229,33 +263,38 @@ function ScoreForm({ initial, onSubmit, onCancel }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <input
-        type="number"
-        min={MIN_SCORE}
-        max={MAX_SCORE}
-        className="border p-1"
-        placeholder={`คะแนน (${MIN_SCORE} ถึง ${MAX_SCORE}, ค่าลบ = หักแต้ม)`}
-        value={score}
-        onChange={(e) => setScore(e.target.value)}
-      />
-      <textarea
-        className="border p-1"
-        placeholder="คำอธิบาย"
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-      />
-      {error && <div className="text-red-600">{error}</div>}
+    <div className="flex flex-col gap-3">
+      <div>
+        <label className="mb-1 block text-sm text-slate-600">
+          คะแนน ({MIN_SCORE} ถึง {MAX_SCORE}, ค่าลบ = หักแต้ม)
+        </label>
+        <input
+          type="number"
+          min={MIN_SCORE}
+          max={MAX_SCORE}
+          className={`${inputCls} sm:w-40`}
+          placeholder="เช่น -5"
+          value={score}
+          onChange={(e) => setScore(e.target.value)}
+        />
+      </div>
+      <div>
+        <label className="mb-1 block text-sm text-slate-600">คำอธิบาย</label>
+        <textarea
+          rows={3}
+          className={inputCls}
+          placeholder="อธิบายเหตุผลในการให้คะแนน"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+      </div>
+      {error && <div className="text-sm text-rose-700">{error}</div>}
       <div className="flex gap-2">
-        <button
-          className="border px-2"
-          onClick={handleSubmit}
-          disabled={saving}
-        >
+        <button className={btnPrimary} onClick={handleSubmit} disabled={saving}>
           {saving ? "กำลังบันทึก..." : "บันทึกคะแนน"}
         </button>
         {onCancel && (
-          <button className="border px-2" onClick={onCancel} disabled={saving}>
+          <button className={btnSecondary} onClick={onCancel} disabled={saving}>
             ยกเลิก
           </button>
         )}
@@ -276,64 +315,104 @@ function ScoreSection({ history, onSave }) {
     setEditing(false);
   }
 
-  // ยังไม่เคยประเมิน → แสดงฟอร์ม
+  let body;
   if (!latest) {
-    return <ScoreForm onSubmit={handleSubmit} />;
-  }
-
-  // กำลังแก้ไข → ฟอร์มพร้อมค่าเดิม (บันทึกเป็นเอกสารใหม่ ประวัติเดิมยังอยู่)
-  if (editing) {
-    return (
+    // ยังไม่เคยประเมิน → แสดงฟอร์ม
+    body = <ScoreForm onSubmit={handleSubmit} />;
+  } else if (editing) {
+    // กำลังแก้ไข → ฟอร์มพร้อมค่าเดิม (บันทึกเป็นเอกสารใหม่ ประวัติเดิมยังอยู่)
+    body = (
       <ScoreForm
         initial={latest}
         onSubmit={handleSubmit}
         onCancel={() => setEditing(false)}
       />
     );
-  }
-
-  // เคยประเมินแล้ว → แสดงคะแนนล่าสุด
-  return (
-    <div className="flex flex-col gap-2">
-      <div>
-        <div>คะแนน: {formatScore(latest.score)}</div>
-        <div>เหตุผล: {latest.comment}</div>
-        <div className="text-sm text-gray-500">
-          {latest.evaluatorName ? `โดย ${latest.evaluatorName} · ` : ""}
-          {formatDate(latest.createdAt)}
-        </div>
-      </div>
-
-      <div className="flex gap-2">
-        <button className="border px-2" onClick={() => setEditing(true)}>
-          แก้ไขคะแนน
-        </button>
-        {history.length > 1 && (
-          <button
-            className="border px-2"
-            onClick={() => setShowHistory((v) => !v)}
+  } else {
+    // เคยประเมินแล้ว → แสดงคะแนนล่าสุด
+    body = (
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-4">
+          <div
+            className={`flex h-12 w-14 shrink-0 items-center justify-center rounded-md text-lg font-semibold ${
+              latest.score >= 0
+                ? "bg-emerald-50 text-emerald-700"
+                : "bg-rose-50 text-rose-700"
+            }`}
           >
-            {showHistory ? "ซ่อนประวัติ" : `ดูประวัติ (${history.length})`}
+            {formatScore(latest.score)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="whitespace-pre-wrap break-words text-slate-700">
+              {latest.comment}
+            </p>
+            <div className="mt-1 text-xs text-slate-500">
+              {latest.evaluatorName ? `${latest.evaluatorName} · ` : ""}
+              {formatDate(latest.createdAt)}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button className={btnSecondary} onClick={() => setEditing(true)}>
+            แก้ไขคะแนน
           </button>
+          {history.length > 1 && (
+            <button
+              className={btnSecondary}
+              onClick={() => setShowHistory((v) => !v)}
+            >
+              {showHistory ? "ซ่อนประวัติ" : `ดูประวัติ (${history.length})`}
+            </button>
+          )}
+        </div>
+
+        {showHistory && (
+          <ul className="flex flex-col gap-2 border-t border-slate-200 pt-3">
+            {history.map((h, i) => (
+              <li
+                key={h.id}
+                className={`text-sm ${i === 0 ? "" : "opacity-60"}`}
+              >
+                <span
+                  className={`font-semibold ${
+                    h.score >= 0 ? "text-emerald-700" : "text-rose-700"
+                  }`}
+                >
+                  {formatScore(h.score)}
+                </span>{" "}
+                <span className="text-slate-700">{h.comment}</span>
+                <span className="text-slate-500">
+                  {" "}
+                  · {h.evaluatorName ? `${h.evaluatorName}, ` : ""}
+                  {formatDate(h.createdAt)}
+                  {i === 0 ? " (ล่าสุด)" : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
+    );
+  }
 
-      {showHistory && (
-        <div className="flex flex-col gap-1 border-t pt-2">
-          {history.map((h, i) => (
-            <div key={h.id} className="text-sm">
-              {i === 0 ? "(ล่าสุด) " : ""}
-              {formatScore(h.score)} — {h.comment}
-              <span className="text-gray-500">
-                {" "}
-                · {h.evaluatorName ? `${h.evaluatorName}, ` : ""}
-                {formatDate(h.createdAt)}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+  return <div className="rounded-md bg-slate-50 p-3">{body}</div>;
+}
+
+function Chevron({ open }) {
+  return (
+    <svg
+      className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${
+        open ? "rotate-180" : ""
+      }`}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <path d="M5 8l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
@@ -342,62 +421,136 @@ function CourseList({ title, items, scoreHistory, onSaveScore }) {
   const [openCertKey, setOpenCertKey] = useState();
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="font-bold">{title}</div>
-      {items.length === 0 && <div>ไม่มีรายวิชา</div>}
-      {items.map(({ comp, record }) => (
-        <div key={comp.id}>
-          {record ? (
-            <div className="border h-auto">
-              <div
-                onClick={() => {
-                  setOpenCompId(openCompId === comp.id ? undefined : comp.id);
-                  setOpenCertKey(undefined);
-                }}
-              >
-                <div>{comp.competencyName}</div>
-                <div>{comp.description}</div>
-              </div>
+    <section className="flex flex-col gap-3">
+      <h2 className="font-medium text-slate-900">
+        {title} <span className="text-sm text-slate-500">({items.length})</span>
+      </h2>
 
-              {openCompId === comp.id &&
-                Object.entries(record.certificates ?? {}).map(
+      {items.length === 0 && (
+        <p className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500">
+          ไม่มีรายวิชา
+        </p>
+      )}
+
+      {items.map(({ comp, record }) => {
+        const isCompOpen = openCompId === comp.id;
+
+        // ไม่ได้ส่ง
+        if (!record) {
+          return (
+            <div
+              key={comp.id}
+              className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-4"
+            >
+              <div className="min-w-0">
+                <div className="font-medium text-slate-900">
+                  {comp.competencyName}
+                </div>
+                <div className="text-sm text-slate-500">{comp.description}</div>
+              </div>
+              <span className="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                ไม่ได้ส่ง
+              </span>
+            </div>
+          );
+        }
+
+        return (
+          <div
+            key={comp.id}
+            className="overflow-hidden rounded-lg border border-slate-200 bg-white"
+          >
+            <button
+              type="button"
+              aria-expanded={isCompOpen}
+              className="flex w-full items-start justify-between gap-3 p-4 text-left hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400"
+              onClick={() => {
+                setOpenCompId(isCompOpen ? undefined : comp.id);
+                setOpenCertKey(undefined);
+              }}
+            >
+              <div className="min-w-0">
+                <div className="font-medium text-slate-900">
+                  {comp.competencyName}
+                </div>
+                <div className="text-sm text-slate-500">{comp.description}</div>
+              </div>
+              <Chevron open={isCompOpen} />
+            </button>
+
+            {isCompOpen && (
+              <div className="divide-y divide-slate-100 border-t border-slate-100">
+                {Object.entries(record.certificates ?? {}).map(
                   ([certKey, c]) => {
-                    const isOpen = openCertKey === `${comp.id}__${certKey}`;
+                    const fullKey = `${comp.id}__${certKey}`;
+                    const isOpen = openCertKey === fullKey;
+                    const history = scoreHistory[scoreKey(record.id, certKey)];
+
                     return (
                       <div key={certKey}>
-                        <div
+                        <button
+                          type="button"
+                          aria-expanded={isOpen}
+                          className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400"
                           onClick={() =>
-                            setOpenCertKey(
-                              isOpen ? undefined : `${comp.id}__${certKey}`,
-                            )
+                            setOpenCertKey(isOpen ? undefined : fullKey)
                           }
                         >
-                          <div className="flex justify-between">
-                            <div>{c.compName}</div>
-                            <div>{c.name}</div>
+                          <div className="min-w-0">
+                            <div className="text-slate-900">{c.compName}</div>
+                            <div className="text-sm text-slate-500">
+                              {c.name}
+                            </div>
+                            {c.reflection && (
+                              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-700">
+                                {c.reflection}
+                              </p>
+                            )}
                           </div>
-                          <div>{c.reflection}</div>
-                        </div>
+                          <ScoreBadge score={history?.[0]?.score} />
+                        </button>
 
                         {isOpen && (
-                          <ScoreSection
-                            history={scoreHistory[scoreKey(record.id, certKey)]}
-                            onSave={(data) =>
-                              onSaveScore(record, certKey, data)
-                            }
-                          />
+                          <div className="px-4 pb-4">
+                            <ScoreSection
+                              history={history}
+                              onSave={(data) =>
+                                onSaveScore(record, certKey, data)
+                              }
+                            />
+                          </div>
                         )}
                       </div>
                     );
                   },
                 )}
-            </div>
-          ) : (
-            <div>ไม่ได้ส่ง</div>
-          )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
+function EmployeeCard({ employee, pointBalance }) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-5">
+      <div className="flex items-end justify-between gap-4">
+        <div className="min-w-0">
+          <div className="truncate text-lg font-medium text-slate-900">
+            {employee?.name ?? "-"}
+          </div>
+          <div className="text-sm text-slate-500">{employee?.empId}</div>
         </div>
-      ))}
-    </div>
+        <div className="text-right">
+          <div className="text-sm text-slate-500">คะแนนคงเหลือ</div>
+          <div className="text-3xl font-semibold text-slate-900">
+            {pointBalance === undefined ? "-" : (pointBalance ?? "ไม่พบข้อมูล")}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -504,34 +657,54 @@ function EmployeeList() {
     setElectiveItems(attachScoreId);
   }
 
+  const selectedEmployee = evaluateEmployees.find(
+    (e) => e.empId === selectedEmpId,
+  );
+
   return (
     <>
-      <div className="col-span-1">
-        {evaluateEmployees.map((e) => (
-          <div
-            key={e.empId}
-            className={`border cursor-pointer ${
-              selectedEmpId === e.empId ? "bg-gray-100" : ""
-            }`}
-            onClick={() => loadEmployee(e)}
-          >
-            <div>{e.empId}</div>
-            <div>{e.name}</div>
-          </div>
-        ))}
-      </div>
+      <aside className="md:col-span-1">
+        <ul className="flex max-h-[70vh] flex-col gap-2 overflow-y-auto">
+          {evaluateEmployees.map((e) => {
+            const active = selectedEmpId === e.empId;
+            return (
+              <li key={e.empId}>
+                <button
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => loadEmployee(e)}
+                  className={`w-full rounded-lg border p-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+                    active
+                      ? "border-slate-900 bg-slate-900 text-white"
+                      : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="font-medium">{e.name}</div>
+                  <div
+                    className={`text-sm ${active ? "text-slate-300" : "text-slate-500"}`}
+                  >
+                    {e.empId}
+                  </div>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
 
-      <div className="col-span-2 flex flex-col gap-6">
-        {!selectedEmpId && <div>เลือกพนักงานทางซ้ายเพื่อเริ่มประเมิน</div>}
-        {loading && <div>กำลังโหลด...</div>}
+      <div className="flex flex-col gap-6 md:col-span-2">
+        {!selectedEmpId && (
+          <p className="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
+            เลือกพนักงานเพื่อเริ่มประเมิน
+          </p>
+        )}
+        {loading && <p className="p-6 text-slate-500">กำลังโหลด...</p>}
         {selectedEmpId && !loading && (
           <>
-            <div>
-              คะแนนคงเหลือ:{" "}
-              {pointBalance === undefined
-                ? "-"
-                : (pointBalance ?? "ไม่พบข้อมูล")}
-            </div>
+            <EmployeeCard
+              employee={selectedEmployee}
+              pointBalance={pointBalance}
+            />
             <CourseList
               title="Mandatory"
               items={mandatoryItems}
