@@ -503,7 +503,9 @@ function CourseList({ title, items, scoreHistory, onSaveScore }) {
                       <div key={certKey}>
                         <div className="flex items-start justify-between gap-3 px-4 py-3">
                           <div className="min-w-0">
-                            <div className="text-slate-900">{c.compName}</div>
+                            <div className="text-slate-900">
+                              {c.compName ? c.compName : "เรียนรู้ด้วยตนเอง"}
+                            </div>
                             <div className="text-sm">
                               {safeUrl(c.url) ? (
                                 <a
