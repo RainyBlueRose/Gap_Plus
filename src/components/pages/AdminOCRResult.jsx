@@ -52,7 +52,6 @@ const AdminOCRResult = () => {
     }),
   );
 
-  console.log("ocrResults", ocrResults);
 
   async function loadOCRResult() {
     const q = collection(db, "idp_records");

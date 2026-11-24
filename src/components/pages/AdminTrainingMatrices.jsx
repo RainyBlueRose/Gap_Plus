@@ -57,7 +57,6 @@ const AdminTrainingMatrices = () => {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log(newData);
     setTraining_matrices(newData);
   }
 

@@ -11,16 +11,13 @@ export async function loadDocs(q, key) {
     try {
       const snap = await getDocsFromCache(q);
       if (!snap.empty) {
-        console.log("ดึงข้อมูล Docs จาก cache");
         return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       }
     } catch (e) {
-      console.log("cache miss", e.code);
     }
   }
 
   const snap = await getDocsFromServer(q);
   localStorage.setItem(key, String(Date.now()));
-  console.log("ดึงข้อมูล Docs จาก firebase");
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }

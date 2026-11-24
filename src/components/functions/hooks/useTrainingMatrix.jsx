@@ -20,15 +20,11 @@ export function useTrainingMatrix() {
   const jobCode = user?.jobCode;
 
   useEffect(() => {
-    if (!jobCode) return console.log("useTrainingMatrix ไม่ได้ไปต่อ");
     dispatch(setLoadingTrainingMatrix("loading"));
-    console.log("useTrainingMatrix ทำงาน");
-    console.log("useTrainingMatrix JobCode", jobCode);
     async function load() {
       try {
         const ref = doc(db, "training_matrices", jobCode);
         const snap = await loadDoc(ref, `gap:matrix:${jobCode}`);
-        console.log("useTrainingMatrix snap", snap);
         dispatch(setTrainingMatrix(snap));
       } catch (error) {
         console.error("โหลด Training Matrix ไม่สำเร็จ:", error);

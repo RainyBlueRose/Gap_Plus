@@ -9,7 +9,6 @@ export async function loadDoc(ref, key) {
     try {
       const snap = await getDocFromCache(ref);
       if (snap.exists()) {
-        console.log("ดึงจาก cache");
         return snap.data();
       }
     } catch {}
@@ -17,6 +16,5 @@ export async function loadDoc(ref, key) {
 
   const snap = await getDocFromServer(ref);
   localStorage.setItem(key, String(Date.now()));
-  console.log("ดึงจาก Firebase");
   return snap.data();
 }

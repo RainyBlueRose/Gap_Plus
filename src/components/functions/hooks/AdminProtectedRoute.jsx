@@ -10,7 +10,6 @@ export const AdminProtectedRoute = () => {
     return <div>loading ...</div>;
   }
   if (!isAuthentication) {
-    console.log("ไม่มี User");
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
   if (user.level !== "admin") {

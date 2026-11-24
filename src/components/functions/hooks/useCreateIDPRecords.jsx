@@ -10,7 +10,6 @@ export const useCreateIDPRecords = () => {
       return;
     }
     function createIDPRecords() {
-      console.log("useCreateIDPRecords idpRecords", idpRecords);
     }
     createIDPRecords();
   }, [idpRecords]);

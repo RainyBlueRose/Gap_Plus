@@ -14,10 +14,8 @@ export const ProtectedRoute = () => {
   }
 
   if (!isAuthentication) {
-    console.log("ไม่มี User");
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
-  console.log("มี User");
   return <Outlet />;
 };
 

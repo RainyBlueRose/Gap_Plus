@@ -4,8 +4,6 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 
 export const createElectiveIDPRecord = async (user, comp) => {
-  console.log("user", user);
-  console.log("comp", comp);
   const date = new Date();
   const idpinfo = await setDoc(
     doc(db, "idp_records", `${user.id}_${comp.id}`),
@@ -25,8 +23,6 @@ export const createElectiveIDPRecord = async (user, comp) => {
 };
 
 export const createMandatoryIDPRecord = async (user, comp) => {
-  console.log("user", user);
-  console.log("comp", comp);
   const date = new Date();
   const idpinfo = await setDoc(
     doc(db, "idp_records", `${user.id}_${comp.id}`),
