@@ -13,6 +13,8 @@ import {
 import { getAuth } from "firebase/auth";
 import { db } from "../config/firebase";
 
+import { useUserData } from "../../store/userSlice";
+
 /* ------------------------------------------------------------------ */
 /* หน้าประวัติการถูกให้คะแนนสำหรับพนักงาน                                */
 /*                                                                    */
@@ -31,7 +33,9 @@ import { db } from "../config/firebase";
  * หรือส่งผ่าน prop: <MyScoreHistory empId="6604022630438" />
  */
 function getCurrentEmpId() {
-  return getAuth().currentUser?.uid ?? null;
+  const { user } = useUserData();
+  const { empId } = user;
+  return empId;
 }
 
 /* ------------------------------ helpers ------------------------------ */
@@ -46,7 +50,10 @@ function toMillis(ts) {
 function formatDate(ts) {
   if (!ts) return "-";
   const date = typeof ts.toDate === "function" ? ts.toDate() : ts;
-  return date.toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short" });
+  return date.toLocaleString("th-TH", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 }
 
 function formatScore(n) {
@@ -95,7 +102,9 @@ async function fetchHistory(empId) {
   });
 
   return {
-    pointBalance: empSnap.exists() ? (empSnap.data().pointBalance ?? null) : null,
+    pointBalance: empSnap.exists()
+      ? (empSnap.data().pointBalance ?? null)
+      : null,
     entries,
   };
 }
@@ -161,7 +170,9 @@ function HistoryItem({ entry }) {
     >
       <div
         className={`flex h-12 w-14 shrink-0 items-center justify-center rounded-md text-lg font-semibold ${
-          positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+          positive
+            ? "bg-emerald-50 text-emerald-700"
+            : "bg-rose-50 text-rose-700"
         }`}
         aria-label={`คะแนน ${formatScore(entry.score)}`}
       >
