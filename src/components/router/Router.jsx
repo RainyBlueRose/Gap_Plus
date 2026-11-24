@@ -15,6 +15,7 @@ import AdminOCRResult from "../pages/AdminOCRResult";
 import AdminEmployees from "../pages/AdminEmployees";
 import Evaluate from "../pages/Evaluate";
 import MyScoreHistory from "../pages/MyScoreHistory";
+import Profile from "../pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "/Home", element: <Home /> },
       { path: "/MyLearning", element: <MyLearning /> },
       { path: "/MyScoreHistory", element: <MyScoreHistory /> },
+      { path: "/Profile", element: <Profile /> },
     ],
   },
   {
@@ -46,6 +48,7 @@ export const ROUTES = {
   HOME: "/Home",
   MYLEARNING: "/MyLearning",
   MYSCOREHISTORY: "/MyScoreHistory",
+  PROFILE: "/Profile",
   ADMIN: "/Admin",
   ADMINTRAININGMATRIX: "/Admin/Training_matrices",
   ADMINOCRRESULT: "/Admin/OCRResult",

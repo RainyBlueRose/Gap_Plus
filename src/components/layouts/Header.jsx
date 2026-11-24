@@ -1,7 +1,7 @@
 //Header ข้างบน เอาไปใช้โดยการไป import ลงทุกหน้าที่อยากให้มี
 
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 
 import { useAuth } from "../functions/hooks/useAuth";
 import { ROUTES } from "../router/Router";
@@ -31,7 +31,12 @@ function NavLinkItem({ to, children, mobile, onClick }) {
   };
 
   return (
-    <NavLink to={to} end={to === ROUTES.HOME} className={className} onClick={onClick}>
+    <NavLink
+      to={to}
+      end={to === ROUTES.HOME}
+      className={className}
+      onClick={onClick}
+    >
       {children}
     </NavLink>
   );
@@ -50,12 +55,25 @@ function SignOut({ onClick }) {
   );
 }
 
+function Profile({ onClick }) {
+  return (
+    <button
+      className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+      onClick={onClick}
+    >
+      Profile
+    </button>
+  );
+}
+
 function UserDropdown({ onSignOut }) {
+  const navigate = useNavigate();
   return (
     <div
       role="menu"
       className="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
     >
+      <Profile onClick={() => navigate(ROUTES.PROFILE)} />
       <SignOut onClick={onSignOut} />
     </div>
   );
@@ -185,7 +203,10 @@ const Header = () => {
         <NavIcon />
 
         {/* จอใหญ่ */}
-        <nav aria-label="เมนูหลัก" className="hidden h-full items-center gap-2 md:flex">
+        <nav
+          aria-label="เมนูหลัก"
+          className="hidden h-full items-center gap-2 md:flex"
+        >
           <ul className="flex h-full items-center gap-2">
             {NAV_LINKS.map(({ to, label }) => (
               <li key={to} className="h-full">
