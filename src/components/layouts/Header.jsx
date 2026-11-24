@@ -66,7 +66,18 @@ function Profile({ onClick }) {
   );
 }
 
-function UserDropdown({ onSignOut }) {
+function Admin({ onClick }) {
+  return (
+    <button
+      className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+      onClick={onClick}
+    >
+      Admin
+    </button>
+  );
+}
+
+function UserDropdown({ isAdmin, onSignOut }) {
   const navigate = useNavigate();
   return (
     <div
@@ -74,13 +85,15 @@ function UserDropdown({ onSignOut }) {
       className="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
     >
       <Profile onClick={() => navigate(ROUTES.PROFILE)} />
+      {/* แสดงเมนู Admin เฉพาะผู้ใช้ที่ level เป็น admin */}
+      {isAdmin && <Admin onClick={() => navigate(ROUTES.ADMIN)} />}
       <SignOut onClick={onSignOut} />
     </div>
   );
 }
 
 // เมนูผู้ใช้บนจอใหญ่: คลิกเพื่อเปิด คลิกข้างนอกหรือกด Esc เพื่อปิด
-function AboutUser({ name, onSignOut }) {
+function AboutUser({ name, isAdmin, onSignOut }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -129,6 +142,7 @@ function AboutUser({ name, onSignOut }) {
 
       {open && (
         <UserDropdown
+          isAdmin={isAdmin}
           onSignOut={() => {
             setOpen(false);
             onSignOut();
@@ -190,6 +204,10 @@ const Header = () => {
   const { signOut } = useAuth();
   const { user } = useUserData();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // เป็นแอดมินเมื่อ user.level เท่ากับ "admin" (ไม่สนตัวพิมพ์เล็ก/ใหญ่)
+  const isAdmin = String(user?.level ?? "").toLowerCase() === "admin";
+
   // รายการเมนู: เพิ่ม/ลบ/เรียงลำดับที่นี่ที่เดียว
   const NAV_LINKS = [
     { to: ROUTES.MYLEARNING, label: "My Learning" },
@@ -214,7 +232,9 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          {user && <AboutUser name={user.name} onSignOut={signOut} />}
+          {user && (
+            <AboutUser name={user.name} isAdmin={isAdmin} onSignOut={signOut} />
+          )}
         </nav>
 
         {/* มือถือ */}
@@ -236,17 +256,44 @@ const Header = () => {
             ))}
           </ul>
           {user && (
-            <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
-              <span className="truncate text-slate-900">{user.name}</span>
-              <button
-                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
-                onClick={() => {
-                  setMenuOpen(false);
-                  signOut();
-                }}
-              >
-                Sign Out
-              </button>
+            <div className="mt-3 border-t border-slate-100 pt-3">
+              <div className="truncate px-3 pb-2 text-slate-900">
+                {user.name}
+              </div>
+              <ul className="flex flex-col gap-1">
+                <li>
+                  <NavLinkItem
+                    to={ROUTES.PROFILE}
+                    mobile
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Profile
+                  </NavLinkItem>
+                </li>
+                {/* เมนู Admin เฉพาะผู้ใช้ที่ level เป็น admin (เหมือนบนจอใหญ่) */}
+                {isAdmin && (
+                  <li>
+                    <NavLinkItem
+                      to={ROUTES.ADMIN}
+                      mobile
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Admin
+                    </NavLinkItem>
+                  </li>
+                )}
+                <li>
+                  <button
+                    className="block w-full rounded-md px-3 py-2 text-left text-slate-600 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      signOut();
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </li>
+              </ul>
             </div>
           )}
         </nav>
