@@ -3,6 +3,8 @@ import { AdminNavbar } from "../layouts/AdminNavbar";
 import {
   getDocs,
   collection,
+  query,
+  where,
   doc,
   updateDoc,
   FieldPath,
@@ -37,6 +39,49 @@ const RECORD_EDIT_FIELDS = ["status"].filter((f) => EDITABLE[f]);
 const CERT_EDIT_FIELDS = ["ocrStatus", "ocrResult", "ocrText", "reflection"].filter(
   (f) => EDITABLE[f],
 );
+
+// ช่องระดับเอกสาร ส่งได้แค่ช่องเดียวไป Firestore (ดัชนีฟิลด์เดี่ยวที่มีอยู่แล้ว)
+// เรียงจากช่องที่แคบที่สุด ถ้ากรอกหลายช่องจะใช้ช่องแรกที่ไม่ว่างในรายการนี้
+const SERVER_FIELD_PRIORITY = [
+  "empId",
+  "managerId",
+  "actedBy",
+  "compKey",
+  "empName",
+  "type",
+  "status",
+];
+
+const DOC_FILTERS = [
+  { key: "empId", label: "รหัสพนักงาน", placeholder: "empId" },
+  { key: "empName", label: "ชื่อพนักงาน", placeholder: "Jane Doe" },
+  { key: "compKey", label: "วิชา", placeholder: "compKey" },
+  { key: "status", label: "สถานะ", placeholder: "Complete" },
+  { key: "type", label: "ประเภท", placeholder: "mandatory / selective" },
+  { key: "managerId", label: "รหัสหัวหน้า", placeholder: "managerId" },
+  { key: "actedBy", label: "ผู้ดำเนินการ", placeholder: "actedBy" },
+];
+
+// อยู่ใน map ของ certificates จึงกรองจากเอกสารที่อ่านมาแล้ว ไม่ยิงคำขอเพิ่ม
+const CERT_FILTERS = [
+  { key: "ocrStatus", label: "สถานะ OCR", placeholder: "completed / failed" },
+  { key: "ocrResult", label: "ผลลัพธ์ OCR", placeholder: "Investigate" },
+];
+
+const EMPTY_SEARCH = {
+  empId: "",
+  empName: "",
+  managerId: "",
+  actedBy: "",
+  compKey: "",
+  type: "",
+  status: "",
+  ocrStatus: "",
+  ocrResult: "",
+};
+
+const STATUS_SUGGESTIONS = ["Complete", "In Progress"];
+const OCR_STATUS_SUGGESTIONS = ["completed", "failed"];
 
 const btnPrimary =
   "rounded-md bg-slate-900 px-4 py-2 text-white hover:bg-slate-700 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
@@ -75,51 +120,39 @@ function certEntries(record) {
   );
 }
 
-function recordSearchText(record) {
-  return [
-    record.id,
-    record.empId,
-    record.empName,
-    record.managerId,
-    record.actedBy,
-    record.compKey,
-    record.type,
-    record.status,
-    formatTimestamp(record.timestamp),
-  ]
-    .filter((v) => v !== undefined && v !== null)
-    .join(" ")
-    .toLowerCase();
-}
-
-function certSearchText(cert) {
-  return Object.values(cert ?? {})
-    .filter((v) => v !== undefined && v !== null)
-    .join(" ")
-    .toLowerCase();
+function matchesDocFilters(record, filters) {
+  return SERVER_FIELD_PRIORITY.every((key) => {
+    const value = filters[key].trim();
+    return !value || String(record[key] ?? "") === value;
+  });
 }
 
 // แปลง records → กลุ่ม { record, rows: [{ certKey, cert }] } ตามตัวกรอง
-function buildGroups(records, { query, status, ocrStatus }) {
-  const q = query.trim().toLowerCase();
+// ตัวกรองระดับเอกสารที่ไม่ได้ส่งไป Firestore และตัวกรอง OCR ใช้กรองตรงนี้
+function buildGroups(records, filters) {
+  const ocrStatus = filters.ocrStatus.trim();
+  const ocrResult = filters.ocrResult.trim().toLowerCase();
 
   return records
+    .filter((record) => matchesDocFilters(record, filters))
     .map((record) => {
-      if (status && record.status !== status) return null;
-
-      const recordText = recordSearchText(record);
       const certs = certEntries(record);
       let rows;
 
       if (certs.length === 0) {
-        // record ที่ยังไม่มีไฟล์ ก็ยังแสดงให้เห็น
-        const match = !ocrStatus && (!q || recordText.includes(q));
+        const match = !ocrStatus && !ocrResult;
         rows = match ? [{ certKey: null, cert: null }] : [];
       } else {
         rows = certs
           .filter(([, cert]) => {
             if (ocrStatus && cert.ocrStatus !== ocrStatus) return false;
-            return !q || recordText.includes(q) || certSearchText(cert).includes(q);
+            if (
+              ocrResult &&
+              !String(cert.ocrResult ?? "").toLowerCase().includes(ocrResult)
+            ) {
+              return false;
+            }
+            return true;
           })
           .map(([certKey, cert]) => ({ certKey, cert }));
       }
@@ -479,9 +512,7 @@ const AdminOCRResult = () => {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
 
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [ocrFilter, setOcrFilter] = useState("");
+  const [search, setSearch] = useState(EMPTY_SEARCH);
 
   // { type: "record", id } หรือ { type: "cert", id, certKey }
   const [editing, setEditing] = useState(null);
@@ -495,17 +526,29 @@ const AdminOCRResult = () => {
 
   /* ---------- data ---------- */
 
-  async function loadRecords() {
+  async function loadRecords(event) {
+    event?.preventDefault();
+
+    const serverField = SERVER_FIELD_PRIORITY.find((key) => search[key].trim() !== "");
+    const recordsQuery = serverField
+      ? query(
+          collection(db, "idp_records"),
+          where(serverField, "==", search[serverField].trim()),
+        )
+      : collection(db, "idp_records");
+
     setLoading(true);
     setLoadError("");
     try {
-      const snap = await getDocs(collection(db, "idp_records"));
+      const snap = await getDocs(recordsQuery);
       setRecords(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
       setLoaded(true);
       setEditing(null);
+      setOpenRecords({});
+      setOpenCerts({});
     } catch (error) {
-      console.error("Failed to load idp_records", error);
-      setLoadError("โหลดข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
+      console.error("Failed to search idp_records", error);
+      setLoadError("ค้นหาข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
     } finally {
       setLoading(false);
     }
@@ -609,29 +652,31 @@ const AdminOCRResult = () => {
   /* ---------- derived ---------- */
 
   const statusOptions = [
-    ...new Set(records.map((r) => r.status).filter(Boolean)),
+    ...new Set([
+      ...STATUS_SUGGESTIONS,
+      ...records.map((r) => r.status).filter(Boolean),
+    ]),
   ].sort();
   const ocrStatusOptions = [
-    ...new Set(
-      records.flatMap((r) => certEntries(r).map(([, c]) => c.ocrStatus)).filter(Boolean),
-    ),
+    ...new Set([
+      ...OCR_STATUS_SUGGESTIONS,
+      ...records.flatMap((r) => certEntries(r).map(([, c]) => c.ocrStatus)).filter(Boolean),
+    ]),
   ].sort();
 
-  const groups = buildGroups(records, {
-    query,
-    status: statusFilter,
-    ocrStatus: ocrFilter,
-  });
+  const groups = buildGroups(records, search);
   const fileCount = groups.reduce(
     (sum, g) => sum + g.rows.filter((r) => r.cert).length,
     0,
   );
-  const hasFilter = query || statusFilter || ocrFilter;
+  const hasFilter = Object.values(search).some((value) => value.trim() !== "");
 
   function clearFilters() {
-    setQuery("");
-    setStatusFilter("");
-    setOcrFilter("");
+    setSearch(EMPTY_SEARCH);
+  }
+
+  function setSearchField(key, value) {
+    setSearch((current) => ({ ...current, [key]: value }));
   }
 
   function toggleRecord(id) {
@@ -672,8 +717,8 @@ const AdminOCRResult = () => {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="text-slate-500">
             {loaded
-              ? `พบ ${groups.length} record · ${fileCount} ไฟล์`
-              : "ยังไม่ได้โหลดข้อมูล"}
+              ? `อ่าน ${records.length} เอกสารจาก Firestore · แสดง ${groups.length} record · ${fileCount} ไฟล์`
+              : "ยังไม่ได้ค้นหา"}
           </p>
           {groups.length > 0 && (
             <div className="flex gap-2">
@@ -687,59 +732,54 @@ const AdminOCRResult = () => {
           )}
         </div>
 
-        {/* ค้นหา / กรอง */}
-        <div className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-slate-200 bg-white p-4">
-          <button className={btnPrimary} onClick={loadRecords} disabled={loading}>
-            {loading ? "กำลังโหลด..." : loaded ? "โหลดใหม่" : "โหลดข้อมูล"}
-          </button>
-
-          <label className="flex min-w-64 flex-1 flex-col gap-1 text-sm text-slate-600">
-            ค้นหา
-            <input
-              type="search"
-              className={inputCls}
-              placeholder="พิมพ์ชื่อ รหัสพนักงาน หรือผล OCR"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1 text-sm text-slate-600">
-            สถานะ
-            <select
-              className={inputCls}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+        {/* กรอกตัวกรองก่อน แล้วค่อยค้นหาครั้งเดียว */}
+        <form
+          className="mb-4 rounded-lg border border-slate-200 bg-white p-4"
+          onSubmit={loadRecords}
+        >
+          <p className="mb-3 text-sm text-slate-500">
+            กรอกตัวกรองที่ต้องการแล้วกดค้นหา ถ้าเว้นช่องระดับเอกสารไว้ทั้งหมด
+            ระบบจะอ่านทั้งคอลเลกชัน ถ้ากรอกช่องใดช่องหนึ่ง ระบบอ่านด้วยช่องที่แคบที่สุดเพียงช่องเดียว
+            (ลำดับ: รหัสพนักงาน, รหัสหัวหน้า, ผู้ดำเนินการ, วิชา, ชื่อ, ประเภท, สถานะ)
+            ช่องที่เหลือและตัวกรอง OCR ใช้กรองผลที่อ่านมาแล้ว ไม่มีการอ่านเพิ่ม
+            ค่าต้องตรงทุกตัวอักษร ยกเว้นผลลัพธ์ OCR ที่ค้นหาแบบมีส่วนของคำ
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            {DOC_FILTERS.map(({ key, label, placeholder }) => (
+              <label key={key} className="flex w-44 flex-col gap-1 text-sm text-slate-600">
+                {label}
+                <input
+                  className={inputCls}
+                  value={search[key]}
+                  placeholder={placeholder}
+                  onChange={(e) => setSearchField(key, e.target.value)}
+                />
+              </label>
+            ))}
+            {CERT_FILTERS.map(({ key, label, placeholder }) => (
+              <label key={key} className="flex w-44 flex-col gap-1 text-sm text-slate-600">
+                {label}
+                <input
+                  className={inputCls}
+                  value={search[key]}
+                  placeholder={placeholder}
+                  onChange={(e) => setSearchField(key, e.target.value)}
+                />
+              </label>
+            ))}
+            <button type="submit" className={btnPrimary} disabled={loading}>
+              {loading ? "กำลังค้นหา..." : "ค้นหา"}
+            </button>
+            <button
+              type="button"
+              className={btnSecondary}
+              onClick={clearFilters}
+              disabled={!hasFilter || loading}
             >
-              <option value="">ทั้งหมด</option>
-              {statusOptions.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1 text-sm text-slate-600">
-            สถานะ OCR
-            <select
-              className={inputCls}
-              value={ocrFilter}
-              onChange={(e) => setOcrFilter(e.target.value)}
-            >
-              <option value="">ทั้งหมด</option>
-              {ocrStatusOptions.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button className={btnSecondary} onClick={clearFilters} disabled={!hasFilter}>
-            ล้างตัวกรอง
-          </button>
-        </div>
+              ล้างตัวกรอง
+            </button>
+          </div>
+        </form>
 
         {loadError && (
           <p role="alert" className="mb-4 text-rose-700">
@@ -827,7 +867,7 @@ const AdminOCRResult = () => {
             <p className="rounded-lg border border-dashed border-slate-300 p-10 text-center text-slate-500">
               {loaded
                 ? "ไม่พบข้อมูลที่ตรงกับเงื่อนไขค้นหา"
-                : "กด “โหลดข้อมูล” เพื่อดึงข้อมูลจาก idp_records"}
+                : "กดค้นหาเพื่อดึงข้อมูล เว้นช่องไว้ทั้งหมดจะอ่านทั้งคอลเลกชัน"}
             </p>
           )}
         </div>
