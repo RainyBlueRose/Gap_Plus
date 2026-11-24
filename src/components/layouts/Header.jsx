@@ -8,13 +8,6 @@ import { ROUTES } from "../router/Router";
 
 import { useUserData } from "../../store/userSlice";
 
-// รายการเมนู: เพิ่ม/ลบ/เรียงลำดับที่นี่ที่เดียว
-const NAV_LINKS = [
-  { to: ROUTES.MYLEARNING, label: "My Learning" },
-  { to: ROUTES.EVALUATE, label: "Evaluate" },
-  { to: ROUTES.MYSCOREHISTORY, label: "My Score" },
-];
-
 /* ------------------------------ nav links ------------------------------ */
 
 // เมนูบนจอใหญ่: มีเส้นใต้สีแดงเมื่ออยู่หน้านั้นหรือชี้เมาส์
@@ -179,6 +172,12 @@ const Header = () => {
   const { signOut } = useAuth();
   const { user } = useUserData();
   const [menuOpen, setMenuOpen] = useState(false);
+  // รายการเมนู: เพิ่ม/ลบ/เรียงลำดับที่นี่ที่เดียว
+  const NAV_LINKS = [
+    { to: ROUTES.MYLEARNING, label: "My Learning" },
+    { to: ROUTES.MYSCOREHISTORY, label: "My Score" },
+    { to: ROUTES.EVALUATE, label: "Evaluate" },
+  ];
 
   return (
     <NavBar>
