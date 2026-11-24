@@ -29,16 +29,10 @@ const PROFILE_FIELDS = [
   { key: "managerName", label: "หัวหน้างาน", show: true },
   { key: "managerId", label: "รหัสหัวหน้างาน", show: false },
   { key: "id", label: "ID", show: false },
+  { key: "level", label: "ระดับสิทธิ์", show: false },
 ];
 
 /* ------------------------------ helpers ------------------------------ */
-
-function getInitials(name) {
-  if (!name) return "?";
-  const parts = String(name).trim().split(/\s+/).filter(Boolean);
-  const letters = parts.slice(0, 2).map((p) => p[0]);
-  return letters.join("").toUpperCase() || "?";
-}
 
 function displayValue(value) {
   if (value === undefined || value === null || value === "") return "-";
@@ -51,60 +45,58 @@ function Page(props) {
   return <div className="min-h-screen bg-slate-50">{props.children}</div>;
 }
 
-function ProfileCard({ title, subtitle }) {
-  if (!title && !subtitle) return null;
+// การ์ดบนสุด: ชื่อ + ตำแหน่งทางซ้าย, คะแนนคงเหลือทางขวา
+function SummaryCard({ title, subtitle, highlight }) {
+  if (!title && !subtitle && !highlight) return null;
   return (
-    <section className="flex items-center gap-4 rounded-lg border border-slate-200 bg-white p-5">
-      <div
-        className="font-supreme-regular flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-900 text-lg font-semibold text-white"
-        aria-hidden="true"
-      >
-        {getInitials(title?.value)}
-      </div>
+    <section className="flex flex-col gap-5 rounded-lg border border-slate-200 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
         {title && (
-          <h2 className="font-notosanthai-semibold break-words text-xl text-slate-900">
+          <h2 className="font-notosanthai-semibold break-words text-2xl text-slate-900">
             {displayValue(title.value)}
           </h2>
         )}
         {subtitle && (
-          <p className="font-notosanthai-regular break-words text-slate-500">
+          <p className="font-notosanthai-regular mt-1 break-words text-slate-500">
             {displayValue(subtitle.value)}
           </p>
         )}
       </div>
-    </section>
-  );
-}
 
-function HighlightCard({ field }) {
-  return (
-    <section className="flex items-end justify-between gap-4 rounded-lg border border-slate-200 bg-white p-5">
-      <div>
-        <div className="text-sm text-slate-500">{field.label}</div>
-        <div className="mt-1 text-4xl font-semibold text-slate-900">
-          {displayValue(field.value)}
+      {highlight && (
+        <div className="shrink-0 border-t border-slate-100 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0 sm:text-right">
+          <div className="text-sm text-slate-500">{highlight.label}</div>
+          <div className="text-4xl font-semibold text-slate-900">
+            {displayValue(highlight.value)}
+          </div>
+          <Link
+            to={ROUTES.MYSCOREHISTORY}
+            className="text-sm text-blue-700 underline underline-offset-2 hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+          >
+            ดูประวัติคะแนน ›
+          </Link>
         </div>
-      </div>
-      <Link
-        to={ROUTES.MYSCOREHISTORY}
-        className="text-sm text-blue-700 underline underline-offset-2 hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
-      >
-        ดูประวัติคะแนน ›
-      </Link>
+      )}
     </section>
   );
 }
 
+// รายละเอียดแบบรายการ: label ซ้าย / value ขวา คั่นด้วยเส้นบาง ๆ
 function DetailCard({ fields }) {
   if (fields.length === 0) return null;
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5">
-      <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+    <section className="rounded-lg border border-slate-200 bg-white">
+      <h2 className="border-b border-slate-200 px-6 py-3 font-medium text-slate-900">
+        ข้อมูลพนักงาน
+      </h2>
+      <dl className="divide-y divide-slate-100 px-6">
         {fields.map((field) => (
-          <div key={field.key} className="min-w-0">
-            <dt className="text-sm text-slate-500">{field.label}</dt>
-            <dd className="font-notosanthai-regular break-words text-slate-900">
+          <div
+            key={field.key}
+            className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4"
+          >
+            <dt className="text-sm text-slate-500 sm:pt-0.5">{field.label}</dt>
+            <dd className="font-notosanthai-regular break-words text-slate-900 sm:col-span-2">
               {displayValue(field.value)}
             </dd>
           </div>
@@ -142,8 +134,7 @@ const Profile = () => {
           </p>
         ) : (
           <>
-            <ProfileCard title={title} subtitle={subtitle} />
-            {highlight && <HighlightCard field={highlight} />}
+            <SummaryCard title={title} subtitle={subtitle} highlight={highlight} />
             <DetailCard fields={details} />
           </>
         )}
