@@ -195,6 +195,19 @@ const btnSecondary =
 const inputCls =
   "w-full rounded-md border border-slate-300 bg-white p-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
 
+// เปิดลิงก์เฉพาะ http/https เท่านั้น เพื่อความปลอดภัย
+function safeUrl(link) {
+  if (typeof link !== "string") return null;
+  try {
+    const url = new URL(link.trim());
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 function Page(props) {
   return <div className="min-h-screen bg-slate-50">{props.children}</div>;
 }
@@ -488,18 +501,28 @@ function CourseList({ title, items, scoreHistory, onSaveScore }) {
 
                     return (
                       <div key={certKey}>
-                        <button
-                          type="button"
-                          aria-expanded={isOpen}
-                          className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400"
-                          onClick={() =>
-                            setOpenCertKey(isOpen ? undefined : fullKey)
-                          }
-                        >
+                        <div className="flex items-start justify-between gap-3 px-4 py-3">
                           <div className="min-w-0">
                             <div className="text-slate-900">{c.compName}</div>
-                            <div className="text-sm text-slate-500">
-                              {c.name}
+                            <div className="text-sm">
+                              {safeUrl(c.url) ? (
+                                <a
+                                  href={safeUrl(c.url)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="เปิดไฟล์ในแท็บใหม่"
+                                  className="break-all text-blue-700 underline underline-offset-2 hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                                >
+                                  {c.name} ↗
+                                </a>
+                              ) : (
+                                <span className="text-slate-500">
+                                  {c.name}
+                                  {c.url
+                                    ? " (ลิงก์ไม่ถูกต้อง)"
+                                    : " (ไม่มีลิงก์ไฟล์)"}
+                                </span>
+                              )}
                             </div>
                             {c.reflection && (
                               <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-700">
@@ -507,8 +530,20 @@ function CourseList({ title, items, scoreHistory, onSaveScore }) {
                               </p>
                             )}
                           </div>
-                          <ScoreBadge score={history?.[0]?.score} />
-                        </button>
+                          <div className="flex shrink-0 items-center gap-2">
+                            <ScoreBadge score={history?.[0]?.score} />
+                            <button
+                              type="button"
+                              aria-expanded={isOpen}
+                              className={btnSecondary}
+                              onClick={() =>
+                                setOpenCertKey(isOpen ? undefined : fullKey)
+                              }
+                            >
+                              {history?.[0] ? "ดูคะแนน" : "ให้คะแนน"}
+                            </button>
+                          </div>
+                        </div>
 
                         {isOpen && (
                           <div className="px-4 pb-4">
