@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Header from "../layouts/Header";
 
@@ -10,200 +10,409 @@ import { useIDPRecords } from "../functions/hooks/useIDPRecords";
 import { useUploadCourseFile } from "../functions/hooks/useUploadCourseFile";
 import { useCreateIDPRecords } from "../functions/hooks/useCreateIDPRecords";
 
-function Page(props) {
+/* ------------------------------------------------------------------ */
+/* หน้าลงทะเบียนวิชาเรียนของพนักงาน                                      */
+/*                                                                    */
+/* โครงสร้างหลังการ refactor:                                            */
+/*   MyLearning        ดึงข้อมูล/ hook ต่าง ๆ และเก็บว่าเปิดวิชาไหนอยู่       */
+/*   CompetencySection รายการวิชา (ใช้ร่วมกันทั้ง Mandatory / Selective)   */
+/*   CourseModal       หน้าต่างรายละเอียดวิชา (รวมของเดิมที่ซ้ำกัน 2 ชุด)     */
+/*   CourseCard        การ์ดหลักสูตร 1 รายการ: เลือกไฟล์ + คำอธิบาย + บันทึก  */
+/* ------------------------------------------------------------------ */
+
+const btnPrimary =
+  "rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
+const btnSecondary =
+  "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
+
+/* ------------------------------ helpers ------------------------------ */
+
+// เปิดลิงก์เฉพาะ http/https เท่านั้น
+function safeUrl(link) {
+  if (typeof link !== "string") return null;
+  try {
+    const url = new URL(link.trim());
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+// กติกาเดิม: Mandatory แสดงเฉพาะที่ยังไม่เริ่ม/Complete,
+// Selective แสดงเฉพาะที่ยังไม่เลือก/In Progress/Complete
+function isVisible(type, status) {
+  if (!status) return true;
+  if (type === "mandatory") return status === "Complete";
+  return status === "In Progress" || status === "Complete";
+}
+
+/* ------------------------------ status ------------------------------ */
+
+function StatusBadge({ type, status }) {
+  let label;
+  let tone;
+  if (status === "Complete") {
+    label = "Complete";
+    tone = "bg-emerald-50 text-emerald-700";
+  } else if (status === "In Progress") {
+    label = "Selected";
+    tone = "bg-blue-50 text-blue-700";
+  } else {
+    label = type === "mandatory" ? "Incomplete" : "Not selected";
+    tone = "bg-slate-100 text-slate-600";
+  }
   return (
-    // <div className="bg-[#EDF0FF]">
-    <div>
-      <div>{props.children}</div>
-    </div>
+    <span
+      className={`shrink-0 whitespace-nowrap rounded px-2 py-0.5 text-xs font-supreme-regular ${tone}`}
+    >
+      {label}
+    </span>
   );
 }
 
-function RenderCourseElectiveHeadline({
-  onSelectCourseClick,
-  competencyName,
-  courseStatus,
-  description,
+function statusBorder(status) {
+  if (status === "Complete") return "border-l-emerald-500";
+  if (status === "In Progress") return "border-l-blue-500";
+  return "border-l-slate-300";
+}
+
+/* ------------------------------ list ------------------------------ */
+
+function CompetencyCard({ type, competency, status, onOpen }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={`flex h-full w-full flex-col justify-between gap-4 rounded-lg border border-l-4 border-slate-200 bg-white p-4 text-left hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${statusBorder(status)}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="font-notosanthai-semibold text-lg text-slate-900">
+          {competency.competencyName}
+        </div>
+        <StatusBadge type={type} status={status} />
+      </div>
+      <div className="flex items-end justify-between gap-3">
+        <div className="font-notosanthai-regular text-sm text-slate-500">
+          {competency.description}
+        </div>
+        <span className="shrink-0 whitespace-nowrap text-sm text-slate-700">
+          รายละเอียด ›
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function CompetencySection({
+  type,
+  title,
+  subtitle,
+  items,
+  getStatus,
+  onOpen,
 }) {
-  return (
-    <div className="flex justify-between gap-3">
-      <RenderCourseElectiveHeadlineText
-        competencyName={competencyName}
-        description={description}
-      />
-      <SavedSelectiveButton
-        onSelectCourseClick={onSelectCourseClick}
-        courseStatus={courseStatus}
-      />
-    </div>
-  );
-}
+  const visibleItems = items
+    .map((competency) => ({ competency, status: getStatus(competency) }))
+    .filter(({ status }) => isVisible(type, status));
 
-function RenderCourseElectiveHeadlineText({ competencyName, description }) {
   return (
-    <div>
-      <RenderCourseElectiveHeadlineName competencyName={competencyName} />
-      <RenderCourseElectiveHeadlineDescription description={description} />
-    </div>
-  );
-}
+    <section className="flex flex-col gap-3">
+      <div>
+        <h2 className="font-supreme-regular text-2xl font-bold text-slate-900">
+          {title}
+        </h2>
+        <p className="font-notosanthai-regular text-slate-500">{subtitle}</p>
+      </div>
 
-function RenderCourseElectiveHeadlineName({ competencyName }) {
-  return (
-    <div className="font-notosanthai-semibold text-xl">{competencyName}</div>
-  );
-}
-
-function RenderCourseElectiveHeadlineDescription({ description }) {
-  return (
-    <div className="font-notosanthai-regular text-gray-400 text-sm">
-      {description}
-    </div>
-  );
-}
-
-function SavedSelectiveButton({ onSelectCourseClick, courseStatus }) {
-  return (
-    <div className="flex flex-col justify-center font-notosanthai-regular whitespace-nowrap">
-      {courseStatus === "In Progress" && (
-        <div className="font-supreme-regular px-10 py-2 bg-[#B3C6F9] shadow-sm rounded-sm">
-          In Progress
+      {visibleItems.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
+          ไม่มีรายวิชา
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {visibleItems.map(({ competency, status }) => (
+            <CompetencyCard
+              key={competency.id}
+              type={type}
+              competency={competency}
+              status={status}
+              onOpen={() => onOpen({ type, competency })}
+            />
+          ))}
         </div>
       )}
-      {courseStatus === "Complete" && (
-        <div className="font-supreme-regular px-10 py-2 bg-[#85F8C4] shadow-sm rounded-sm">
-          Complete
-        </div>
-      )}
-      {courseStatus === undefined && (
-        <button
-          className="font-supreme-regular px-10 py-2 border border-[#2e4dff] text-[#2e4dff] bg-[#e0e5ff] shadow-sm rounded-sm"
-          onClick={() => {
-            onSelectCourseClick();
-          }}
-        >
-          เลือกหลักสูตร
-        </button>
-      )}
-    </div>
+    </section>
   );
 }
 
-function RenderCourseContainer({
+/* ------------------------------ modal ------------------------------ */
+
+function CourseCard({
   course,
   certificate,
   file,
+  reflection,
   onFileChange,
   onTextChange,
-  reflection,
-  onSaveClick,
+  onSave,
+  saving,
+  message,
 }) {
-  return (
-    <div className="rounded-lg shadow-xl border-lg">
-      <div className="bg-[#FAFAFA] p-5 border-b-gray-100 rounded-t-lg">
-        <RenderCourseContainerHeadline course={course} />
-      </div>
-      <div className="p-5">
-        <RenderCourseContainerFileInput
-          certificate={certificate}
-          file={file}
-          onFileChange={onFileChange}
-        />
-        <RenderCourseContainerTextInput
-          reflection={reflection}
-          certificate={certificate}
-          onTextChange={onTextChange}
-        />
-        <RenderCourseContainerSaveButton onSaveClick={onSaveClick} />
-      </div>
-    </div>
-  );
-}
+  const displayName = course.name || course.institute || course.link;
+  const courseLink = safeUrl(course.link);
+  const savedUrl = safeUrl(certificate?.url);
 
-function RenderCourseContainerHeadline({ course }) {
   return (
-    <div className="flex justify-between font-notosanthai-semibold">
-      {course.link ? (
-        <a className="text-xl" href={course.link}>
-          {course.name === "" ? <div>{course.link}</div>: <div>{course.name}</div>}
-        </a>
-      ) : (
-        <div className="text-xl">{course.name}</div>
-      )}
-      <div>{course.institute}</div>
-    </div>
-  );
-}
-
-function RenderCourseContainerFileInput({ file, certificate, onFileChange }) {
-  const imgName = certificate?.name;
-  const imgUrl = certificate?.url;
-  return (
-    <div className="flex flex-col gap-4">
-      <label className="font-notosanthai-regular text-gray-700">
-        หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร (เลือกไฟล์)
-      </label>
-      <div className="rounded-xl p-5 bg-[#fafafa]">
-        <label className="inline-block px-3 py-2 rounded-sm bg-white border-gray-500 border-2 rounded-[24px] font-notosanthai-regular px-10 hover:cursor-pointer">
-          {file ? file.name : "เลือกไฟล์"}
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(e) => onFileChange(e.target.files[0])}
-          />
-        </label>
-        {imgUrl && (
+    <div className="shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="flex items-start justify-between gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3">
+        {courseLink ? (
           <a
-            href={imgUrl}
+            href={courseLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 text-blue-600 underline inline-block"
+            className="font-notosanthai-semibold break-all text-lg text-blue-700 underline underline-offset-2 hover:text-blue-900"
           >
-            {imgName || "ดูรูปภาพ"}
+            {displayName} ↗
           </a>
+        ) : (
+          <div className="font-notosanthai-semibold text-lg text-slate-900">
+            {displayName}
+          </div>
         )}
+        {course.institute && course.institute !== displayName && (
+          <div className="font-notosanthai-regular shrink-0 text-sm text-slate-500">
+            {course.institute}
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-4 p-4">
+        <div>
+          <div className="font-notosanthai-regular mb-2 text-sm text-slate-600">
+            หลักฐานการสำเร็จหลักสูตร / วุฒิบัตร (เลือกไฟล์)
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <label
+              className={`${btnSecondary} cursor-pointer focus-within:ring-2 focus-within:ring-slate-400`}
+            >
+              เลือกไฟล์
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(e) => onFileChange(e.target.files[0])}
+              />
+            </label>
+            <span className="font-notosanthai-regular break-all text-sm text-slate-600">
+              {file ? file.name : "ยังไม่ได้เลือกไฟล์ใหม่"}
+            </span>
+            {savedUrl && (
+              <a
+                href={savedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-notosanthai-regular break-all text-sm text-blue-700 underline underline-offset-2 hover:text-blue-900"
+              >
+                {certificate?.name || "ดูไฟล์ที่ส่งแล้ว"} ↗
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="font-notosanthai-regular mb-2 block text-sm text-slate-600">
+            คำอธิบายและการนำไปประยุกต์ใช้ในการปฏิบัติงาน
+          </label>
+          <textarea
+            rows={4}
+            className="font-notosanthai-regular w-full rounded-md border border-slate-300 bg-white p-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            placeholder="รายละเอียดความรู้ที่ได้รับ หรือสรุปผลสัมฤทธิ์ของหลักสูตร..."
+            value={reflection ?? certificate?.reflection ?? ""}
+            onChange={onTextChange}
+          />
+        </div>
+
+        <div className="flex items-center justify-end gap-3">
+          {message && (
+            <span
+              className={`text-sm ${
+                message.type === "error" ? "text-rose-700" : "text-emerald-700"
+              }`}
+            >
+              {message.text}
+            </span>
+          )}
+          <button className={btnPrimary} onClick={onSave} disabled={saving}>
+            {saving ? "กำลังบันทึก..." : "บันทึก"}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function RenderCourseContainerTextInput({
-  reflection,
-  certificate,
-  onTextChange,
+function CourseModal({
+  type,
+  competency,
+  status,
+  idpRecord,
+  onClose,
+  onSelectCourse,
+  onUpload,
 }) {
+  // state ของไฟล์/คำอธิบายอยู่ในโมดัล เมื่อปิดโมดัลจะถูกล้างอัตโนมัติ
+  const [files, setFiles] = useState({});
+  const [reflections, setReflections] = useState({});
+  const [savingIndex, setSavingIndex] = useState(null);
+  const [messages, setMessages] = useState({});
+  const [selecting, setSelecting] = useState(false);
+
+  // ปิดด้วยปุ่ม Esc และล็อกการเลื่อนของหน้าด้านหลัง
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  const courses = competency.courses ?? [];
+  // หมายเหตุ: ใช้ length + 1 ตามโครงสร้างข้อมูลเดิม (ข้าม index = length)
+  // ห้ามเปลี่ยน ไม่เช่นนั้นจะอ่านข้อมูลที่เคยบันทึกไว้ไม่เจอ
+  const selfLearningIndex = courses.length + 1;
+
+  const cards = [
+    ...courses.map((course, index) => ({ index, course })),
+    { index: selfLearningIndex, course: { name: "เรียนรู้ด้วยตนเอง" } },
+  ];
+
+  function setMessage(index, message) {
+    setMessages((prev) => ({ ...prev, [index]: message }));
+  }
+
+  async function handleSave(index) {
+    const certificate = idpRecord?.certificates?.[index];
+    const file = files[index];
+    if (!file) {
+      setMessage(index, { type: "error", text: "กรุณาเลือกไฟล์ก่อนบันทึก" });
+      return;
+    }
+
+    setSavingIndex(index);
+    setMessage(index, null);
+    try {
+      // ถ้าไม่ได้แก้คำอธิบาย ให้ส่งค่าที่เคยบันทึกไว้ แทนที่จะส่ง undefined
+      const reflection = reflections[index] ?? certificate?.reflection ?? "";
+      await onUpload(competency, index, file, reflection);
+      setFiles((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+      setMessage(index, { type: "success", text: "บันทึกแล้ว" });
+    } catch (err) {
+      console.error(err);
+      setMessage(index, {
+        type: "error",
+        text: "บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง",
+      });
+    } finally {
+      setSavingIndex(null);
+    }
+  }
+
+  async function handleSelect() {
+    setSelecting(true);
+    try {
+      await onSelectCourse(competency);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSelecting(false);
+    }
+  }
+
   return (
-    <div className="py-5">
-      <h1 className="font-notosanthai-regular py-3 text-lg">
-        คำอธิบายและการนำไปประยุกต์ใช้ในการปฏิบัติงาน
-      </h1>
-      <textarea
-        className="border border-gray-200 border-2 rounded-lg w-full h-30 p-3 font-notosanthai-regular focus:border-gray-500 outline-none"
-        placeholder="รายละเอียดความรู้ที่ได้รับ หรือสรุปผลสัมฤทธิ์ของหลักสูตร..."
-        value={reflection ?? certificate?.reflection ?? ""}
-        onChange={(e) => {
-          onTextChange(e);
-        }}
-      ></textarea>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+      onClick={onClose} // กดนอกกรอบเพื่อปิด
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="course-modal-title"
+        className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-200 bg-white p-4">
+          <div className="min-w-0">
+            <h2
+              id="course-modal-title"
+              className="font-notosanthai-semibold text-xl text-slate-900"
+            >
+              {competency.competencyName}
+            </h2>
+            <p className="font-notosanthai-regular text-sm text-slate-500">
+              {competency.description}
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            {type === "elective" && !status ? (
+              <button
+                className={btnPrimary}
+                onClick={handleSelect}
+                disabled={selecting}
+              >
+                {selecting ? "กำลังเลือก..." : "เลือกหลักสูตร"}
+              </button>
+            ) : (
+              <StatusBadge type={type} status={status} />
+            )}
+            <button
+              className={btnSecondary}
+              onClick={onClose}
+              aria-label="ปิดหน้าต่าง"
+            >
+              ปิด
+            </button>
+          </div>
+        </div>
+
+        <div className="flex min-h-0 flex-col gap-3 overflow-y-auto p-4">
+          {cards.map(({ index, course }) => (
+            <CourseCard
+              key={index}
+              course={course}
+              certificate={idpRecord?.certificates?.[index]}
+              file={files[index]}
+              reflection={reflections[index]}
+              onFileChange={(file) => {
+                if (!file) return;
+                setFiles((prev) => ({ ...prev, [index]: file }));
+              }}
+              onTextChange={(e) =>
+                setReflections((prev) => ({ ...prev, [index]: e.target.value }))
+              }
+              onSave={() => handleSave(index)}
+              saving={savingIndex === index}
+              message={messages[index]}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-function RenderCourseContainerSaveButton({ onSaveClick }) {
-  return (
-    <div className="flex justify-end">
-      <button
-        className="inline-block px-3 py-2 rounded-xl bg-[#007AFF] rounded-[24px] font-notosanthai-regular text-white px-10 hover:cursor-pointer active:bg-[#006adb] transition duration-150"
-        onClick={() => {
-          onSaveClick();
-        }}
-      >
-        บันทึก
-      </button>
-    </div>
-  );
-}
+/* ------------------------------ page ------------------------------ */
 
 const MyLearning = () => {
   const { competencies, status } = useCompetenciesData();
@@ -219,522 +428,65 @@ const MyLearning = () => {
   useCompetencies();
   useCreateIDPRecords();
 
-  const [selectedMandatory, setSelectedMandatory] = useState(null);
-  const [selectedSelective, setSelectedSelective] = useState(null);
-  const [files, setFiles] = useState({});
-  const [reflections, setReflection] = useState({});
+  // { type: "mandatory" | "elective", competency } หรือ null
+  const [selected, setSelected] = useState(null);
+  const closeModal = useCallback(() => setSelected(null), []);
 
-  // ---------- handlers ----------
+  function renderModal() {
+    if (!selected) return null;
+    const { type, competency } = selected;
 
-  const handleFileChange = (courseKey, file) => {
-    if (!file) return;
-    setFiles((prev) => ({ ...prev, [courseKey]: file }));
-  };
-
-  const handleReflectionChange = (courseKey, e) => {
-    setReflection((prev) => ({ ...prev, [courseKey]: e.target.value }));
-  };
-
-  const handleSaveElective = async (competency, index) => {
-    const file = files[index];
-    const reflection = reflections[index];
-    if (!file) return;
-    await uploadCourseFileElective(competency, index, file, reflection);
-  };
-
-  const handleSaveMandatory = async (competency, index) => {
-    const file = files[index];
-    const reflection = reflections[index];
-    if (!file) return;
-    await uploadCourseFileMandatory(competency, index, file, reflection);
-  };
-
-  const closeElective = () => {
-    setSelectedSelective(null);
-    setFiles({});
-    setReflection({});
-  };
-
-  const closeMandatory = () => {
-    setSelectedMandatory(null);
-    setFiles({});
-    setReflection({});
-  };
-
-  // ---------- modals ----------
-  /*
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  */
-
-  // <button
-  //   className="border p-5"
-  //   disabled={!!courseStatus}
-  //   onClick={() => setElectiveIDPRecords(selectedSelective)}
-  // >
-  //   Select class
-  // </button>
-  const renderCourseElective = () => {
-    if (!selectedSelective) return null;
-    console.log("selectedSelective", selectedSelective);
-
-    const courseStatus = checkSelectedCourseStatus(selectedSelective);
-    // รองรับ 3 กรณี: ยังไม่เลือก / In Progress / Complete
-    if (
-      courseStatus &&
-      courseStatus !== "In Progress" &&
-      courseStatus !== "Complete"
-    ) {
-      return null;
-    }
-
-    const selfLearningIndex = selectedSelective.courses.length + 1;
-    const idpRecord = fetchIDPRecordFromCache(selectedSelective);
-    const savedSelfLearning = idpRecord?.certificates?.[selfLearningIndex];
+    const courseStatus = checkSelectedCourseStatus(competency);
+    if (!isVisible(type, courseStatus)) return null;
 
     return (
-      //กดด้านนอกกรอบจะปิด
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-        onClick={closeElective}
-      >
-        <div
-          className="bg-white p-5 rounded w-2/4 h-3/4 overflow-y-auto"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div className="flex flex-col gap-3">
-            {/* ถ้ามีสถานะแล้ว (In Progress / Complete) จะกดเลือกซ้ำไม่ได้ */}
-            <RenderCourseElectiveHeadline
-              onSelectCourseClick={() =>
-                setElectiveIDPRecords(selectedSelective)
-              }
-              competencyName={selectedSelective.competencyName}
-              description={selectedSelective.description}
-              courseStatus={courseStatus}
-            />
-
-            {selectedSelective.courses.map((course, index) => {
-              return (
-                <RenderCourseContainer
-                  key={index}
-                  course={course}
-                  file={files[index]}
-                  onFileChange={(file) => {
-                    handleFileChange(index, file);
-                  }}
-                  certificate={idpRecord?.certificates?.[index]}
-                  reflection={reflections[index]}
-                  onTextChange={(e) => {
-                    handleReflectionChange(index, e);
-                  }}
-                  onSaveClick={() => {
-                    handleSaveElective(selectedSelective, index);
-                  }}
-                />
-              );
-            })}
-            <RenderCourseContainer
-              course={{ name: "เรียนรู้ด้วยตนเอง" }}
-              file={files[selfLearningIndex]}
-              onFileChange={(file) => handleFileChange(selfLearningIndex, file)}
-              certificate={savedSelfLearning}
-              reflection={reflections[selfLearningIndex]}
-              onTextChange={(e) => handleReflectionChange(selfLearningIndex, e)}
-              onSaveClick={() =>
-                handleSaveElective(selectedSelective, selfLearningIndex)
-              }
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
-  /*
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  */
-
-  const renderCourseMandatory = () => {
-    if (!selectedMandatory) return null;
-
-    const courseStatus = checkSelectedCourseStatus(selectedMandatory);
-    // รองรับ 2 กรณี: ยังไม่เลือก / Complete
-    if (courseStatus && courseStatus !== "Complete") return null;
-
-    const selfLearningIndex = selectedMandatory.courses.length + 1;
-    const idpRecord = fetchIDPRecordFromCache(selectedMandatory);
-    const savedSelfLearning = idpRecord?.certificates?.[selfLearningIndex];
-
-    return (
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
-        onClick={closeMandatory}
-      >
-        <div
-          className="bg-white p-5 rounded w-2/4 h-3/4 overflow-y-auto"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div className="flex flex-col gap-3">
-            <div className="flex justify-between gap-3">
-              <RenderCourseElectiveHeadlineText
-                competencyName={selectedMandatory.competencyName}
-                description={selectedMandatory.description}
-              />
-              <ClassMandatoryStatus status={courseStatus} />
-            </div>
-            {selectedMandatory.courses.map((course, index) => {
-              const saved = idpRecord?.certificates?.[index];
-              return (
-                <RenderCourseContainer
-                  key={index}
-                  course={{
-                    ...course,
-                    name: course.name || course.institute || course.link,
-                  }}
-                  file={files[index]}
-                  onFileChange={(file) => handleFileChange(index, file)}
-                  certificate={saved}
-                  reflection={reflections[index]}
-                  onTextChange={(e) => handleReflectionChange(index, e)}
-                  onSaveClick={() =>
-                    handleSaveMandatory(selectedMandatory, index)
-                  }
-                />
-              );
-            })}
-
-            <RenderCourseContainer
-              course={{ name: "เรียนรู้ด้วยตนเอง" }}
-              file={files[selfLearningIndex]}
-              onFileChange={(file) =>
-                handleFileChange(selfLearningIndex, file)
-              }
-              certificate={savedSelfLearning}
-              reflection={reflections[selfLearningIndex]}
-              onTextChange={(e) =>
-                handleReflectionChange(selfLearningIndex, e)
-              }
-              onSaveClick={() =>
-                handleSaveMandatory(selectedMandatory, selfLearningIndex)
-              }
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ---------- page ----------
-
-  function LoadingScreen({ loadingStatus }) {
-    if (loadingStatus !== "loading") return;
-    return <div>กำลังโหลด</div>;
-  }
-
-  function IntroSection(props) {
-    return <div>{props.children}</div>;
-  }
-
-  function IntroHeadline() {
-    return (
-      <div>
-        <IntroHeadlineText />
-        <IntroSubHeadlineText />
-      </div>
-    );
-  }
-  function IntroHeadlineText() {
-    return <div></div>;
-  }
-
-  function IntroSubHeadlineText() {
-    return <div></div>;
-  }
-
-  function ClassesSection(props) {
-    return <div className="p-10">{props.children}</div>;
-  }
-
-  function ClassesMandatory() {
-    return (
-      <div className="px-10 flex flex-col gap-5 bg-white rounded-lg">
-        <ClassesMandatoryHeadline />
-        <ClassesMandatoryContainer />
-      </div>
-    );
-  }
-
-  function ClassesMandatoryHeadline() {
-    return (
-      <div className="flex flex-col p-5 gap-1">
-        <ClassesMandatoryHeadlineText />
-        <ClassesMandatorySubHeadlineText />
-      </div>
-    );
-  }
-
-  function ClassesMandatoryContainer() {
-    return (
-      //ปรับจำนวน Grid ตรงนี้
-      <div className="grid grid-cols-2 gap-4">
-        {competencies.mandatory.map((m) => {
-          const itemStatus = checkSelectedCourseStatus(m);
-          if (itemStatus && itemStatus !== "Complete") return null;
-
-          return (
-            <div key={m.id}>
-              <div
-                className={`rounded-lg border border-gray-100 border-l-5 ${itemStatus === "Complete" ? `border-l-green-500` : `border-l-[#B3C6F9]`} p-5 hover:cursor-pointer h-full flex flex-col gap-4 justify-between`}
-                onClick={() => setSelectedMandatory(m)}
-              >
-                <ClassesMandatoryContainerStatusAndHeadline
-                  competencyName={m.competencyName}
-                  status={itemStatus}
-                />
-                <ClassesDescriptionAndDetail description={m.description} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  function ClassesMandatoryContainerStatusAndHeadline({
-    competencyName,
-    status,
-  }) {
-    return (
-      <div className="flex justify-between">
-        <div className="font-notosanthai-semibold text-lg">
-          {competencyName}
-        </div>
-        <ClassMandatoryStatus status={status} />
-      </div>
-    );
-  }
-
-  function ClassesMandatoryHeadlineText() {
-    return (
-      <div className="font-supreme-regular text-3xl font-bold">Mandatory</div>
-    );
-  }
-
-  function ClassesMandatorySubHeadlineText() {
-    return (
-      <div className="text-gray-600 font-notosanthai-regular">
-        รายวิชาบังคับตามตำแหน่งงานของท่าน
-      </div>
-    );
-  }
-
-  function ClassMandatoryStatus({ status }) {
-    return (
-      <div>
-        {status === "Complete" && (
-          <div className="font-supreme-regular px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
-            Complete
-          </div>
-        )}
-        {status === undefined && (
-          <div className="font-supreme-regular px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
-            Incomplete
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function ClassesDescriptionAndDetail({ description }) {
-    return (
-      <div className="flex">
-        <ClassesMandatoryContainerDescription description={description} />
-        <Detail />
-      </div>
-    );
-  }
-
-  function ClassesMandatoryContainerDescription({ description }) {
-    return <div className="font-notosanthai-regular">{description}</div>;
-  }
-
-  function Detail() {
-    return (
-      <div className="flex items-center justify-end whitespace-nowrap items-end">
-        <DetailText />
-        <ArrowRightDown className="h-8 w-8 " />
-      </div>
-    );
-  }
-
-  function DetailText() {
-    return <div className="font-notosanthai-regular">รายละเอียด</div>;
-  }
-
-  function ArrowRightDown({ className }) {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        transform="rotate(180)"
-        width="100%"
-        height="100%"
-        className={className}
-      >
-        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-        <g
-          id="SVGRepo_tracerCarrier"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        ></g>
-        <g id="SVGRepo_iconCarrier">
-          {" "}
-          <path
-            d="M17 17L7 7M7 7V16M7 7H16"
-            stroke="#000000"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>{" "}
-        </g>
-      </svg>
-    );
-  }
-
-  function ClassesSelective() {
-    return (
-      <div className="p-10 flex flex-col gap-5">
-        <ClassesSelectiveHeadline />
-        <ClassesSelectiveContainer />
-      </div>
-    );
-  }
-
-  function ClassesSelectiveContainer() {
-    return (
-      <div className="grid grid-cols-2 gap-4">
-        {competencies.electives.map((e) => {
-          const itemStatus = checkSelectedCourseStatus(e);
-          if (
-            itemStatus &&
-            itemStatus !== "In Progress" &&
-            itemStatus !== "Complete"
-          ) {
-            return null;
-          }
-
-          return (
-            <div key={e.id}>
-              <div
-                className={`rounded-lg border border-gray-100 border-l-5 ${itemStatus === "Complete" ? `border-l-green-500` : itemStatus === "In Progress" ? `border-l-[#B3C6F9]` : `border-l-gray-500`} p-5 hover:cursor-pointer h-full flex flex-col gap-4 justify-between`}
-                onClick={() => setSelectedSelective(e)}
-              >
-                <ClassesSelectiveContainerStatusAndHeadline
-                  competencyName={e.competencyName}
-                  status={itemStatus}
-                />
-                <ClassesDescriptionAndDetail description={e.description} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  function ClassesSelectiveContainerStatusAndHeadline({
-    competencyName,
-    status,
-  }) {
-    return (
-      <div className="flex justify-between">
-        <div className="font-notosanthai-semibold text-lg">
-          {competencyName}
-        </div>
-        <ClassSelectiveStatus status={status} />
-      </div>
-    );
-  }
-
-  function ClassSelectiveStatus({ status }) {
-    return (
-      <div>
-        {status === undefined && (
-          <div className="font-supreme-regular px-3 bg-[#ECF1FF] shadow-sm rounded-sm whitespace-nowrap">
-            Not Selected
-          </div>
-        )}
-        {status === "In Progress" && (
-          <div className="font-supreme-regular px-3 bg-[#B3C6F9] shadow-sm rounded-sm whitespace-nowrap">
-            Selected
-          </div>
-        )}
-        {status === "Complete" && (
-          <div className="font-supreme-regular px-3 bg-[#85F8C4] shadow-sm rounded-sm whitespace-nowrap">
-            Complete
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function ClassesSelectiveHeadline() {
-    return (
-      <div className="flex flex-col p-5 gap-1">
-        <ClassesSelectiveHeadlineText />
-        <ClassesSelectiveSubHeadline />
-      </div>
-    );
-  }
-
-  function ClassesSelectiveHeadlineText() {
-    return (
-      <div className="font-supreme-regular text-3xl font-bold">Selective</div>
-    );
-  }
-
-  function ClassesSelectiveSubHeadline() {
-    return (
-      <div className="text-gray-600 font-notosanthai-regular">
-        ท่านสามารถเลือกวิชาที่ต้องการเรียนได้ที่แสดงอยู่โดยต้องเลือกอย่างน้อย 1
-        วิชาเรียนและสามารถเลือกเรียนได้มากกว่า 1 วิชา
-      </div>
+      <CourseModal
+        type={type}
+        competency={competency}
+        status={courseStatus}
+        idpRecord={fetchIDPRecordFromCache(competency)}
+        onClose={closeModal}
+        onSelectCourse={setElectiveIDPRecords}
+        onUpload={
+          type === "elective"
+            ? uploadCourseFileElective
+            : uploadCourseFileMandatory
+        }
+      />
     );
   }
 
   return (
-    <Page>
+    <div className="min-h-screen bg-slate-50">
       <Header />
-      <LoadingScreen loadingStatus={status} />
-      <IntroSection>
-        <IntroHeadline />
-      </IntroSection>
-      <ClassesSection>
-        <ClassesMandatory />
-        <ClassesSelective />
-      </ClassesSection>
+      <main className="mx-auto flex max-w-6xl flex-col gap-8 p-4">
+        <h1 className="text-xl font-semibold text-slate-900">
+          วิชาเรียนของฉัน
+        </h1>
 
-      {renderCourseElective()}
-      {renderCourseMandatory()}
-    </Page>
+        {status === "loading" && <p className="text-slate-500">กำลังโหลด...</p>}
+
+        <CompetencySection
+          type="mandatory"
+          title="Mandatory"
+          subtitle="รายวิชาบังคับตามตำแหน่งงานของท่าน"
+          items={competencies?.mandatory ?? []}
+          getStatus={checkSelectedCourseStatus}
+          onOpen={setSelected}
+        />
+
+        <CompetencySection
+          type="elective"
+          title="Selective"
+          subtitle="ท่านสามารถเลือกวิชาที่ต้องการเรียนได้ที่แสดงอยู่โดยต้องเลือกอย่างน้อย 1 วิชาเรียนและสามารถเลือกเรียนได้มากกว่า 1 วิชา"
+          items={competencies?.electives ?? []}
+          getStatus={checkSelectedCourseStatus}
+          onOpen={setSelected}
+        />
+      </main>
+
+      {renderModal()}
+    </div>
   );
 };
 
