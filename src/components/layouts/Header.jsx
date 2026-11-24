@@ -107,6 +107,7 @@ const Header = () => {
         <NavLinkItem to={ROUTES.HOME} children="About Gap Plus" />
         <NavLinkItem to={ROUTES.MYLEARNING} children="My Learning" />
         <NavLinkItem to={ROUTES.EVALUATE} children={"Evaluate"} />
+        <NavLinkItem to={ROUTES.MYSCOREHISTORY} children="My Score" />
         <AboutUser>
           <UserDropdown />
         </AboutUser>
