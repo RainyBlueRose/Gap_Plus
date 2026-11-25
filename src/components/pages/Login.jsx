@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import ImageHowToUseGapPlus from "../../assets/How to use StarMeter.png";
+import GapPlusIcon from "../../assets/PaperPlaneGapPlus.png";
 
 import { useSocialSignIn } from "../functions/hooks/useSocialSignIn";
 
@@ -40,12 +40,11 @@ function IntroText(props) {
 
 function Headline() {
   return (
-    <h1 className="font-supreme-regular text-6xl font-bold text-slate-900 md:text-8xl">
-      GAP Plus
+    <h1 className="font-supreme-regular text-6xl font-bold text-aa-ink md:text-8xl">
+      GAP <span className="text-aa-red">Plus</span>
     </h1>
   );
 }
-
 function SubHeadline() {
   return (
     <p className="font-notosanthai-regular max-w-md text-lg text-slate-600">
@@ -101,16 +100,15 @@ function LoginError({ message }) {
 }
 
 function ImageDescription() {
-  return null;
-  // return (
-  //   <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-3">
-  //     <img
-  //       className="w-full"
-  //       src={ImageHowToUseGapPlus}
-  //       alt="ภาพแสดงวิธีการใช้งาน Gap Plus"
-  //     />
-  //   </div>
-  // );
+  return (
+    <div className="w-full max-w-2xl">
+      <img
+        className="w-full"
+        src={GapPlusIcon}
+        alt="ภาพแสดงวิธีการใช้งาน Gap Plus"
+      />
+    </div>
+  );
 }
 
 /* ------------------------------ help ------------------------------ */
@@ -136,7 +134,7 @@ function HelpHeadline() {
         สามารถส่งอีเมลถึงศูนย์บริหารการจัดการการฝึกอบรม (TMC) ได้ที่{" "}
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          className="break-all text-white underline underline-offset-2 hover:text-slate-200"
+          className="break-all font-semibold text-white underline underline-offset-2 hover:text-aa-red"
         >
           {CONTACT_EMAIL}
         </a>

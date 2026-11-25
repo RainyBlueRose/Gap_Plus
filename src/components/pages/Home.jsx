@@ -1,6 +1,6 @@
 import Header from "../layouts/Header";
 
-import ImageHowToUseGapPlus from "../../assets/How to use StarMeter.png";
+import GapPlusIcon from "../../assets/PaperPlaneGapPlus.png";
 
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../router/Router";
@@ -64,16 +64,15 @@ function IntroButton({ onClick }) {
 }
 
 function ImageDescription() {
-  return null;
-  // return (
-  //   <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-3">
-  //     <img
-  //       className="w-full"
-  //       src={ImageHowToUseGapPlus}
-  //       alt="ภาพแสดงวิธีการใช้งาน Gap Plus"
-  //     />
-  //   </div>
-  // );
+  return (
+    <div className="w-full max-w-2xl">
+      <img
+        className="w-full"
+        src={GapPlusIcon}
+        alt="ภาพแสดงวิธีการใช้งาน Gap Plus"
+      />
+    </div>
+  );
 }
 
 /* ------------------------------ problems ------------------------------ */
@@ -119,9 +118,21 @@ function ProblemSubject(props) {
   );
 }
 
-function ProblemContainer({ headlineNumber, headlineText, mainText }) {
+function ProblemContainer({
+  headlineNumber,
+  headlineText,
+  mainText,
+  variant = "red",
+}) {
+  const colorStyle =
+    variant === "red"
+      ? "border-t-aa-red bg-aa-red-light/40"
+      : "border-t-slate-200 bg-white";
+
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-slate-200 border-t-4 border-t-aa-red bg-aa-red-light/40 p-6">
+    <div
+      className={`flex flex-col gap-4 rounded-lg border border-slate-200 border-t-4 p-6 ${colorStyle}`}
+    >
       <ProblemContainerHeadline
         headlineNumber={headlineNumber}
         headlineText={headlineText}
@@ -275,6 +286,7 @@ const Home = () => {
         </ProblemHeadline>
         <ProblemSubject>
           <ProblemContainer
+            variant="white"
             headlineNumber="01"
             headlineText="ปัญหาการเข้าสู่ระบบ"
             mainText={
@@ -285,6 +297,7 @@ const Home = () => {
             }
           />
           <ProblemContainer
+            variant="red"
             headlineNumber="02"
             headlineText="สอบถามข้อมูลเพิ่มเติม"
             mainText={
@@ -296,8 +309,9 @@ const Home = () => {
             }
           />
           <ProblemContainer
-            headlineNumber="03"
-            headlineText="แก้ไขข้อมูล"
+            variant="white"
+            headlineNumber="02"
+            headlineText="สอบถามข้อมูลเพิ่มเติม"
             mainText={
               <>
                 ข้อมูลในโปรไฟล์ส่วนตัวไม่ถูกต้อง เช่น ตำแหน่งงานไม่อัปเดต,
