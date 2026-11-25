@@ -23,6 +23,8 @@ import { useUserData } from "../../store/userSlice";
 /*   idp_scores (empId ==)  -> ประวัติการให้คะแนนและเหตุผลของหัวหน้า        */
 /*   competencies/{compKey} -> ชื่อรายวิชา                              */
 /*   idp_records/{recordId} -> ชื่อ certificate                         */
+/*                                                                    */
+/* ธีม: AirAsia CI (สี aa-red / aa-red-dark / aa-red-light / aa-ink)      */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -113,9 +115,9 @@ async function fetchHistory(empId) {
 
 function SummaryCard({ pointBalance, gained, lost }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5">
+    <section className="rounded-lg border border-slate-200 border-t-4 border-t-aa-red bg-white p-5">
       <div className="text-sm text-slate-500">คะแนนคงเหลือ</div>
-      <div className="mt-1 text-4xl font-semibold text-slate-900">
+      <div className="mt-1 text-4xl font-semibold text-aa-ink">
         {pointBalance ?? "-"}
       </div>
       <div className="mt-4 flex gap-6 border-t border-slate-100 pt-4 text-sm">
@@ -147,10 +149,10 @@ function FilterTabs({ value, onChange }) {
           role="tab"
           aria-selected={value === f.id}
           onClick={() => onChange(f.id)}
-          className={`rounded-md px-3 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+          className={`rounded-md px-3 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-aa-red ${
             value === f.id
-              ? "bg-slate-900 text-white"
-              : "text-slate-600 hover:bg-slate-100"
+              ? "bg-aa-red text-white"
+              : "text-slate-600 hover:bg-aa-red-light"
           }`}
         >
           {f.label}
@@ -181,7 +183,7 @@ function HistoryItem({ entry }) {
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2">
-          <span className="font-medium text-slate-900">{entry.courseName}</span>
+          <span className="font-medium text-aa-ink">{entry.courseName}</span>
           {!entry.isCurrent && (
             <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">
               ถูกแก้ไขแล้ว
@@ -285,6 +287,7 @@ export default function MyScoreHistory({ empId: empIdProp }) {
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input
                 type="checkbox"
+                className="accent-aa-red"
                 checked={showEdited}
                 onChange={(e) => setShowEdited(e.target.checked)}
               />
@@ -311,10 +314,10 @@ export default function MyScoreHistory({ empId: empIdProp }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white">
       <Header />
       <main className="mx-auto max-w-2xl p-4">
-        <h1 className="mb-4 text-xl font-semibold text-slate-900">
+        <h1 className="mb-4 text-xl font-semibold text-aa-ink">
           ประวัติการประเมินของฉัน
         </h1>
         {content}
