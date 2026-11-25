@@ -44,6 +44,11 @@ const UsersIcon = () => (
   </Icon>
 );
 
+const ScoreIcon = () => (
+  <Icon>
+    <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z" />
+  </Icon>
+);
 /* ------------------------------ parts ------------------------------ */
 
 function AdminNavLink({ to, label, icon: IconComponent, end }) {
@@ -116,6 +121,7 @@ export const AdminNavbar = () => {
     },
     { to: ROUTES.ADMINOCRRESULT, label: "IDP Records", icon: DocumentIcon },
     { to: ROUTES.ADMINEMPLOYEES, label: "Employees", icon: UsersIcon },
+    { to: ROUTES.ADMINIDPSCORE, label: "IDP Score", icon: ScoreIcon },
   ];
   return (
     <nav

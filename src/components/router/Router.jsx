@@ -16,6 +16,7 @@ import AdminEmployees from "../pages/AdminEmployees";
 import Evaluate from "../pages/Evaluate";
 import MyScoreHistory from "../pages/MyScoreHistory";
 import Profile from "../pages/Profile";
+import AdminScoreResult from "../pages/AdminScoreResult";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: "/MyLearning", element: <MyLearning /> },
       { path: "/MyScoreHistory", element: <MyScoreHistory /> },
       { path: "/Profile", element: <Profile /> },
+      { path: "Evaluate", element: <Evaluate /> },
     ],
   },
   {
@@ -38,7 +40,7 @@ export const router = createBrowserRouter([
       { path: "/Admin/Training_matrices", element: <AdminTrainingMatrices /> },
       { path: "/Admin/OCRResult", element: <AdminOCRResult /> },
       { path: "/Admin/Employees", element: <AdminEmployees /> },
-      { path: "Evaluate", element: <Evaluate /> },
+      { path: "/Admin/Score", element: <AdminScoreResult /> },
     ],
   },
 ]);
@@ -53,5 +55,6 @@ export const ROUTES = {
   ADMINTRAININGMATRIX: "/Admin/Training_matrices",
   ADMINOCRRESULT: "/Admin/OCRResult",
   ADMINEMPLOYEES: "/Admin/Employees",
+  ADMINIDPSCORE: "/Admin/Score",
   EVALUATE: "/Evaluate",
 };
