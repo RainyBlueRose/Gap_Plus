@@ -13,6 +13,18 @@ import { useUserData } from "../../store/userSlice";
 // เมนูบนจอใหญ่: มีเส้นใต้สีแดงเมื่ออยู่หน้านั้นหรือชี้เมาส์
 const desktopLinkBase =
   "relative flex h-full items-center px-3 transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[3px] after:rounded-full after:bg-red-600 after:transition-transform after:duration-100 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400";
+const menuItemCls =
+  "w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-aa-red-light hover:text-aa-red-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-aa-red";
+
+// ทำให้ตัวอักษรแรกของแต่ละคำ (ชื่อ/นามสกุล) เป็นตัวพิมพ์ใหญ่
+// ตัวอักษรที่เหลือไม่แตะ จึงไม่ทำให้ชื่ออย่าง McDonald เพี้ยน และภาษาไทยไม่ได้รับผลกระทบ
+function formatName(name) {
+  return String(name ?? "")
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
 
 function NavLinkItem({ to, children, mobile, onClick }) {
   const className = ({ isActive }) => {
@@ -46,10 +58,7 @@ function NavLinkItem({ to, children, mobile, onClick }) {
 
 function SignOut({ onClick }) {
   return (
-    <button
-      className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
-      onClick={onClick}
-    >
+    <button className={menuItemCls} onClick={onClick}>
       Sign Out
     </button>
   );
@@ -57,10 +66,7 @@ function SignOut({ onClick }) {
 
 function Profile({ onClick }) {
   return (
-    <button
-      className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
-      onClick={onClick}
-    >
+    <button className={menuItemCls} onClick={onClick}>
       Profile
     </button>
   );
@@ -68,10 +74,7 @@ function Profile({ onClick }) {
 
 function Admin({ onClick }) {
   return (
-    <button
-      className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
-      onClick={onClick}
-    >
+    <button className={menuItemCls} onClick={onClick}>
       Admin
     </button>
   );
@@ -118,10 +121,10 @@ function AboutUser({ name, isAdmin, onSignOut }) {
       <button
         aria-haspopup="menu"
         aria-expanded={open}
-        className={`flex items-center gap-2 rounded-md border px-4 py-1.5 text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
+        className={`flex items-center gap-2 rounded-md border px-4 py-1.5 text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-aa-red ${
           open
-            ? "border-slate-300 bg-slate-100"
-            : "border-slate-200 bg-white hover:bg-slate-50"
+            ? "border-aa-red/40 bg-aa-red-light/60"
+            : "border-slate-200 bg-white hover:bg-aa-red-light/40"
         }`}
         onClick={() => setOpen((v) => !v)}
       >
@@ -233,7 +236,11 @@ const Header = () => {
             ))}
           </ul>
           {user && (
-            <AboutUser name={user.name} isAdmin={isAdmin} onSignOut={signOut} />
+            <AboutUser
+              name={formatName(user.name)}
+              isAdmin={isAdmin}
+              onSignOut={signOut}
+            />
           )}
         </nav>
 
@@ -258,7 +265,7 @@ const Header = () => {
           {user && (
             <div className="mt-3 border-t border-slate-100 pt-3">
               <div className="truncate px-3 pb-2 text-slate-900">
-                {user.name}
+                {formatName(user.name)}
               </div>
               <ul className="flex flex-col gap-1">
                 <li>
