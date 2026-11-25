@@ -4,6 +4,8 @@ import { getAuth } from "firebase/auth";
 import {
   getDocs,
   collection,
+  query,
+  where,
   doc,
   writeBatch,
   serverTimestamp,
@@ -38,6 +40,38 @@ const EDITABLE = {
 // ช่วงคะแนน ต้องตรงกับหน้า Evaluate (ค่าลบ = หักแต้ม)
 const MIN_SCORE = -10;
 const MAX_SCORE = 10;
+
+// ส่งได้แค่ช่องเดียวไป Firestore เรียงจากช่องที่แคบที่สุด
+const SERVER_FIELD_PRIORITY = [
+  "empId",
+  "recordId",
+  "compKey",
+  "evaluatorId",
+  "evaluatorName",
+  "certKey",
+];
+
+const TEXT_FILTERS = [
+  { key: "empId", label: "รหัสพนักงาน", placeholder: "empId" },
+  { key: "compKey", label: "วิชา", placeholder: "compKey" },
+  { key: "certKey", label: "ไฟล์ที่", placeholder: "1" },
+  { key: "recordId", label: "รหัส record", placeholder: "recordId" },
+  { key: "evaluatorName", label: "ชื่อผู้ประเมิน", placeholder: "บางส่วนของชื่อ" },
+  { key: "evaluatorId", label: "รหัสผู้ประเมิน", placeholder: "uid" },
+  { key: "comment", label: "เหตุผล", placeholder: "บางส่วนของเหตุผล" },
+  { key: "score", label: "คะแนน", placeholder: "เช่น 5 หรือ -2" },
+];
+
+const EMPTY_SEARCH = {
+  empId: "",
+  compKey: "",
+  certKey: "",
+  recordId: "",
+  evaluatorName: "",
+  evaluatorId: "",
+  comment: "",
+  score: "",
+};
 
 const btnPrimary =
   "rounded-md bg-slate-900 px-4 py-2 text-white hover:bg-slate-700 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
@@ -96,22 +130,12 @@ function computeLatestIds(items) {
   return latest;
 }
 
-function searchText(item) {
-  return [
-    item.id,
-    item.empId,
-    item.recordId,
-    item.compKey,
-    item.certKey,
-    item.score,
-    item.comment,
-    item.evaluatorId,
-    item.evaluatorName,
-    formatTimestamp(item.createdAt),
-  ]
-    .filter((v) => v !== undefined && v !== null)
-    .join(" ")
-    .toLowerCase();
+function matchesLoadedScore(item, filters) {
+  return TEXT_FILTERS.every(({ key }) => {
+    const value = filters[key].trim().toLowerCase();
+    if (!value) return true;
+    return String(item[key] ?? "").toLowerCase().includes(value);
+  });
 }
 
 function getEditor() {
@@ -317,9 +341,8 @@ const AdminScoreResult = () => {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
 
-  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState(EMPTY_SEARCH);
   const [signFilter, setSignFilter] = useState(""); // "" | "plus" | "minus"
-  const [evaluatorFilter, setEvaluatorFilter] = useState("");
   const [onlyLatest, setOnlyLatest] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
@@ -332,20 +355,31 @@ const AdminScoreResult = () => {
 
   /* ---------- data ---------- */
 
-  async function loadScores() {
+  async function loadScores(event) {
+    event?.preventDefault();
+
+    const serverField = SERVER_FIELD_PRIORITY.find((key) => search[key].trim() !== "");
+    const scoresQuery = serverField
+      ? query(
+          collection(db, "idp_scores"),
+          where(serverField, "==", search[serverField].trim()),
+        )
+      : collection(db, "idp_scores");
+
     setLoading(true);
     setLoadError("");
     try {
-      const snap = await getDocs(collection(db, "idp_scores"));
+      const snap = await getDocs(scoresQuery);
       const data = snap.docs
         .map((d) => ({ id: d.id, ...d.data() }))
         .sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
       setItems(data);
       setLoaded(true);
       setEditingId(null);
+      setOpenItems({});
     } catch (error) {
-      console.error("Failed to load idp_scores", error);
-      setLoadError("โหลดข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
+      console.error("Failed to search idp_scores", error);
+      setLoadError("ค้นหาข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
     } finally {
       setLoading(false);
     }
@@ -450,26 +484,28 @@ const AdminScoreResult = () => {
   /* ---------- derived ---------- */
 
   const latestIds = computeLatestIds(items);
-  const evaluatorOptions = [...new Set(items.map(evaluatorLabel))]
-    .filter((v) => v !== "-")
-    .sort();
 
-  const q = query.trim().toLowerCase();
   const list = items.filter((item) => {
+    if (!matchesLoadedScore(item, search)) return false;
     if (onlyLatest && !latestIds.has(item.id)) return false;
     if (signFilter === "plus" && !(item.score >= 0)) return false;
     if (signFilter === "minus" && !(item.score < 0)) return false;
-    if (evaluatorFilter && evaluatorLabel(item) !== evaluatorFilter) return false;
-    return !q || searchText(item).includes(q);
+    return true;
   });
 
-  const hasFilter = query || signFilter || evaluatorFilter || onlyLatest;
+  const hasFilter =
+    signFilter ||
+    onlyLatest ||
+    Object.values(search).some((value) => value.trim() !== "");
 
   function clearFilters() {
-    setQuery("");
+    setSearch(EMPTY_SEARCH);
     setSignFilter("");
-    setEvaluatorFilter("");
     setOnlyLatest(false);
+  }
+
+  function setSearchField(key, value) {
+    setSearch((current) => ({ ...current, [key]: value }));
   }
 
   function toggleItem(id) {
@@ -495,7 +531,9 @@ const AdminScoreResult = () => {
 
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="text-slate-500">
-            {loaded ? `พบ ${list.length} รายการ` : "ยังไม่ได้โหลดข้อมูล"}
+            {loaded
+              ? `อ่าน ${items.length} รายการจาก Firestore · แสดง ${list.length} รายการ`
+              : "ยังไม่ได้ค้นหา"}
           </p>
           {list.length > 0 && (
             <div className="flex gap-2">
@@ -509,65 +547,65 @@ const AdminScoreResult = () => {
           )}
         </div>
 
-        {/* ค้นหา / กรอง */}
-        <div className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-slate-200 bg-white p-4">
-          <button className={btnPrimary} onClick={loadScores} disabled={loading}>
-            {loading ? "กำลังโหลด..." : loaded ? "โหลดใหม่" : "โหลดข้อมูล"}
-          </button>
+        <form
+          className="mb-4 rounded-lg border border-slate-200 bg-white p-4"
+          onSubmit={loadScores}
+        >
+          <p className="mb-3 text-sm text-slate-500">
+            กรอกตัวกรองแล้วกดค้นหา ถ้าว่างทุกช่องระดับเอกสาร
+            ระบบจะอ่านทั้งคอลเลกชัน ถ้ากรอกช่องใดช่องหนึ่ง ระบบอ่านด้วยช่องที่แคบที่สุดเพียงช่องเดียว
+            (ลำดับ: รหัสพนักงาน, รหัส record, วิชา, รหัสผู้ประเมิน, ชื่อผู้ประเมิน, ไฟล์ที่)
+            หลังค้นหาแล้ว การพิมพ์กรองเฉพาะรายการที่โหลดมาแล้วทันที พิมพ์เพียงบางส่วนก็แสดงได้
+            ผลคะแนนและเฉพาะรายการล่าสุดกรองจากผลที่โหลดมาแล้ว ไม่มีการอ่านเพิ่ม
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            {TEXT_FILTERS.map(({ key, label, placeholder }) => (
+              <label key={key} className="flex w-44 flex-col gap-1 text-sm text-slate-600">
+                {label}
+                <input
+                  className={inputCls}
+                  value={search[key]}
+                  placeholder={placeholder}
+                  onChange={(e) => setSearchField(key, e.target.value)}
+                />
+              </label>
+            ))}
 
-          <label className="flex min-w-64 flex-1 flex-col gap-1 text-sm text-slate-600">
-            ค้นหา
-            <input
-              type="search"
-              className={inputCls}
-              placeholder="พิมพ์รหัสพนักงาน วิชา ผู้ประเมิน หรือเหตุผล"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </label>
+            <label className="flex w-44 flex-col gap-1 text-sm text-slate-600">
+              ผลคะแนน
+              <select
+                className={inputCls}
+                value={signFilter}
+                onChange={(e) => setSignFilter(e.target.value)}
+              >
+                <option value="">ทั้งหมด</option>
+                <option value="plus">ได้คะแนน (+)</option>
+                <option value="minus">ถูกหักคะแนน (-)</option>
+              </select>
+            </label>
 
-          <label className="flex flex-col gap-1 text-sm text-slate-600">
-            ผลคะแนน
-            <select
-              className={inputCls}
-              value={signFilter}
-              onChange={(e) => setSignFilter(e.target.value)}
+            <label className="flex items-center gap-2 pb-2 text-sm text-slate-600">
+              <input
+                type="checkbox"
+                checked={onlyLatest}
+                onChange={(e) => setOnlyLatest(e.target.checked)}
+              />
+              เฉพาะรายการล่าสุด
+            </label>
+
+            <button type="submit" className={btnPrimary} disabled={loading}>
+              {loading ? "กำลังค้นหา..." : "ค้นหา"}
+            </button>
+            <button
+              type="button"
+              className={btnSecondary}
+              onClick={clearFilters}
+              disabled={!hasFilter || loading}
             >
-              <option value="">ทั้งหมด</option>
-              <option value="plus">ได้คะแนน (+)</option>
-              <option value="minus">ถูกหักคะแนน (-)</option>
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-1 text-sm text-slate-600">
-            ผู้ประเมิน
-            <select
-              className={inputCls}
-              value={evaluatorFilter}
-              onChange={(e) => setEvaluatorFilter(e.target.value)}
-            >
-              <option value="">ทั้งหมด</option>
-              {evaluatorOptions.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex items-center gap-2 pb-2 text-sm text-slate-600">
-            <input
-              type="checkbox"
-              checked={onlyLatest}
-              onChange={(e) => setOnlyLatest(e.target.checked)}
-            />
-            เฉพาะรายการล่าสุด
-          </label>
-
-          <button className={btnSecondary} onClick={clearFilters} disabled={!hasFilter}>
-            ล้างตัวกรอง
-          </button>
-        </div>
+              ล้างตัวกรอง
+            </button>
+          </div>
+        </form>
 
         {loadError && (
           <p role="alert" className="mb-4 text-rose-700">
@@ -602,7 +640,7 @@ const AdminScoreResult = () => {
             <p className="rounded-lg border border-dashed border-slate-300 p-10 text-center text-slate-500">
               {loaded
                 ? "ไม่พบข้อมูลที่ตรงกับเงื่อนไขค้นหา"
-                : "กด “โหลดข้อมูล” เพื่อดึงข้อมูลจาก idp_scores"}
+                : "กรอกตัวกรองแล้วกดค้นหา เว้นช่องระดับเอกสารไว้ทั้งหมดจะอ่านทั้งคอลเลกชัน"}
             </p>
           )}
         </div>
