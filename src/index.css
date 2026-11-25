@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@theme {
+  --color-aa-red: #FF0000;
+  --color-aa-red-dark: #CC0000;
+  --color-aa-red-light: #FFE5E5;
+  --color-aa-ink: #1F1F1F;
+}
+
 @font-face {
     font-family: font-supreme-regular;
     src: url(./assets/fonts/Supreme-Regular.woff2);

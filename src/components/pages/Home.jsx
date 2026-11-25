@@ -37,8 +37,8 @@ function IntroText(props) {
 
 function Headline() {
   return (
-    <h1 className="font-supreme-regular text-6xl font-bold text-slate-900 md:text-8xl">
-      GAP Plus
+    <h1 className="font-supreme-regular text-6xl font-bold text-aa-ink md:text-8xl">
+      GAP <span className="text-aa-red">Plus</span>
     </h1>
   );
 }
@@ -56,7 +56,7 @@ function IntroButton({ onClick }) {
   return (
     <button
       onClick={onClick}
-      className="font-supreme-regular rounded-lg bg-slate-900 px-8 py-3 text-lg text-white hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+      className="font-supreme-regular rounded-lg bg-aa-red px-8 py-3 text-lg text-white hover:bg-aa-red-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
     >
       My Learning
     </button>
@@ -121,7 +121,7 @@ function ProblemSubject(props) {
 
 function ProblemContainer({ headlineNumber, headlineText, mainText }) {
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-slate-50 p-6">
+    <div className="flex flex-col gap-4 rounded-lg border border-slate-200 border-t-4 border-t-aa-red bg-aa-red-light/40 p-6">
       <ProblemContainerHeadline
         headlineNumber={headlineNumber}
         headlineText={headlineText}
@@ -193,7 +193,7 @@ function ContactUsHeadline() {
 function ContactUsHeadlineText() {
   return (
     <h2 className="font-supreme-regular text-2xl font-semibold text-white">
-      CONTACT US!
+      CONTACT <span className="text-aa-red">US!</span>
     </h2>
   );
 }
@@ -205,7 +205,7 @@ function ContactUsSubHeadline() {
       สามารถส่งอีเมลถึงศูนย์บริหารการจัดการการฝึกอบรม (TMC) ได้ที่{" "}
       <a
         href={`mailto:${CONTACT_EMAIL}`}
-        className="break-all text-white underline underline-offset-2 hover:text-slate-200"
+        className="break-all font-semibold text-white underline underline-offset-2 hover:text-aa-red"
       >
         {CONTACT_EMAIL}
       </a>
